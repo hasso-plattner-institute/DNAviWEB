@@ -9,6 +9,7 @@ Date: 2025-AUG-29 \n
 """
 import subprocess
 import shutil
+import os
 from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE
 
 def allowed_file(filename):
@@ -38,7 +39,7 @@ def run_cmd(cmd):
     return output, err
     # END OF FUNCTION
 
-def input2dnavi(in_vars, log_dir="./log/dnavi.log"):
+def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
     """
     Function to transform user inputs into command-line usable arguments
     for DNAvi
@@ -59,7 +60,8 @@ def input2dnavi(in_vars, log_dir="./log/dnavi.log"):
     except subprocess.CalledProcessError as e:
         error = e.output.decode("utf-8")
         # Save error to log file
-        with open(log_dir, "w") as text_file:
+        abs_dirname = os.path.dirname(os.path.abspath(__file__))
+        with open(f"{abs_dirname.rsplit('src',1)[0]}{log_dir}", "w") as text_file:
             text_file.write(error)
         text_file.close()
         error_msg = f"--- Error occured, please check {log_dir}"
