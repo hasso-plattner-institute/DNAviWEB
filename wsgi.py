@@ -5,7 +5,7 @@ Gunicorn server how to interact with the app.
 # Import is necessary for production to expose flask object so
 # Gunicorn can run it. The exact instruction for Gunicorn
 # in production environemnt are located in DNAvi.service
-from client.app import app
+from .client.app import app
 
 # Ignored in production
 # Only for testing

@@ -11,15 +11,13 @@ Date: 2025-AUG-29 \n
 """
 
 import os
-import zipfile as zf
 from uuid import uuid4
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory, g
 import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
-import shutil
-from src.client_constants import USERS, UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from src.tools import allowed_file, input2dnavi, move_dnavi_files
+from .src.client_constants import USERS, UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
+from .src.tools import allowed_file, input2dnavi, move_dnavi_files
 
 ###############################################################################
 # CONFIGURE APP
