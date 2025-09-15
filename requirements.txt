@@ -1,0 +1,12 @@
+numpy
+pandas
+seaborn
+scipy
+matplotlib
+imageio
+scikit-image
+flask
+flask-login
+python-dotenv
+sqlalchemy
+psycopg2-binary
