@@ -1,2 +1,3 @@
 DNAviEnv/
 .env
+__pycache__/
