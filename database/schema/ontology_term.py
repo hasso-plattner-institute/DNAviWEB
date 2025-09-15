@@ -1,0 +1,63 @@
+"""
+This module defines the ontology_term table according to its definition in the EGA metadata schema.
+https://github.com/EbiEga/ega-metadata-schema/blob/main/schemas/EGA.common-definitions.json
+"""
+from typing import List
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String
+from database.schema.base import Base
+
+class OntologyTerm(Base):
+    """
+    EGA Definition:
+    This property represents an ontology term (a.k.a. class). 
+    It consists on two properties: the term identifier (termId) and its label (termLabel). 
+    This property and its structure is inherited across many other elements in the 
+    schemas. It is there, when inherited, where the real ontology constraint is put in place
+    (e.g. using 'graphRestriction' keywords). Based on phenopacket's [OntologyClass]
+    (https://phenopacket-schema.readthedocs.io/en/latest/ontologyclass.html)
+    
+    Columns:
+    - term_id: The identifier of an ontology term must be in CURIE format (check property
+    'curieGeneralPattern'). Whether a specific term is valid or not according
+    to an ontology hierarchy is checked at each specific termId using ontology validation 
+    keywords (e.g. 'graphRestriction').
+    
+    - term_label: The label of a term is the human-readable string associated with the identifier.
+    It is not required that it matches the label of the termId within the referenced ontology,
+    although it should. This is due to the fact that the source of truth will always be the termId,
+    and not the label, which adds more context.
+
+    - ontology_description: Optional description of the term,
+    e.g., from the Ontology Lookup Service (OLS).
+    Note: This field is not required by the EGA schema but added for extra clarity.
+    """
+    __tablename__ = "ontology_term"
+
+    term_id: Mapped[str] = mapped_column(String(50), primary_key=True)
+    term_label: Mapped[str] = mapped_column(String(255), nullable=False)
+    ontology_description: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    # Relationships
+    # No direct sample–ontology term relationship
+
+    # One ontology term can be appear in multiple rows in the sample_disease table (One to Many)
+    # Parent: ontology_term
+    # Child: sample_disease
+    # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
+    sample_diseases: Mapped[List["SampleDisease"]] = relationship(
+        back_populates="ontology_term"
+    )
+    sample_phenotypic_abnormalities: Mapped[
+        List["SamplePhenotypicAbnormality"]] = relationship(
+        back_populates="sample"
+    )
+    sample_treatments: Mapped[List["SampleTreatment"]] = relationship(
+        back_populates="ontology_term"
+    )
+    sample_statuses: Mapped[List["SampleStatus"]] = relationship(
+        back_populates="ontology_term"
+    )
+    sample_cell_types: Mapped[List["SampleCellType"]] = relationship(
+        back_populates="ontology_term"
+    )
