@@ -10,7 +10,8 @@ Date: 2025-AUG-29 \n
 import subprocess
 import shutil
 import os
-from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE
+import sys
+from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, SUCCESS_TOKEN
 
 def allowed_file(filename):
     """
@@ -34,6 +35,10 @@ def run_cmd(cmd):
                          stdout=subprocess.PIPE,
                          shell=True)
     (output, err) = p.communicate()
+    output = output.decode("utf-8")
+    if "error" in output:
+        print("Written error: " + output)
+
     p_status = p.wait()  # Critical
 
     return output, err
@@ -49,28 +54,42 @@ def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
     :return:submit cmd
     """
 
-    # Basic minimal input
-    cmd = f"python3 {DNAVI_EXE}"
+
+    ##############################################################################
+    # !!! CRITICAL Set the python executable for DNAvi (it will not know othwer.)
+    ##############################################################################
+    OUR_PYTHON=sys.executable
+    cmd = f"{OUR_PYTHON} {DNAVI_EXE}"
     for argument, variable in in_vars:
         print(argument, variable)
         cmd += f" -{argument} {variable}"
-    try:
-        subprocess.check_output(cmd, shell=True,
-            stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        error = e.output.decode("utf-8")
+
+    ##############################################################################
+    # Actually run DNAvi
+    ##############################################################################
+    outpt, err = run_cmd(cmd)
+    print(outpt)
+
+    ##############################################################################
+    # Require the SUCCESS_TOKEN (a string) to not throw the error.
+    ##############################################################################
+    if SUCCESS_TOKEN not in outpt:
+        error = outpt
         # Save error to log file
         abs_dirname = os.path.dirname(os.path.abspath(__file__))
-        with open(f"{abs_dirname.rsplit('src',1)[0]}{log_dir}", "w") as text_file:
+        with open(f"{abs_dirname.rsplit('src', 
+                                        1)[0]}{log_dir}", "w") as text_file:
             text_file.write(error)
         text_file.close()
-        error_msg = f"--- Error occured, please check {log_dir}"
+        error_msg = f"--- Error occured: {outpt}, also see {log_dir}."
         return "", error_msg
 
-    return "", "", #output, error
+    elif SUCCESS_TOKEN in outpt:
+        return "", None # set error to None
     # END OF FUNCTION
 
-def move_dnavi_files(request_id="", error=None, upload_folder="", download_folder=""):
+def move_dnavi_files(request_id="", error=None, upload_folder="", download_folder="",
+                     arx="zip"):
     """
     Function to move dnavi files
     :param error: str
@@ -78,22 +97,28 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     :param download_folder: str
     :return:
     """
-
     current_folder_loc = f"{upload_folder}{request_id}"
 
     if error:
         output_id = f"ERROR_{request_id}"
         interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
+        final_destination = f"{download_folder}{output_id}.{arx}"
     else:
         output_id = request_id
         interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
+        final_destination = f"{download_folder}{output_id}.{arx}"
 
-    shutil.make_archive(interm_destination, 'zip',current_folder_loc)
-    shutil.move(f"{interm_destination}.zip", final_destination)
+    print(interm_destination)
+    print(current_folder_loc)
+    print(final_destination)
+    print("Compressing to: ", f"{interm_destination}.{arx}")
+    shutil.make_archive(interm_destination, arx, current_folder_loc)
+
+    if os.path.isfile(f"{interm_destination}.{arx}"):
+        print("Success, moving now to: ", download_folder)
+        shutil.move(f"{interm_destination}.{arx}", download_folder+"/")
+
     # CLEAN UP THE UPLOAD DIR
     shutil.rmtree(current_folder_loc)
-
     return output_id
     # END OF FUNCTION
