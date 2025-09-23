@@ -84,6 +84,7 @@ def warning():
 
 
 
+
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
@@ -131,7 +132,6 @@ def protect():
         ######################################################################
         assigned_vars = [e for e in [("i",f),("l",l),("m",m)] if e[1]]
         op, error = input2dnavi(in_vars=assigned_vars)
-
         ######################################################################
         #               ZIP + MOVE OUTPUT TO DOWNLOAD                        #
         ######################################################################
@@ -189,8 +189,6 @@ def download(filename):
     return send_from_directory(directory, filename, as_attachment=True)
 
 if __name__ =='__main__':
-    # pip install pyopenssl
-    app.run(host="0.0.0.0", debug=True) #, ssl_context="adhoc")
-
+    app.run(host="0.0.0.0", debug=True)
 
 # END OF SCRIPT
