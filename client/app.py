@@ -1,5 +1,3 @@
-#!/home/anja/snap/miniconda3/bin/python3
-
 """
 
 Main application file \n

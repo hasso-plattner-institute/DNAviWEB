@@ -60,10 +60,11 @@ def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
     ##############################################################################
     OUR_PYTHON=sys.executable
     cmd = f"{OUR_PYTHON} {DNAVI_EXE}"
+
     for argument, variable in in_vars:
         print(argument, variable)
         cmd += f" -{argument} {variable}"
-
+    print(cmd)
     ##############################################################################
     # Actually run DNAvi
     ##############################################################################
