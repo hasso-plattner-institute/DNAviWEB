@@ -10,3 +10,4 @@ flask-login
 python-dotenv
 sqlalchemy
 psycopg2-binary
+scikit_posthocs
