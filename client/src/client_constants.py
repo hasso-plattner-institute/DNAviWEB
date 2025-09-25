@@ -15,6 +15,7 @@ import datetime
 # USER
 ####################################################################################
 USERS = {'tester':{'pw':'gellyfish'}}
+SUCCESS_TOKEN = "--- DONE. Results in same folder as input file."
 
 ####################################################################################
 # DIRECTORIES
