@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>DNAvi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css" />
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" type="text/css" /> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}" type="text/css" />   
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate-simply-amazed.css') }}" type="text/css" />
+
+<!--
+
+Tooplate 2123 Simply Amazed
+
+https://www.tooplate.com/view/2123-simply-amazed
+
+-->
+</head>
+
+
+<body>
+    <div id="outer">
+        <header class="header order-last" id="tm-header">
+            <nav class="navbar">
+                <div class="collapse navbar-collapse single-page-nav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section-2"><span class="icn"><i class="fab fa-2x fa-battle-net"></i></span> DNAvi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section-3"><span class="icn"><i class="far fa-2x fa-images"></i></span> Documentation</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#section-4"><span class="icn"><i class="far fa-2x fa-comments"></i></span> Citation</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        
+        <button class="navbar-button collapsed" type="button">
+            <span class="menu_icon">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </span>
+        </button>
+
+        <script type="text/javascript">// <![CDATA[
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();
+        }
+// ]]></script>
+
+        <main id="content-box" class="order-first">
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <!-- HEADER WITH LOGO -->
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <section class="work-section section" id="section-2">
+                <div class="container">
+                    <style> img {float: right;} </style>
+                    <div class="center">
+                    <h1> DNAvi - Cell-free DNA visualization and analysis
+                        <img src="./static/img/logo.svg" alt="logo" width=7%; height=auto; style="float:left"></h1>
+                    <br></br>
+                    </div>
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <!-- 1: INPUT SECTION -->
+            <!-- --------------------------------------------------------------------------------------------------- -->
+                    <div class="row">
+                        <div class="item col-md-4">
+                            <div class="effect-julia item">
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- DNA GEL OR CSV -->
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <img src="./static/img/all_input_descr.svg" alt="Minerva" width=100%; height=auto>
+                                <h3>1. Upload DNA Table or Gel</h3>
+                                <form method="POST" enctype="multipart/form-data">
+                                <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg">
+                                <p>Max. 16 MB file size allowed. <a href="./static/tables/examples.zip">
+                                    Download examples</a>.</p>
+                                 <br></br>
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- LADDER ANNOTATION CSV-->
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <details> <summary>Required: annotate DNA ladder</summary>
+                                    <a href="./static/tables/ladder.csv"> Download example</a>.</p>
+                                    <img src="./static/img/annotate.svg" alt="Minerva" width=60%; height=auto>
+                                    <form method="POST" enctype="multipart/form-data">
+                                    <input type="file" name="ladder_file" accept=".txt,.tsv,.csv">
+                                    <p>Next, annotate basepairs (bp). Note: peaks annotated as "marker" will be excluded from analysis.
+
+                                </details>
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- METADATA CSV-->
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <details> <summary>Optional: Add metadata</summary>
+                                    <img src="./static/img/metadata.svg" alt="Minerva" width=60%; height=auto>
+                                     <form method="POST" enctype="multipart/form-data">
+                                    <input type="file" name="meta_file" accept=".txt,.tsv,.csv">
+                                    <p>Add any group information <a href="./static/tables/metadata.csv"
+                                    > Download example</a>.</p>
+                                </details>
+                                <br></br>
+                                <footer><p>Need help? Use our <a href="#section-3"> documentation</a>.</p></footer>
+                            </div>
+                        </div>
+
+                       <!-- ---------------------------------------------------------------------------------------- -->
+                       <!-- SUBMISSION -->
+                       <!-- ---------------------------------------------------------------------------------------- -->
+                        <div class="item col-md-4 one">
+                            <div class="tm-work-item-inner">
+                                <img src="./static/img/submit.svg" alt="Minerva" width=100%; height=auto>
+                                <h3>2. Submit for Analysis</h3>
+                                <p>Your DNA file will be analysed for peaks, height normalized,
+                                    and grouped in case you provided metadata. Be patient, this may take a while.</p>
+                                <button type="submit" class="btn btn-success" >Submit</button>
+                                </form>
+
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- DISPLAY ERROR MESSAGES HERE
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    <ul class=flashes>
+                                    {% for message in messages %}
+                                    <li>{{ message }}</li>
+                                    {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                {% endwith %}
+                                {% block body %}{% endblock %}
+
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- FILE MISSING
+                                <!-- ------------------------------------------------------------------------------ -->
+                                    <br></br>
+                                    {% if missing_error %}
+                                    <br></br>
+                                     <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                                    {% endif %}
+
+                                <!-- ------------------------------------------------------------------------------ -->
+                                <!-- OTHER ERROR
+                                <!-- ------------------------------------------------------------------------------ -->
+                                    {% if error %}
+                                    <br></br>
+                                    <p class=error><strong>Error:</strong> {{ error }} </p>
+                                    <br></br>
+                                    {% endif %}
+                            </div>
+                        </div>
+                       <!-- ---------------------------------------------------------------------------------------- -->
+                       <!-- DOWNLOAD INFORMATION-->
+                       <!-- ---------------------------------------------------------------------------------------- -->
+                        <div class="item col-md-4 two">
+                            <div class="tm-work-item-inner">
+                                <img src="./static/img/download.svg" alt="Minerva" width=100%; height=auto>
+                                <h3>3. Automatic Download</h3>
+                                <p>A .ZIP folder containing all results and plots will be downloaded automatically.
+                                   You are allowed to use this for your work only if you cite DNAvi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <!-- 2: DOCUMENTATION SECTION -->
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <section class="gallery-section section parallax-window" data-parallax="scroll"
+                     data-image-src="img/section-3-bg.jpg" id="section-3">
+                <div class="container">
+                    <div class="title text-right">
+                        <h2>Documentation and Downloads</h2>
+                    </div>
+                    <div class="mx-auto gallery-slider">
+
+                        <figure class="effect-julia item">
+                        <img src="./static/img/docu.svg" alt="Image">
+                        <figcaption><div><p>Download our full documentation in .pdf format</p></div>
+                                <a href="./static/tables/documentation_DNAvi.pdf">View more</a>
+                        </figcaption>
+                        </figure>
+
+                        <figure class="effect-julia item">
+                        <img src="./static/img/input_example.svg" alt="Image">
+                        <figcaption><div><p>Download a ready-to-use DNA signal table</p></div>
+                        <a href="./static/tables/electropherogram.csv" >View more</a>
+                        </figcaption>
+                        </figure>
+
+                        <figure class="effect-julia item">
+                        <img src="./static/img/img_example.svg" alt="Image">
+                        <figcaption><div><p>Download an example gel image that fulfils our quality criteria.</p></div>
+                        <a href="./static/img/examples/gel.png">View more</a></figcaption>
+                        </figure>
+
+                        <figure class="effect-julia item">
+                            <img src="./static/img/meta_example.svg" alt="Image">
+                            <figcaption>
+                                <div>
+                                    <p>Download a meta file to annotate the DNA ladder or define groups</p>
+                                </div>
+                                <a href="./static/tables/metadata.csv">View more</a>
+                            </figcaption>
+                        </figure>
+                        <figure class="effect-julia item">
+                            <img src="./static/img/gallery.svg" alt="Image">
+                            <figcaption><div><p>View examples of output plots and interpretation aid.</p></div>
+                            <a href="{{ url_for('gallery') }}">View more</a>
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </section>
+
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <!-- 4: CITATION AND CONTACT SECTION -->
+            <!-- --------------------------------------------------------------------------------------------------- -->
+            <section class="contact-section section" id="section-4">
+                <div class="container">
+                <div class="row">
+                    <div class="title">
+                        <h3>Citation</h3>
+                    </div>
+                     <div class="col-lg-5 col-md-6 mb-4 contact-form">
+                        <p>Please cite DNAvi whenever you use it for your research, analysis or visualization.</p>
+                 </div>
+                    <div class="title">
+                        <h3>Contact</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 mb-4 contact-form">
+                        <p>Tool credits</p>
+                                <ul class="font-weight-light">
+                                    <li>
+                                        <span class="icn"><i class="fas fa-at"></i></span>
+                                        <span class="lbl">Email:</span> <a href="#">ahess@molgen.mpg.de</a>
+                                    </li>
+                                    <li>
+                                        <span class="lbl">ORCID:</span> <a href="https://orcid.org/0000-0001-6634-9502">
+                                        https://orcid.org/0000-0001-6634-9502</a>
+                                    </li>
+                                    <li>
+                                        <span class="icn"><i class="fas fa-globe-asia"></i></span>
+                                        <span class="lbl">GitHub:</span> <a href="#">https://github.com/anjahess</a>
+                                    </li>
+                                </ul>
+                                            <footer class="footer container container-2">
+                    <div class="row">
+                        <p class="col-sm-7">Copyright Anja Hess, 2025. </p>
+                        <p class="col-sm-5 text-right design">Design: <a rel="nofollow" href="https://www.tooplate.com"
+                                                                         target="_parent"
+                        > Layout Copyright 2021 Simply Amazed Co. Tooplate</a></p>
+                    </div>
+                </footer>
+                        </div>
+                            </div>                        
+                        </div>
+                        </div>
+                    </div>                
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery.singlePageNav.min.js"></script>
+    <script src="js/slick.js"></script>
+    <script src="js/parallax.min.js"></script>
+    <script src="js/templatemo-script.js"></script>
+</body>
+</html>

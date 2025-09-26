@@ -51,10 +51,11 @@ def request_loader(request):
   if username not in USERS:
     return
 
-  user = User()
-  user.id = username
-  user.is_authenticated = request.form['pw'] == USERS[username]['pw']
-  return user
+  if USERS[username]['pw'] == request.form['pw']:
+      user = User()
+      user.id = username
+      return user
+  return None
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -95,6 +96,7 @@ def warning():
 @login_required
 
 def protect():
+    print("noooooo2")
     error=None
     output_id = None
 
