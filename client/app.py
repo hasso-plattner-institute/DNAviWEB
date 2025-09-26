@@ -34,42 +34,43 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONT_LEN
 login_manager.init_app(app)
 
 class User(UserMixin):
-  pass
+    pass
 
 @login_manager.user_loader
 def user_loader(username):
-  if username not in USERS:
-    return
-
-  user = User()
-  user.id = username
-  return user
+    if username not in USERS:
+        return
+    user = User()
+    user.id = username
+    return user
 
 @login_manager.request_loader
 def request_loader(request):
-  username = request.form.get('username')
-  if username not in USERS:
-    return
+    username = request.form.get('username')
+    if username not in USERS:
+        return
 
-  if USERS[username]['pw'] == request.form['pw']:
-      user = User()
-      user.id = username
-      return user
-  return None
+    if USERS[username]['pw'] == request.form['pw']:
+        user = User()
+        user.id = username
+        return user
+    return None
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template(f'login.html')
     email = request.form['username']
-    try:
-        request.form['pw'] == USERS[email]['pw']
+    password = request.form.get('pw')
+
+    # Check if user exists and password matches
+    if email in USERS and USERS[email]['pw'] == password:
         print("SUCCESS LOGGING IN")
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return redirect(url_for('protect'))
-    except:
+        return redirect(url_for('dashboard'))
+    else:
         return render_template(f'index.html',
                                error=f"LOGIN FAILED")
 
@@ -86,7 +87,10 @@ def info():
 def warning():
     return "A warning message. (warning)"
 
-
+@app.route('/dashboard', methods=['GET','POST'])
+@login_required
+def dashboard():
+    return render_template(f'index2.html')
 
 
 ##############################################################################
@@ -96,7 +100,6 @@ def warning():
 @login_required
 
 def protect():
-    print("noooooo2")
     error=None
     output_id = None
 
@@ -175,16 +178,16 @@ def after_request_func(response):
     # Clean up download dir.
     ###########################################################################
     if os.path.isfile(f"{app.config['DOWNLOAD_FOLDER']}{output_id}.zip"):
-       os.remove(f"{app.config['DOWNLOAD_FOLDER']}{output_id}.zip")
-       print("---- CLEANED")
+        os.remove(f"{app.config['DOWNLOAD_FOLDER']}{output_id}.zip")
+        print("---- CLEANED")
     else:
         print("Error cleaning up.")
     return response
 
 @app.route('/logout')
 def logout():
-  logout_user()
-  return 'Logged out'
+    logout_user()
+    return 'Logged out'
 
 @app.route('/download', methods=['POST'])
 def download(filename):
