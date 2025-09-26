@@ -4,3 +4,5 @@ __pycache__/
 lib/
 lib/DNAvi/tests/electropherogram/
 client/log/dnavi.log
+client/static2/
+client/templates2/
