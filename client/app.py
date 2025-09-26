@@ -21,7 +21,11 @@ from .src.tools import allowed_file, input2dnavi, move_dnavi_files
 # CONFIGURE APP
 ###############################################################################
 login_manager = LoginManager()
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder='client/static',
+    template_folder='client/templates'
+)
 app.secret_key = "74352743t#+#´01230435¹^xvc1u"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
