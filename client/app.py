@@ -54,7 +54,7 @@ def request_loader(request):
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template(f'index.html')
+        return render_template(f'login.html')
     email = request.form['username']
     try:
         request.form['pw'] == USERS[email]['pw']
