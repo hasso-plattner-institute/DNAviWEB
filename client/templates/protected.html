@@ -1,62 +1,239 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>DNAvi</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css" />
-    <link rel="stylesheet" href="fontawesome/css/all.min.css" type="text/css" /> 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}" type="text/css" />   
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate-simply-amazed.css') }}" type="text/css" />
+  <!--begin::Head-->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>DNAvi | New Analysis</title>
 
-<!--
+    <!--begin::Accessibility Meta Tags-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!--end::Accessibility Meta Tags-->
 
-Tooplate 2123 Simply Amazed
+    <!--begin::Primary Meta Tags-->
+    <meta name="title" content="DNAvi | New Analysis" />
+    <meta name="author" content="ColorlibHQ" />
+    <meta
+      name="description"
+      content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS. Fully accessible with WCAG 2.1 AA compliance."
+    />
+    <meta
+      name="keywords"
+      content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel, WCAG compliant"
+    />
+    <!--end::Primary Meta Tags-->
 
-https://www.tooplate.com/view/2123-simply-amazed
+    <!--begin::Accessibility Features-->
+    <!-- Skip links will be dynamically added by accessibility.js -->
+    <meta name="supported-color-schemes" content="light dark" />
+    <link rel="preload" href="{{ url_for('static', filename='css/adminlte.css') }}" as="style" />
+    <!--end::Accessibility Features-->
 
--->
-</head>
+    <!--begin::Fonts-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+      integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+      crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
+    />
+    <!--end::Fonts-->
 
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
 
-<body>
-    <div id="outer">
-        <header class="header order-last" id="tm-header">
-            <nav class="navbar">
-                <div class="collapse navbar-collapse single-page-nav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section-2"><span class="icn"><i class="fab fa-2x fa-battle-net"></i></span> DNAvi</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section-3"><span class="icn"><i class="far fa-2x fa-images"></i></span> Documentation</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#section-4"><span class="icn"><i class="far fa-2x fa-comments"></i></span> Citation</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
-        
-        <button class="navbar-button collapsed" type="button">
-            <span class="menu_icon">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </span>
-        </button>
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+      crossorigin="anonymous"
+    />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
 
-        <script type="text/javascript">// <![CDATA[
-        function loading(){
-            $("#loading").show();
-            $("#content").hide();
-        }
-// ]]></script>
+    <!--begin::Required Plugin(AdminLTE)-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
+    <!--end::Required Plugin(AdminLTE)-->
 
-        <main id="content-box" class="order-first">
+    <!-- apexcharts -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
+      integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <!--begin::Header-->
+      <nav class="app-header navbar navbar-expand bg-body">
+        <!--begin::Container-->
+        <div class="container-fluid">
+          <!--begin::Start Navbar Links-->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+              <a href="#" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item d-none d-md-block">
+              <a href="#" class="nav-link">Contact</a>
+            </li>
+          </ul>
+          <!--end::Start Navbar Links-->
+
+          <!--begin::End Navbar Links-->
+          <ul class="navbar-nav ms-auto">
+            <!--begin::Navbar Search-->
+            <li class="nav-item">
+              <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+                <i class="bi bi-search"></i>
+              </a>
+            </li>
+            <!--end::Navbar Search-->
+
+            <!--begin::Fullscreen Toggle-->
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+                <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+                <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+              </a>
+            </li>
+            <!--end::Fullscreen Toggle-->
+          </ul>
+          <!--end::End Navbar Links-->
+        </div>
+        <!--end::Container-->
+      </nav>
+      <!--end::Header-->
+      <!--begin::Sidebar-->
+      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+        <!--begin::Sidebar Brand-->
+        <div class="sidebar-brand">
+          <!--begin::Brand Link-->
+          <a class="d-flex align-items-center">
+            <!--begin::Brand Image-->
+            <img
+              src="{{ url_for('static', filename='img/logo.svg') }}"
+              alt="DNAvi Logo"
+              class="brand-image opacity-75 shadow me-2"
+              style="height: 60px; width: auto;"
+            />
+            <!--end::Brand Image-->
+            <!--begin::Brand Text-->
+            <span class="brand-text fw-light">DNAvi</span>
+            <!--end::Brand Text-->
+          </a>
+          <!--end::Brand Link-->
+        </div>
+        <!--end::Sidebar Brand-->
+        <!--begin::Sidebar Wrapper-->
+        <div class="sidebar-wrapper">
+          <nav class="mt-2">
+            <!--begin::Sidebar Menu-->
+            <ul
+              class="nav sidebar-menu flex-column"
+              data-lte-toggle="treeview"
+              role="navigation"
+              aria-label="Main navigation"
+              data-accordion="false"
+              id="navigation"
+            >
+              <li class="nav-item">
+                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
+                  <i class="nav-icon bi bi-speedometer"></i>
+                  <p>
+                    Submissions Dashboard
+                  </p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                 <a href="{{ url_for('protect') }}" class="nav-link">
+                  <i class="bi bi-graph-up"></i>
+                  <p>
+                    New Analysis
+                  </p>
+                </a>
+              </li>
+
+              <li class="nav-header">DOCUMENTATIONS</li>
+              <li class="nav-item">
+                <a href="./docs/introduction.html" class="nav-link">
+                  <i class="nav-icon bi bi-download"></i>
+                  <p>Installation</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./docs/layout.html" class="nav-link">
+                  <i class="nav-icon bi bi-grip-horizontal"></i>
+                  <p>Layout</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./docs/color-mode.html" class="nav-link">
+                  <i class="nav-icon bi bi-star-half"></i>
+                  <p>Color Mode</p>
+                </a>
+              <li class="nav-item">
+                <a href="./docs/how-to-contribute.html" class="nav-link">
+                  <i class="nav-icon bi bi-hand-thumbs-up-fill"></i>
+                  <p>How To Contribute</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./docs/faq.html" class="nav-link">
+                  <i class="nav-icon bi bi-question-circle-fill"></i>
+                  <p>FAQ</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./docs/license.html" class="nav-link">
+                  <i class="nav-icon bi bi-patch-check-fill"></i>
+                  <p>License</p>
+                </a>
+              </li>
+            <!--end::Sidebar Menu-->
+          </nav>
+        </div>
+        <!--end::Sidebar Wrapper-->
+      </aside>
+      <!--end::Sidebar-->
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">New Analysis</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
+                </ol>
+              </div>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <div class="app-content">
+          <main id="content-box" class="order-first">
             <!-- --------------------------------------------------------------------------------------------------- -->
             <!-- HEADER WITH LOGO -->
             <!-- --------------------------------------------------------------------------------------------------- -->
@@ -170,111 +347,84 @@ https://www.tooplate.com/view/2123-simply-amazed
                     </div>
                 </div>
             </section>
-
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <!-- 2: DOCUMENTATION SECTION -->
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <section class="gallery-section section parallax-window" data-parallax="scroll"
-                     data-image-src="img/section-3-bg.jpg" id="section-3">
-                <div class="container">
-                    <div class="title text-right">
-                        <h2>Documentation and Downloads</h2>
-                    </div>
-                    <div class="mx-auto gallery-slider">
-
-                        <figure class="effect-julia item">
-                        <img src="./static/img/docu.svg" alt="Image">
-                        <figcaption><div><p>Download our full documentation in .pdf format</p></div>
-                                <a href="./static/tables/documentation_DNAvi.pdf">View more</a>
-                        </figcaption>
-                        </figure>
-
-                        <figure class="effect-julia item">
-                        <img src="./static/img/input_example.svg" alt="Image">
-                        <figcaption><div><p>Download a ready-to-use DNA signal table</p></div>
-                        <a href="./static/tables/electropherogram.csv" >View more</a>
-                        </figcaption>
-                        </figure>
-
-                        <figure class="effect-julia item">
-                        <img src="./static/img/img_example.svg" alt="Image">
-                        <figcaption><div><p>Download an example gel image that fulfils our quality criteria.</p></div>
-                        <a href="./static/img/examples/gel.png">View more</a></figcaption>
-                        </figure>
-
-                        <figure class="effect-julia item">
-                            <img src="./static/img/meta_example.svg" alt="Image">
-                            <figcaption>
-                                <div>
-                                    <p>Download a meta file to annotate the DNA ladder or define groups</p>
-                                </div>
-                                <a href="./static/tables/metadata.csv">View more</a>
-                            </figcaption>
-                        </figure>
-                        <figure class="effect-julia item">
-                            <img src="./static/img/gallery.svg" alt="Image">
-                            <figcaption><div><p>View examples of output plots and interpretation aid.</p></div>
-                            <a href="{{ url_for('gallery') }}">View more</a>
-                            </figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </section>
-
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <!-- 4: CITATION AND CONTACT SECTION -->
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <section class="contact-section section" id="section-4">
-                <div class="container">
-                <div class="row">
-                    <div class="title">
-                        <h3>Citation</h3>
-                    </div>
-                     <div class="col-lg-5 col-md-6 mb-4 contact-form">
-                        <p>Please cite DNAvi whenever you use it for your research, analysis or visualization.</p>
-                 </div>
-                    <div class="title">
-                        <h3>Contact</h3>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-5 col-md-6 mb-4 contact-form">
-                        <p>Tool credits</p>
-                                <ul class="font-weight-light">
-                                    <li>
-                                        <span class="icn"><i class="fas fa-at"></i></span>
-                                        <span class="lbl">Email:</span> <a href="#">ahess@molgen.mpg.de</a>
-                                    </li>
-                                    <li>
-                                        <span class="lbl">ORCID:</span> <a href="https://orcid.org/0000-0001-6634-9502">
-                                        https://orcid.org/0000-0001-6634-9502</a>
-                                    </li>
-                                    <li>
-                                        <span class="icn"><i class="fas fa-globe-asia"></i></span>
-                                        <span class="lbl">GitHub:</span> <a href="#">https://github.com/anjahess</a>
-                                    </li>
-                                </ul>
-                                            <footer class="footer container container-2">
-                    <div class="row">
-                        <p class="col-sm-7">Copyright Anja Hess, 2025. </p>
-                        <p class="col-sm-5 text-right design">Design: <a rel="nofollow" href="https://www.tooplate.com"
-                                                                         target="_parent"
-                        > Layout Copyright 2021 Simply Amazed Co. Tooplate</a></p>
-                    </div>
-                </footer>
-                        </div>
-                            </div>                        
-                        </div>
-                        </div>
-                    </div>                
-                </div>
-            </section>
-        </main>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+      <!--begin::Footer-->
+      <footer class="app-footer">
+        <!--begin::To the end-->
+        <strong>
+          Design: Copyright &copy; 2014-2025&nbsp;
+          <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
+        </strong>
+        All rights reserved.
+        <!--end::To the end-->
+        <!--begin::Copyright-->
+        <div class="float-end d-none d-sm-inline">Copyright &copy; Anja Hess, 2025.</div>
+        <!--end::Copyright-->
+      </footer>
+      <!--end::Footer-->
     </div>
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/jquery.singlePageNav.min.js"></script>
-    <script src="js/slick.js"></script>
-    <script src="js/parallax.min.js"></script>
-    <script src="js/templatemo-script.js"></script>
-</body>
+    <!--end::App Wrapper-->
+    <!--begin::Script-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+    <script src="{{ url_for('static', filename='./js/adminlte.js') }}"></script>
+    <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+    <script>
+      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+      const Default = {
+        scrollbarTheme: 'os-theme-light',
+        scrollbarAutoHide: 'leave',
+        scrollbarClickScroll: true,
+      };
+      document.addEventListener('DOMContentLoaded', function () {
+        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+
+        // Disable OverlayScrollbars on mobile devices to prevent touch interference
+        const isMobile = window.innerWidth <= 992;
+
+        if (
+          sidebarWrapper &&
+          OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
+          !isMobile
+        ) {
+          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+              theme: Default.scrollbarTheme,
+              autoHide: Default.scrollbarAutoHide,
+              clickScroll: Default.scrollbarClickScroll,
+            },
+          });
+        }
+      });
+    </script>
+    <!--end::OverlayScrollbars Configure-->
+
+    <!-- OPTIONAL SCRIPTS -->
+
+    <!-- apexcharts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
+      integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
+      crossorigin="anonymous"
+    ></script>
+    <!--end::Script-->
+  </body>
+  <!--end::Body-->
 </html>
