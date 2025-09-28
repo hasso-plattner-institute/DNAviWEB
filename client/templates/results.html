@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Submission Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body class="p-4">
+
+<h2>Results for submission: {{ output_id }}</h2>
+<hr>
+
+<div class="row">
+    {% for file in files %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                {% if file.endswith(('.png','.jpg','.jpeg','.svg')) %}
+                    <img src="{{ url_for('serve_result_file', output_id=output_id, filename=file) }}" 
+                         class="card-img-top" alt="{{ file }}">
+                {% else %}
+                    <div class="card-body">
+                        <p class="card-text">{{ file }}</p>
+                    </div>
+                {% endif %}
+                <div class="card-footer">
+                    <a href="{{ url_for('serve_result_file', output_id=output_id, filename=file) }}" 
+                       class="btn btn-primary btn-sm" download>Download</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('submissions_dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+
+</body>
+</html>
