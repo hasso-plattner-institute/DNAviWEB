@@ -69,7 +69,7 @@ def login():
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('submissions_dashboard'))
     else:
         return render_template(f'index.html',
                                error=f"LOGIN FAILED")
@@ -87,10 +87,10 @@ def info():
 def warning():
     return "A warning message. (warning)"
 
-@app.route('/dashboard', methods=['GET','POST'])
+@app.route('/submissions_dashboard', methods=['GET','POST'])
 @login_required
-def dashboard():
-    return render_template(f'index2.html')
+def submissions_dashboard():
+    return render_template(f'submissions_dashboard.html')
 
 
 ##############################################################################

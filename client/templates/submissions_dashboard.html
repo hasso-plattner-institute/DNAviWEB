@@ -123,12 +123,12 @@
         <!--begin::Sidebar Brand-->
         <div class="sidebar-brand">
           <!--begin::Brand Link-->
-          <a>
+          <a class="d-flex align-items-center">
             <!--begin::Brand Image-->
             <img
               src="{{ url_for('static', filename='img/logo.svg') }}"
               alt="DNAvi Logo"
-              class="brand-image opacity-75 shadow"
+              class="brand-image opacity-75 shadow me-2"
               style="height: 60px; width: auto;"
             />
             <!--end::Brand Image-->
@@ -152,10 +152,19 @@
               id="navigation"
             >
               <li class="nav-item">
-                 <a href="./index2.html" class="nav-link">
+                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
                   <i class="nav-icon bi bi-speedometer"></i>
                   <p>
                     Submissions Dashboard
+                  </p>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                 <a href="{{ url_for('protect') }}" class="nav-link">
+                  <i class="bi bi-graph-up"></i>
+                  <p>
+                    New Analysis
                   </p>
                 </a>
               </li>
@@ -215,7 +224,6 @@
               </div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Submissions Dashboard</li>
                 </ol>
               </div>
@@ -350,14 +358,14 @@
       <!--begin::Footer-->
       <footer class="app-footer">
         <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">DNAvi</div>
+        <div class="float-end d-none d-sm-inline">
+          Design: Copyright &copy; 2014-2025&nbsp;
+          <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
+        </div>
+        All rights reserved.
         <!--end::To the end-->
         <!--begin::Copyright-->
-        <strong>
-          Copyright &copy; 2014-2025&nbsp;
-          <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
-        </strong>
-        All rights reserved.
+        <div>Copyright &copy; Anja Hess, 2025.</div>
         <!--end::Copyright-->
       </footer>
       <!--end::Footer-->
