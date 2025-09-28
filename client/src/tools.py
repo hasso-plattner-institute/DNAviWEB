@@ -103,23 +103,27 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     if error:
         output_id = f"ERROR_{request_id}"
         interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}.{arx}"
+        final_destination = f"{download_folder}{output_id}"
     else:
         output_id = request_id
         interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}.{arx}"
+        final_destination = f"{download_folder}{output_id}"
 
     print(interm_destination)
     print(current_folder_loc)
     print(final_destination)
+
     print("Compressing to: ", f"{interm_destination}.{arx}")
     shutil.make_archive(interm_destination, arx, current_folder_loc)
 
     if os.path.isfile(f"{interm_destination}.{arx}"):
-        print("Success, moving now to: ", download_folder)
-        shutil.move(f"{interm_destination}.{arx}", download_folder+"/")
-
+        print("Success, moving now from: ", interm_destination)
+        print("Success, moving now to: ", final_destination)
+        shutil.move(f"{interm_destination}", final_destination+"/")
+        shutil.move(f"{interm_destination}.{arx}", f"{final_destination}.{arx}")
+        
     # CLEAN UP THE UPLOAD DIR
-    shutil.rmtree(current_folder_loc)
+    shutil.rmtree(interm_destination)
+    shutil.rmtree(f"{interm_destination}.{arx}")
     return output_id
     # END OF FUNCTION
