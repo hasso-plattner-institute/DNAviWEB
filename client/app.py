@@ -9,6 +9,7 @@ Date: 2025-AUG-29 \n
 """
 
 import os
+import pandas as pd
 from uuid import uuid4
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory, g
 import flask_login
@@ -155,8 +156,40 @@ def protect():
         if error:
             return render_template(f'protected.html',
                                error=error)
-        return download(f"{output_id}.zip")
+          
+        files = get_all_files(app.config['DOWNLOAD_FOLDER']+output_id)
+        # Collect images and statistics CSVs
+        images = []
+        tables = []
+        
+        for fname in files:
+            if fname.lower().endswith(('.pdf','.png', '.jpg', '.jpeg', '.svg')):
+                images.append(fname)
+            elif fname.lower().endswith('_statistics.csv'):
+                csv_path = os.path.join(app.config['DOWNLOAD_FOLDER']+output_id, fname)
+                print("here is a csv path")
+                print(csv_path)
+                df = pd.read_csv(csv_path)
+                table_html = df.to_html(classes='table table-striped', index=False, border=0)
+                tables.append({'name': fname, 'html': table_html})
+        print("here are the tables")
+        print(tables)
+           
+        download(f"{output_id}.zip")
+        return render_template('results.html', images=images, tables=tables, output_id=output_id)
+
     return render_template(f'protected.html', error=error)
+
+def get_all_files(folder, prefix=''):
+    all_files = []
+    for f in os.listdir(folder):
+        full_path = os.path.join(folder, f)
+        relative_path = os.path.join(prefix, f)
+        if os.path.isdir(full_path):
+            all_files.extend(get_all_files(full_path, relative_path))
+        else:
+            all_files.append(relative_path)
+    return all_files
 
 ##############################################################################
 # APP ROUTES
@@ -188,6 +221,13 @@ def after_request_func(response):
 def logout():
     logout_user()
     return 'Logged out'
+
+
+@app.route('/results/<output_id>/<path:filename>')
+@login_required
+def serve_result_file(output_id, filename):
+    directory = os.path.join(app.config['DOWNLOAD_FOLDER'], output_id)
+    return send_from_directory(directory, filename)
 
 @app.route('/download', methods=['POST'])
 def download(filename):

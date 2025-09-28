@@ -122,8 +122,6 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
         shutil.move(f"{interm_destination}", final_destination+"/")
         shutil.move(f"{interm_destination}.{arx}", f"{final_destination}.{arx}")
         
-    # CLEAN UP THE UPLOAD DIR
-    shutil.rmtree(interm_destination)
-    shutil.rmtree(f"{interm_destination}.{arx}")
+
     return output_id
     # END OF FUNCTION
