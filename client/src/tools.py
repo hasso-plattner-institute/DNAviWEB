@@ -122,6 +122,22 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
         shutil.move(f"{interm_destination}", final_destination+"/")
         shutil.move(f"{interm_destination}.{arx}", f"{final_destination}.{arx}")
         
-
     return output_id
     # END OF FUNCTION
+
+def get_all_files(folder, prefix=''):
+    """
+    Recursively get all files in a folder
+    :param folder: str
+    :param prefix: str 
+    :return: list of all files in folder and subfolders
+    """
+    all_files = []
+    for f in os.listdir(folder):
+        full_path = os.path.join(folder, f)
+        relative_path = os.path.join(prefix, f)
+        if os.path.isdir(full_path):
+            all_files.extend(get_all_files(full_path, relative_path))
+        else:
+            all_files.append(relative_path)
+    return all_files

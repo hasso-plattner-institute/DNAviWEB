@@ -9,3 +9,8 @@ client/log/dnavi.log
 exchange/downloads/*
 # Except README.md
 !exchange/downloads/README.md
+
+# Ignore everything in uploads
+exchange/uploads/*
+# Except README.md
+!exchange/uploads/README.md

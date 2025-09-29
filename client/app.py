@@ -16,7 +16,7 @@ import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
 from .src.client_constants import USERS, UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from .src.tools import allowed_file, input2dnavi, move_dnavi_files
+from .src.tools import allowed_file, input2dnavi, get_all_files, move_dnavi_files
 
 ###############################################################################
 # CONFIGURE APP
@@ -156,40 +156,25 @@ def protect():
         if error:
             return render_template(f'protected.html',
                                error=error)
-          
-        files = get_all_files(app.config['DOWNLOAD_FOLDER']+output_id)
-        # Collect images and statistics CSVs
-        images = []
+
+        files = get_all_files(app.config['DOWNLOAD_FOLDER'] + output_id)
+        #download(f"{output_id}.zip")
         tables = []
-        
-        for fname in files:
-            if fname.lower().endswith(('.pdf','.png', '.jpg', '.jpeg', '.svg')):
-                images.append(fname)
-            elif fname.lower().endswith('_statistics.csv'):
-                csv_path = os.path.join(app.config['DOWNLOAD_FOLDER']+output_id, fname)
-                print("here is a csv path")
-                print(csv_path)
+        for f in files:
+            if f.lower().endswith('.csv'):
+                csv_path = os.path.join(app.config['DOWNLOAD_FOLDER'], output_id, f)
                 df = pd.read_csv(csv_path)
-                table_html = df.to_html(classes='table table-striped', index=False, border=0)
-                tables.append({'name': fname, 'html': table_html})
-        print("here are the tables")
-        print(tables)
-           
-        download(f"{output_id}.zip")
-        return render_template('results.html', images=images, tables=tables, output_id=output_id)
+                table_html = df.to_html(classes="table table-striped", index=False, border=0)
+                tables.append({"name": f, "html": table_html})
+
+        return render_template(
+            "results.html",
+            files=files,
+            tables=tables,
+            output_id=output_id
+        )
 
     return render_template(f'protected.html', error=error)
-
-def get_all_files(folder, prefix=''):
-    all_files = []
-    for f in os.listdir(folder):
-        full_path = os.path.join(folder, f)
-        relative_path = os.path.join(prefix, f)
-        if os.path.isdir(full_path):
-            all_files.extend(get_all_files(full_path, relative_path))
-        else:
-            all_files.append(relative_path)
-    return all_files
 
 ##############################################################################
 # APP ROUTES
