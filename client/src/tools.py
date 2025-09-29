@@ -144,7 +144,7 @@ def get_result_files(folder, prefix=''):
         if os.path.isdir(full_path):
             result_files.extend(get_result_files(full_path, relative_path))
         else:
-            if f.lower().endswith(".pdf") or (f.lower().endswith(".csv") and "statistics" in f.lower()):
+            if f.lower().endswith(".html") or (f.lower().endswith(".csv") and "statistics" in f.lower()):
                 result_files.append(relative_path)
 
     return result_files
