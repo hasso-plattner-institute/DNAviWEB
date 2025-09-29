@@ -125,19 +125,27 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     return output_id
     # END OF FUNCTION
 
-def get_all_files(folder, prefix=''):
+def get_result_files(folder, prefix=''):
     """
-    Recursively get all files in a folder
-    :param folder: str
-    :param prefix: str 
-    :return: list of all files in folder and subfolders
+    Recursively collect only files that are useful for result visualization
+    in the web server:
+      - PDF files
+      - CSV files with 'statistics' in the name
+    
+    :param folder: str, base folder to search
+    :param prefix: str, relative prefix (used internally for recursion)
+    :return: list of relative file paths
     """
-    all_files = []
+    result_files = []
     for f in os.listdir(folder):
         full_path = os.path.join(folder, f)
         relative_path = os.path.join(prefix, f)
+
         if os.path.isdir(full_path):
-            all_files.extend(get_all_files(full_path, relative_path))
+            result_files.extend(get_result_files(full_path, relative_path))
         else:
-            all_files.append(relative_path)
-    return all_files
+            if f.lower().endswith(".pdf") or (f.lower().endswith(".csv") and "statistics" in f.lower()):
+                result_files.append(relative_path)
+
+    return result_files
+    # END OF FUNCTION

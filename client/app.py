@@ -16,7 +16,7 @@ import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
 from .src.client_constants import USERS, UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from .src.tools import allowed_file, input2dnavi, get_all_files, move_dnavi_files
+from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
 
 ###############################################################################
 # CONFIGURE APP
@@ -157,10 +157,10 @@ def protect():
             return render_template(f'protected.html',
                                error=error)
 
-        files = get_all_files(app.config['DOWNLOAD_FOLDER'] + output_id)
+        result_files = get_result_files(app.config['DOWNLOAD_FOLDER'] + output_id)
         #download(f"{output_id}.zip")
         tables = []
-        for f in files:
+        for f in result_files:
             if f.lower().endswith('.csv'):
                 csv_path = os.path.join(app.config['DOWNLOAD_FOLDER'], output_id, f)
                 df = pd.read_csv(csv_path)
@@ -169,7 +169,7 @@ def protect():
 
         return render_template(
             "results.html",
-            files=files,
+            result_files=result_files,
             tables=tables,
             output_id=output_id
         )
@@ -216,7 +216,7 @@ def serve_result_file(output_id, filename):
 
 @app.route('/download', methods=['POST'])
 def download(filename):
-    # The directory where the files are  located
+    # The directory where the result files are  located
     directory = app.config['DOWNLOAD_FOLDER']
     # Flask's send_from_directory to send the file to the client
     return send_from_directory(directory, filename, as_attachment=True)
