@@ -51,9 +51,8 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.xscale('log')
     # Create pdf (for results purposes)
     plt.savefig(f"{save_dir}{title}_summary.pdf", bbox_inches='tight')
-    # Create html (for interactive viewing in browser)
-    plotly_fig = mpl_to_plotly(plt.gcf())
-    pio.write_html(plotly_fig, file=f"{save_dir}{title}_summary.html", auto_open=False)
+    # Create png (for viewing in browser)
+    plt.savefig(f"{save_dir}{title}_summary.png", dpi=150, bbox_inches='tight')
     plt.close()
 
     #####################################################################
@@ -94,9 +93,8 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                    bbox_transform=plt.gcf().transFigure, loc='upper right')
         # Create pdf (for download)
         plt.savefig(f"{save_dir}cluster_by_{col}.pdf", bbox_inches="tight")
-        # Create html (for interactive viewing in browser)
-        plotly_fig = mpl_to_plotly(plt.gcf())
-        pio.write_html(plotly_fig, file=f"{save_dir}cluster_by_{col}.html", auto_open=False)
+        # Create png (for viewing in browser)
+        plt.savefig(f"{save_dir}cluster_by_{col}.png", dpi=150, bbox_inches='tight')
         plt.close()
 
         #################################################################
@@ -115,9 +113,8 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         # Create pdf (for download)
         plt.savefig(f"{save_dir}{title}_by_{col}.pdf",
                     bbox_inches='tight')
-        # Create html (for interactive viewing in browser)
-        plotly_fig = mpl_to_plotly(plt.gcf())
-        pio.write_html(plotly_fig, file=f"{save_dir}{title}_by_{col}.html", auto_open=False)
+        # Create png (for viewing in browser)
+        plt.savefig(f"{save_dir}{title}_by_{col}.png", dpi=150, bbox_inches='tight')
         plt.close()
 
 
@@ -137,9 +134,8 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.xscale('log')
     # Create pdf (for download)
     plt.savefig(f"{save_dir}{title}.pdf")
-    # Create html (for interactive viewing in browser)
-    plotly_fig = mpl_to_plotly(plt.gcf())
-    pio.write_html(plotly_fig, file=f"{save_dir}{title}.html", auto_open=False)
+    # Create png (for viewing in browser)
+    plt.savefig(f"{save_dir}{title}.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
 
@@ -216,9 +212,8 @@ def stats_plot(path_to_df, cols_not_to_plot=None, peak_id="peak_id",
         # Create pdf (for download)
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"),
                     bbox_inches='tight')
-        # Create html (for interactive viewing in browser)
-        plotly_fig = mpl_to_plotly(plt.gcf())
-        pio.write_html(plotly_fig, file=f"{path_to_df.replace('.csv', f'_{categorical_var}.html')}", auto_open=False)
+        # Create png (for viewing in browser)
+        plt.savefig(f"{path_to_df.replace('.csv', f'_{categorical_var}.png')}", dpi=150, bbox_inches='tight')
         plt.close()
         # END OF FUNCTION
 
@@ -255,9 +250,8 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",
     plt.xlabel("Relative position in gel (arbitrary units)")
     # Create pdf (for download)
     plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf")
-    # Create html (for interactive viewing in browser)
-    plotly_fig = mpl_to_plotly(plt.gcf())
-    pio.write_html(plotly_fig, file=f"{qc_save_dir}peaks_{i}_{ref}.html", auto_open=False)
+    # Create png (for viewing in browser)
+    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
 
@@ -324,9 +318,8 @@ def lineplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         plt.xlim(window[0], window[1])
     # Create pdf (for download)
     plt.savefig(f"{save_dir}{title}.pdf")
-    # Create html (for interactive viewing in browser)
-    plotly_fig = mpl_to_plotly(plt.gcf())
-    pio.write_html(plotly_fig, file=f"{save_dir}{title}.html", auto_open=False)
+    # Create png (for viewing in browser)
+    plt.savefig(f"{save_dir}{title}.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
 
@@ -359,8 +352,7 @@ def ladderplot(df, ladder2type, qc_save_dir, y_label="", x_label=""):
     plt.xlabel(x_label)
     # Create pdf (for download)
     plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf")
-    # Create html (for interactive viewing in browser)
-    plotly_fig = mpl_to_plotly(plt.gcf())
-    pio.write_html(plotly_fig, file=f"{qc_save_dir}peaks_all_interpolated.html", auto_open=False)
+    # Create png (for viewing in browser)
+    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
