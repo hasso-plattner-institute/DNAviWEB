@@ -11,5 +11,6 @@ python-dotenv
 sqlalchemy
 psycopg2-binary
 scikit_posthocs
-altair
 plotly
+wheel
+gunicorn
