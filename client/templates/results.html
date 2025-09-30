@@ -155,14 +155,34 @@
           </section>
           {% endfor %}
           <!-- Statistics tables -->
-          {% for t in statistics_tables %}
+          {% for t in statistics_files %}
           <section class="mb-5">
             <div class="card card-outline card-primary">
               <div class="card-header">
                 <h4 class="card-title mb-0">{{ t.name }}</h4>
               </div>
-              <div class="card-body" style="overflow:auto; max-height:90vh;">
-                {{ t.html | safe }}
+              <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-hover">
+                  <thead class="table-primary">
+                    <tr>
+                      {% for col in t.columns %}
+                      <th>{{ col }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in t.preview %}
+                    <tr>
+                      {% for col in t.columns %}
+                      <td>{{ row[col] }}</td>
+                      {% endfor %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <div class="p-2 text-end">
+                  <small>Showing first 5 rows. <a href="{{ url_for('serve_result_file', output_id=output_id, filename=t.name) }}" target="_blank">Download full CSV</a></small>
+                </div>
               </div>
             </div>
           </section>

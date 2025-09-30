@@ -158,19 +158,12 @@ def protect():
                                error=error)
 
         statistics_files, peaks_files, other_files = get_result_files(app.config['DOWNLOAD_FOLDER'] + output_id)
-        #download(f"{output_id}.zip")
-        statistics_tables = []
-        for f in statistics_files:
-            if f.lower().endswith('.csv'):
-                csv_path = os.path.join(app.config['DOWNLOAD_FOLDER'], output_id, f)
-                df = pd.read_csv(csv_path)
-                table_html = df.to_html(classes="table table-striped", index=False, border=0)
-                statistics_tables.append({"name": f, "html": table_html})       
+        #download(f"{output_id}.zip")    
         return render_template(
             "results.html",
             peaks_files=peaks_files,
             other_files=other_files,
-            statistics_tables=statistics_tables,
+            statistics_files=statistics_files,
             output_id=output_id
         )
 
