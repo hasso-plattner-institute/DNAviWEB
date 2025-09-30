@@ -11,6 +11,7 @@ import re
 import subprocess
 import shutil
 import os
+import pandas as pd
 import sys
 from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, SUCCESS_TOKEN
 
@@ -129,10 +130,10 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
 def get_result_files(folder, prefix=''):
     """
     Collect result files from a folder (recursively), grouped into categories:
-      - statistics_files: CSV files containing 'statistics'
-      - peaks_files: HTML files named like peaks_<num>_sample.html
-      - other_files: Other HTML files
-    
+      - statistics_files: CSV files containing 'statistics', each with a preview of first 5 rows
+      - peaks_files: PNG files named like peaks_<num>_sample.png
+      - other_files: Other PNG files in plots/qc/stats folders
+
     :param folder: str, base folder to search
     :param prefix: str, relative prefix (used internally for recursion)
     :return: tuple of lists: (statistics_files, peaks_files, other_files)
@@ -154,10 +155,23 @@ def get_result_files(folder, prefix=''):
         else:
             fname = f.lower()
             rel_lower = relative_path.lower()
+            # CSV statistics files 
             if fname.endswith(".csv") and "statistics" in fname:
-                statistics_files.append(relative_path)
+                try:
+                    df = pd.read_csv(full_path)
+                    # Show all rows if it's a basic_statistics file
+                    if("basic_statistics" in fname):
+                        preview = df.to_dict(orient='records')
+                    # Show only first 5 rows otherwise
+                    else:
+                        preview = df.head(5).to_dict(orient='records')
+                except Exception:
+                    preview = []
+                statistics_files.append({'name': relative_path, 'preview': preview, 'columns': list(df.columns) if preview else []})
+            # Peaks PNG
             elif re.match(r"peaks_\d+_sample\.png$", fname):
                 peaks_files.append(relative_path)
+            # Other PNGs in plots/qc/stats
             elif fname.endswith(".png") and any(folder_name in rel_lower for folder_name in ["plots", "qc", "stats"]):
                 other_files.append(relative_path)
 
