@@ -106,40 +106,68 @@
 
         <!-- Content Body -->
         <div class="content-body container-fluid">
-          {% for f in result_files %}
-            <section class="mb-5">
-              <div class="card card-outline card-primary">
-                <div class="card-header">
-                  <h4 class="card-title mb-0">{{ f }}</h4>
-                </div>
-                <div class="card-body p-0" style="overflow:auto; max-height:90vh;">
-                  {% if f.lower().endswith(('.png', '.jpg', '.jpeg', '.svg')) %}
-                    <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
-                        class="img-fluid w-100" style="object-fit:contain;" />
-
-                  {% elif f.lower().endswith('.pdf') or f.lower().endswith('.html') %}
-                    <iframe src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
-                            style="width:100%; height:90vh; border:none;"></iframe>
-
-                  {% elif f.lower().endswith('.csv') %}
-                    {% for t in tables if t.name == f %}
-                      <div style="padding:1rem; overflow:auto; max-height:90vh;">{{ t.html | safe }}</div>
-                    {% endfor %}
-
-                  {% else %}
-                    <div class="p-3">
-                      <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
-                        target="_blank" class="btn btn-primary">
-                        Download {{ f }}
-                      </a>
-                    </div>
-                  {% endif %}
+          <!-- Peaks Files Carousel -->
+          {% if peaks_files %}
+          <section class="mb-5">
+            <div class="card card-outline card-primary">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Peaks Samples</h4>
+                <div>
+                  <button id="prevPeak" class="btn btn-sm btn-primary me-2">&laquo; Previous</button>
+                  <button id="nextPeak" class="btn btn-sm btn-primary">Next &raquo;</button>
                 </div>
               </div>
-            </section>
+              <div class="card-body d-flex justify-content-center align-items-center p-3" style="height:90vh; position:relative;">
+                {% for f in peaks_files %}
+                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f.replace('.png', '.pdf')) }}" target="_blank">
+                    <img class="peak-frame" src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                        style="max-width:100%; max-height:100%; display: {% if loop.first %}block{% else %}none{% endif %}; object-fit: contain;">
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </section>
+          {% endif %}
+          <!-- Other files -->
+          {% for f in other_files %}
+          <section class="mb-5">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h4 class="card-title mb-0">{{ f }}</h4>
+              </div>
+              <div class="card-body p-3" style="overflow:auto; max-height:90vh; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                {% if f.lower().endswith('.png') %}
+                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f.replace('.png', '.pdf')) }}" target="_blank">
+                    <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
+                        style="max-width:100%; max-height:90vh; object-fit:contain; display:block; margin-bottom:0.5rem;">
+                  </a>
+                  <small>Click image to view full PDF</small>
+                {% else %}
+                  <div>
+                    <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
+                      target="_blank" class="btn btn-primary">
+                      Download {{ f }}
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+          {% endfor %}
+          <!-- Statistics tables -->
+          {% for t in statistics_tables %}
+          <section class="mb-5">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h4 class="card-title mb-0">{{ t.name }}</h4>
+              </div>
+              <div class="card-body" style="overflow:auto; max-height:90vh;">
+                {{ t.html | safe }}
+              </div>
+            </div>
+          </section>
           {% endfor %}
         </div>
-
       </div>
     </div>
   </main>
@@ -174,6 +202,28 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const frames = document.querySelectorAll('.peak-frame');
+    if (frames.length === 0) return;
+
+    let current = 0;
+
+    const showFrame = (index) => {
+      frames.forEach((f, i) => f.style.display = i === index ? 'block' : 'none');
+    };
+
+    document.getElementById('prevPeak').addEventListener('click', () => {
+      current = (current - 1 + frames.length) % frames.length;
+      showFrame(current);
+    });
+
+    document.getElementById('nextPeak').addEventListener('click', () => {
+      current = (current + 1) % frames.length;
+      showFrame(current);
+    });
+  });
 </script>
 
 </body>

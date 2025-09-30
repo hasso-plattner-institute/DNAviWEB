@@ -7,6 +7,7 @@ Date: 2025-AUG-29 \n
 
 
 """
+import re
 import subprocess
 import shutil
 import os
@@ -127,25 +128,38 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
 
 def get_result_files(folder, prefix=''):
     """
-    Recursively collect only files that are useful for result visualization
-    in the web server:
-      - PDF files
-      - CSV files with 'statistics' in the name
+    Collect result files from a folder (recursively), grouped into categories:
+      - statistics_files: CSV files containing 'statistics'
+      - peaks_files: HTML files named like peaks_<num>_sample.html
+      - other_files: Other HTML files
     
     :param folder: str, base folder to search
     :param prefix: str, relative prefix (used internally for recursion)
-    :return: list of relative file paths
+    :return: tuple of lists: (statistics_files, peaks_files, other_files)
     """
-    result_files = []
+    statistics_files = []
+    peaks_files = []
+    other_files = []
+
     for f in os.listdir(folder):
         full_path = os.path.join(folder, f)
-        relative_path = os.path.join(prefix, f)
+        relative_path = os.path.join(prefix, f) if prefix else f
 
         if os.path.isdir(full_path):
-            result_files.extend(get_result_files(full_path, relative_path))
+            # Recursively extend lists
+            stats, peaks, other = get_result_files(full_path, relative_path)
+            statistics_files.extend(stats)
+            peaks_files.extend(peaks)
+            other_files.extend(other)
         else:
-            if f.lower().endswith(".html") or (f.lower().endswith(".csv") and "statistics" in f.lower()):
-                result_files.append(relative_path)
+            fname = f.lower()
+            rel_lower = relative_path.lower()
+            if fname.endswith(".csv") and "statistics" in fname:
+                statistics_files.append(relative_path)
+            elif re.match(r"peaks_\d+_sample\.png$", fname):
+                peaks_files.append(relative_path)
+            elif fname.endswith(".png") and any(folder_name in rel_lower for folder_name in ["plots", "qc", "stats"]):
+                other_files.append(relative_path)
 
-    return result_files
+    return statistics_files, peaks_files, other_files
     # END OF FUNCTION
