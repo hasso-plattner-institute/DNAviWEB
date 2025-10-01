@@ -82,7 +82,7 @@ def login():
         return redirect(url_for('submissions_dashboard'))
     else:
         return render_template(f'login.html',
-                               error=f"LOGIN FAILED")
+                               error=f"Login failed: incorrect username or password")
 
 
 @app.route('/register', methods=['GET', 'POST'])
