@@ -35,5 +35,6 @@ def save_users():
     """
     Save all usernames and password from the users.json file when starting the flask app.
     """
+    global USERS
     with open(USERS_FILE, 'w') as f:
         json.dump(USERS, f, indent=4)
