@@ -14,7 +14,6 @@ import datetime
 ####################################################################################
 # USER
 ####################################################################################
-USERS = {'tester':{'pw':'gellyfish'}}
 SUCCESS_TOKEN = "--- DONE. Results in same folder as input file."
 
 ####################################################################################
@@ -25,7 +24,7 @@ DNAVI_ROOT =  MAINDIR.rsplit("client",1)[0]
 UPLOAD_DIR = f"{DNAVI_ROOT}exchange/"
 UPLOAD_FOLDER =  f"{UPLOAD_DIR}uploads/"
 DOWNLOAD_FOLDER =  f"{UPLOAD_DIR}downloads/"
-
+USERS_FILE = f"{DNAVI_ROOT}users.json"
 ####################################################################################
 # EXECUTION
 ####################################################################################

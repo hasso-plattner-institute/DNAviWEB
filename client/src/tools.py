@@ -123,6 +123,11 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
         print("Success, moving now to: ", final_destination)
         shutil.move(f"{interm_destination}", final_destination+"/")
         shutil.move(f"{interm_destination}.{arx}", f"{final_destination}.{arx}")
+        # Delete the parent folder of interm_destination
+        parent_folder = os.path.dirname(interm_destination)
+        if os.path.isdir(parent_folder):
+            shutil.rmtree(parent_folder)
+            print(f"Deleted username folder from uploads: {parent_folder}")
         
     return output_id
     # END OF FUNCTION
