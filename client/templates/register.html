@@ -42,7 +42,7 @@
             </div> -->
 
             <div class="input-group mb-3">
-              <input type="password" class="form-control" name="password" placeholder="Password" required />
+              <input type="password" class="form-control" name="pw" placeholder="Password" required />
               <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
             </div>
 
@@ -83,7 +83,7 @@
 
               </div>
               <div class="col-4">
-                <button type="submit" class="btn btn-primary btn-block">Register</button>
+                <button type="submit" href="{{ url_for('login') }}" class="btn btn-primary btn-block" >Register</button>
               </div>
             </div>
           </form>

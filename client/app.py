@@ -15,8 +15,10 @@ from flask import Flask, request, render_template, redirect, url_for, send_from_
 import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
-from .src.client_constants import USERS, UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
+from .src.users_saving import USERS
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
+from .src.users_saving import get_username, save_users, load_users
 
 ###############################################################################
 # CONFIGURE APP
@@ -25,6 +27,7 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
+load_users()
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
@@ -67,24 +70,37 @@ def home():
 def login():
     if request.method == 'GET':
         return render_template(f'login.html')
-    email = request.form['username']
+    username = request.form['username']
     password = request.form.get('pw')
 
     # Check if user exists and password matches
-    if email in USERS and USERS[email]['pw'] == password:
+    if username in USERS and USERS[username]['pw'] == password:
         print("SUCCESS LOGGING IN")
         user = User()
-        user.id = email
+        user.id = username
         flask_login.login_user(user)
         return redirect(url_for('submissions_dashboard'))
     else:
-        return render_template(f'index.html',
+        return render_template(f'login.html',
                                error=f"LOGIN FAILED")
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template(f'register.html')
+    username = request.form['username']
+    password = request.form['pw']
+    
+    # Check if username exists already
+    if username in USERS:
+        return render_template("register.html", error="User already exists")
+    USERS[username] = {"pw": password}
+    # Save new user
+    save_users()
+    # Send user to log in page
+    return redirect(url_for('login'))
+
 
 @app.route('/gallery', methods=['GET','POST'])
 @login_required
@@ -119,7 +135,10 @@ def submissions_dashboard():
 def protect():
     error=None
     output_id = None
-
+    #########################################################################
+    # SET USERNAME IF USER IS AUTHENTICATED OTHERWISE GENERATE A RANDOM GUEST
+    #########################################################################
+    username = get_username()
     if request.method == 'POST' and 'incomp_results' not in request.form:
         ######################################################################
         # PERFORM BASIC CHECKS
@@ -142,7 +161,7 @@ def protect():
         #        UNIQUE ID, CREATE PROCESSING DIRECTORY, SAVE FILES
         ######################################################################
         request_id = str(uuid4())
-        processing_folder = f"{app.config['UPLOAD_FOLDER']}{request_id}/"
+        processing_folder = f"{app.config['UPLOAD_FOLDER']}{username}/{request_id}/"
         os.makedirs(processing_folder, exist_ok=True)
         f = f"{processing_folder}{secure_filename(data_inpt)}"
         request.files['data_file'].save(f)
@@ -162,19 +181,19 @@ def protect():
         ######################################################################
         print("--- PROVIDING RESULTS FOR DOWNLOAD")
         output_id = move_dnavi_files(request_id=request_id,
-            error=error, upload_folder=app.config['UPLOAD_FOLDER'],
-            download_folder=app.config['DOWNLOAD_FOLDER'])
+            error=error, upload_folder=f"{app.config['UPLOAD_FOLDER']}{username}/",
+            download_folder=f"{app.config['DOWNLOAD_FOLDER']}{username}/")
         g.output_id = output_id # Output id global for later cleaning
 
         ######################################################################
-        #         DISPLAY ERROR + MAKE DOWNLOAD AVAIL                        #
+        #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                        #
         ######################################################################
         if error:
             return render_template(f'protected.html',
                                error=error)
 
-        statistics_files, peaks_files, other_files = get_result_files(app.config['DOWNLOAD_FOLDER'] + output_id)
-        #download(f"{output_id}.zip")    
+        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
+        download(f"{output_id}.zip")    
         return render_template(
             "results.html",
             peaks_files=peaks_files,
@@ -204,8 +223,9 @@ def after_request_func(response):
     ###########################################################################
     # Clean up download dir.
     ###########################################################################
-    if os.path.isfile(f"{app.config['DOWNLOAD_FOLDER']}{output_id}.zip"):
-        os.remove(f"{app.config['DOWNLOAD_FOLDER']}{output_id}.zip")
+    username = get_username()
+    if os.path.isfile(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}.zip"):
+        os.remove(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}.zip")
         print("---- CLEANED")
     else:
         print("Error cleaning up.")
@@ -219,13 +239,15 @@ def logout():
 @app.route('/results/<output_id>/<path:filename>')
 @login_required
 def serve_result_file(output_id, filename):
-    directory = os.path.join(app.config['DOWNLOAD_FOLDER'], output_id)
+    username = get_username()
+    directory = os.path.join(f"{app.config['DOWNLOAD_FOLDER']}{username}/", output_id)
     return send_from_directory(directory, filename)
 
 @app.route('/download', methods=['POST'])
 def download(filename):
+    username = get_username()
     # The directory where the result files are  located
-    directory = app.config['DOWNLOAD_FOLDER']
+    directory = f"{app.config['DOWNLOAD_FOLDER']}{username}/"
     # Flask's send_from_directory to send the file to the client
     return send_from_directory(directory, filename, as_attachment=True)
 
