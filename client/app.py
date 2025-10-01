@@ -42,6 +42,9 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def user_loader(username):
+    # Refresh USERS dict from file
+    users_module.load_users()
+    
     if username not in users_module.USERS:
         return
     user = User()
@@ -50,6 +53,9 @@ def user_loader(username):
 
 @login_manager.request_loader
 def request_loader(request):
+    # Refresh USERS dict from file
+    users_module.load_users()
+    
     username = request.form.get('username')
     if username not in users_module.USERS:
         return
@@ -73,6 +79,9 @@ def login():
     username = request.form['username']
     password = request.form.get('pw')
 
+    # Refresh USERS dict from file
+    users_module.load_users()
+    
     # Check if user exists and password matches
     if username in users_module.USERS and users_module.USERS[username]['pw'] == password:
         print("SUCCESS LOGGING IN")
@@ -91,6 +100,9 @@ def register():
         return render_template(f'register.html')
     username = request.form['username']
     password = request.form['pw']
+    
+    # Refresh USERS dict from file
+    users_module.load_users()
     
     # Check if username exists already
     if username in users_module.USERS:
