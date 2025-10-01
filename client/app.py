@@ -99,6 +99,10 @@ def info():
 def warning():
     return "A warning message. (warning)"
 
+@app.route("/contact")
+def contact():
+    return render_template(f'contact.html')
+
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 @login_required
 def submissions_dashboard():
