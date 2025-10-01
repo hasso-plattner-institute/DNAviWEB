@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>DNAvi | Contact</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
@@ -11,102 +11,124 @@
   <!-- Fonts -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
 
-  <!-- Plugins -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" />
+  <!-- Icons & CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
+
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+      font-family: 'Source Sans 3', sans-serif;
+      color: #343a40;
+    }
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .navbar-brand span {
+      font-size: 1.5rem;
+      color: #007bff;
+    }
+    .hero-section {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 1rem 2rem rgba(0,0,0,0.1);
+      animation: fadeInUp 1s ease forwards;
+    }
+    .hero-section h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    .hero-section p {
+      font-size: 1rem;
+      color: #495057;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .hero-section a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .hero-section a:hover {
+      text-decoration: underline;
+    }
+    hr {
+      border-color: #dee2e6;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 2rem 1rem;
+      }
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+      .hero-section p {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
-<body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+<body>
 
 <div class="app-wrapper">
   <!-- Header -->
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
-        </li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
-        <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">License</a></li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+        <span class="fw-bold">DNAvi</span>
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">License</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('contact') }}">Contact</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Sidebar -->
-  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-    <div class="sidebar-brand">
-      <a class="d-flex align-items-center">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="brand-image opacity-75 shadow me-2" style="height: 60px; width: auto;" />
-        <span class="brand-text fw-light">DNAvi</span>
-      </a>
-    </div>
-    <div class="sidebar-wrapper">
-      <nav class="mt-2">
-        <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
-          <li class="nav-item"><a href="{{ url_for('submissions_dashboard') }}" class="nav-link"><i class="nav-icon bi bi-speedometer"></i><p>Submissions Dashboard</p></a></li>
-          <li class="nav-item"><a href="{{ url_for('protect') }}" class="nav-link"><i class="bi bi-graph-up"></i><p>New Analysis</p></a></li>
-        </ul>
-      </nav>
-    </div>
-  </aside>
-
   <!-- Main Content -->
   <main class="app-main">
     <div class="app-content content">
-      <div class="content-wrapper">
-        <!-- Content Header -->
-        <div class="app-content-header">
-          <div class="row align-items-center">
-            <div class="col-sm-6">
-              <h3 class="mb-0">Contact Information</h3>
-            </div>
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item"><a href="{{ url_for('contact') }}">Contact</a></li>
-              </ol>
-            </div>
-          </div>
+      <div class="container py-5 d-flex justify-content-center">
+        <div class="hero-section">
+          <h1>Contact Information</h1>
+          <p>This tool was developed at the <strong>Max-Planck Institute for Molecular Genetics</strong>.</p>
+          <p>
+            <i class="bi bi-envelope-fill me-2"></i>
+            <a href="mailto:ahess@molgen.mpg.de">ahess@molgen.mpg.de</a>
+          </p>
+          <p>
+            <i class="bi bi-globe2 me-2"></i>
+            <a href="https://www.mpg.de/151820/molekulare-genetik" target="_blank">www.mpg.de/151820/molekulare-genetik</a>
+          </p>
+          <hr>
+          <p>
+            <i class="bi bi-trash-fill me-2"></i>
+            If you wish to request deletion of any data you submitted to our database, please contact us via the email above.
+          </p>
         </div>
-
-        <!-- Content Body -->
-        <div class="content-body container-fluid">
-        <div class="row">
-            <div class="col-md-8">
-            <p>This tool was developed at the <strong>Max-Planck Institute for Molecular Genetics</strong>.</p>
-            <p>
-                <i class="bi bi-envelope-fill me-2"></i>
-                <a href="mailto:ahess@molgen.mpg.de">ahess@molgen.mpg.de</a>
-            </p>
-            <p>
-                <i class="bi bi-globe2 me-2"></i>
-                <a href="https://www.mpg.de/151820/molekulare-genetik" target="_blank">www.mpg.de/151820/molekulare-genetik</a>
-            </p>
-            <hr>
-            <p>
-                <i class="bi bi-trash-fill me-2"></i>
-                If you wish to request deletion of any data you submitted to our database, please contact us via the email above.
-            </p>
-            </div>
-        </div>
-        </div>
-
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="app-footer d-flex justify-content-between align-items-center px-3 py-2 border-top">
-    <div>&copy; Anja Hess, 2025.</div>
-    <div>Design by &copy; <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>, 2014-2025.</div>
+  <footer class="app-footer text-center py-3 border-top mt-auto">
+    <small>&copy; Anja Hess, 2025. Design by 
+      <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
+    </small>
   </footer>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
-
 </body>
 </html>
