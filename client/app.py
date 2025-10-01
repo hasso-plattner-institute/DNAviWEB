@@ -16,8 +16,8 @@ import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from .src.users_saving import USERS
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
+from .src import users_saving as users_module
 from .src.users_saving import get_username, save_users, load_users
 
 ###############################################################################
@@ -42,7 +42,7 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def user_loader(username):
-    if username not in USERS:
+    if username not in users_module.USERS:
         return
     user = User()
     user.id = username
@@ -51,10 +51,10 @@ def user_loader(username):
 @login_manager.request_loader
 def request_loader(request):
     username = request.form.get('username')
-    if username not in USERS:
+    if username not in users_module.USERS:
         return
 
-    if USERS[username]['pw'] == request.form['pw']:
+    if users_module.USERS[username]['pw'] == request.form['pw']:
         user = User()
         user.id = username
         return user
@@ -74,7 +74,7 @@ def login():
     password = request.form.get('pw')
 
     # Check if user exists and password matches
-    if username in USERS and USERS[username]['pw'] == password:
+    if username in users_module.USERS and users_module.USERS[username]['pw'] == password:
         print("SUCCESS LOGGING IN")
         user = User()
         user.id = username
@@ -93,9 +93,9 @@ def register():
     password = request.form['pw']
     
     # Check if username exists already
-    if username in USERS:
+    if username in users_module.USERS:
         return render_template("register.html", error="User already exists")
-    USERS[username] = {"pw": password}
+    users_module.USERS[username] = {"pw": password}
     # Save new user
     save_users()
     # Send user to log in page
