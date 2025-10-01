@@ -38,3 +38,4 @@ def save_users():
     global USERS
     with open(USERS_FILE, 'w') as f:
         json.dump(USERS, f, indent=4)
+    os.chmod(USERS_FILE, 0o770)
