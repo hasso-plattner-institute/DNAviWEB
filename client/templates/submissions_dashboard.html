@@ -113,7 +113,7 @@
                 <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-upload"></i></span>
                 <div class="info-box-content">
                   <span class="info-box-text">Number of Submissions</span>
-                  <span class="info-box-number">10</span>
+                  <span class="info-box-number">{{ num_submissions }}</span>
                 </div>
               </div>
             </div>
@@ -141,12 +141,18 @@
                       <th>Date Submitted</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr><td><a href="protected.html" class="link-primary">S1234</a></td><td><time datetime="2025-01-15">Jan 15, 2025</time></td></tr>
-                    <tr><td><a href="protected.html" class="link-primary">S1000</a></td><td><time datetime="2025-03-20">Mar 20, 2025</time></td></tr>
-                    <tr><td><a href="protected.html" class="link-primary">S1234</a></td><td><time datetime="2025-09-21">Sep 21, 2025</time></td></tr>
-                    <tr><td><a href="protected.html" class="link-primary">S1222</a></td><td><time datetime="2025-09-26">Sep 26, 2025</time></td></tr>
-                  </tbody>
+                 <tbody>
+                  {% for sub in submissions %}
+                  <tr>
+                    <td>
+                      <a href="{{ url_for('results', output_id=sub.submission_id) }}" class="link-primary">{{ sub.submission_id }}</a>
+                    </td>
+                    <td>
+                      <time datetime="{{ sub.submission_date | datetimeformat }}">{{ sub.submission_date | datetimeformat }}</time>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
                 </table>
               </div>
             </div>
