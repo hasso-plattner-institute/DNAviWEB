@@ -11,6 +11,7 @@ Date: 2025-AUG-29 \n
 import os
 import pandas as pd
 from uuid import uuid4
+import datetime
 from flask import Flask, request, render_template, redirect, url_for, send_from_directory, g
 import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
@@ -131,11 +132,31 @@ def warning():
 def contact():
     return render_template(f'contact.html')
 
+
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 @login_required
 def submissions_dashboard():
-    return render_template(f'submissions_dashboard.html')
+    username = get_username()
+    user_downloads = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
+    submissions = []
 
+    if os.path.exists(user_downloads):
+        for sub_id in os.listdir(user_downloads):
+            sub_path = os.path.join(user_downloads, sub_id)
+            if os.path.isdir(sub_path):
+                submissions.append({
+                    "submission_id": sub_id,
+                    "submission_date": os.path.getctime(sub_path)  # creation time
+                })
+
+    # Sort submissions newest first
+    submissions.sort(key=lambda x: x["submission_date"], reverse=True)
+
+    return render_template(
+        'submissions_dashboard.html',
+        submissions=submissions,
+        num_submissions=len(submissions)
+    )
 
 ##############################################################################
 # PROCESS INPUT
@@ -205,7 +226,7 @@ def protect():
                                error=error)
 
         statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
-        download(f"{output_id}.zip")    
+        #download(f"{output_id}.zip")    
         return render_template(
             "results.html",
             peaks_files=peaks_files,
@@ -255,6 +276,25 @@ def serve_result_file(output_id, filename):
     directory = os.path.join(f"{app.config['DOWNLOAD_FOLDER']}{username}/", output_id)
     return send_from_directory(directory, filename)
 
+@app.route('/results/<output_id>', methods=['GET'])
+@login_required
+def results(output_id):
+    username = get_username()
+    result_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
+
+    if not os.path.exists(result_dir):
+        return f"Results not found for {output_id}", 404
+
+    statistics_files, peaks_files, other_files = get_result_files(result_dir)
+
+    return render_template(
+        "results.html",
+        peaks_files=peaks_files,
+        other_files=other_files,
+        statistics_files=statistics_files,
+        output_id=output_id
+    )
+
 @app.route('/download', methods=['POST'])
 def download(filename):
     username = get_username()
@@ -262,6 +302,10 @@ def download(filename):
     directory = f"{app.config['DOWNLOAD_FOLDER']}{username}/"
     # Flask's send_from_directory to send the file to the client
     return send_from_directory(directory, filename, as_attachment=True)
+
+@app.template_filter('datetimeformat')
+def datetimeformat(value):
+    return datetime.datetime.fromtimestamp(value).strftime('%b %d, %Y')
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)
