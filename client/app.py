@@ -58,6 +58,12 @@ def request_loader(request):
     return None
 
 @app.route('/', methods=['GET', 'POST'])
+def home():
+    if request.method == 'GET':
+        return render_template(f'home.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template(f'login.html')
@@ -74,6 +80,11 @@ def login():
     else:
         return render_template(f'index.html',
                                error=f"LOGIN FAILED")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template(f'register.html')
 
 @app.route('/gallery', methods=['GET','POST'])
 @login_required
@@ -98,7 +109,8 @@ def submissions_dashboard():
 # PROCESS INPUT
 ##############################################################################
 @app.route('/protect', methods=['GET','POST'])
-@login_required
+# Allow users to use DNAvi without logging in
+#@login_required
 
 def protect():
     error=None
@@ -199,7 +211,6 @@ def after_request_func(response):
 def logout():
     logout_user()
     return 'Logged out'
-
 
 @app.route('/results/<output_id>/<path:filename>')
 @login_required
