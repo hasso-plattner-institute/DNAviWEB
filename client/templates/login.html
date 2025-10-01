@@ -74,7 +74,11 @@
         <div class="card card-outline card-primary">
           <div class="card-body login-card-body">
             <p class="login-box-msg">Sign in to start your session</p>
-
+            {% if error %}
+              <div class="alert alert-danger" role="alert">
+                {{ error }}
+              </div>
+            {% endif %}
             <form method='POST'>
               <div class="input-group mb-3">
                 <input type='text' class="form-control" name='username' placeholder="Username" />
