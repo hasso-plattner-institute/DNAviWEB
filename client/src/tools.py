@@ -116,18 +116,19 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     print(final_destination)
 
     print("Compressing to: ", f"{interm_destination}.{arx}")
-    shutil.make_archive(interm_destination, arx, current_folder_loc)
+    zip_path = f"{interm_destination}_compressed"
+    shutil.make_archive(zip_path, arx, current_folder_loc)
 
-    if os.path.isfile(f"{interm_destination}.{arx}"):
+    if os.path.isfile(f"{zip_path}.{arx}"):
+        shutil.move(f"{interm_destination}", final_destination+"/")
+        shutil.move(f"{zip_path}.{arx}", download_folder+"/")
         print("Success, moving now from: ", interm_destination)
         print("Success, moving now to: ", final_destination)
-        shutil.move(f"{interm_destination}", final_destination+"/")
-        shutil.move(f"{interm_destination}.{arx}", f"{final_destination}.{arx}")
         # Delete the parent folder of interm_destination
         parent_folder = os.path.dirname(interm_destination)
         if os.path.isdir(parent_folder):
             shutil.rmtree(parent_folder)
-            print(f"Deleted username folder from uploads: {parent_folder}")
+            print(f"Deleted {parent_folder} folder from uploads")
         
     return output_id
     # END OF FUNCTION

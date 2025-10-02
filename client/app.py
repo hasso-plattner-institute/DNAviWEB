@@ -295,7 +295,7 @@ def results(output_id):
         output_id=output_id
     )
 
-@app.route('/download', methods=['POST'])
+@app.route('/download/<filename>', methods=['GET'])
 def download(filename):
     username = get_username()
     # The directory where the result files are  located
