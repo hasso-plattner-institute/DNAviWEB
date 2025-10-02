@@ -120,6 +120,11 @@ def register():
 def gallery():
     return render_template(f'gallery.html')
 
+@app.route('/documentation', methods=['GET','POST'])
+@login_required
+def documentation():
+    return render_template(f'documentation.html')
+
 @app.route("/info")
 def info():
     return "Hello, World! (info)"
