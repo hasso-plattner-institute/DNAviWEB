@@ -107,16 +107,28 @@
 
         <!-- Content Body -->
         <div class="content-body container-fluid">
+          <!-- Results Intro Section -->
+          <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
+              <div>
+                <p class="text-muted mb-0">
+                  View your analysis interactively in this web interface.  
+                  For a more detailed analysis download the ZIP file.
+                </p>
+              </div>
+              <div class="mt-3 mt-md-0">
+                <a href="{{ url_for('download', filename=output_id ~ '_compressed.zip') }}" class="btn btn-success btn">
+                  <i class="bi bi-download me-2"></i> Download All as ZIP
+                </a>
+              </div>
+            </div>
+          </div>
           <!-- Peaks Files Carousel -->
           {% if peaks_files %}
           <section class="mb-5">
             <div class="card card-outline card-primary">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="card-title mb-0">Peaks Samples</h4>
-                <div>
-                  <button id="prevPeak" class="btn btn-sm btn-primary me-2">&laquo; Previous</button>
-                  <button id="nextPeak" class="btn btn-sm btn-primary">Next &raquo;</button>
-                </div>
               </div>
               <div class="card-body d-flex justify-content-center align-items-center p-3" style="height:90vh; position:relative;">
                 {% for f in peaks_files %}
@@ -125,6 +137,12 @@
                         style="max-width:100%; max-height:100%; display: {% if loop.first %}block{% else %}none{% endif %}; object-fit: contain;">
                   </a>
                 {% endfor %}
+                <button id="prevPeak" class="btn btn-sm btn-primary position-absolute top-50 start-0 translate-middle-y ms-2">
+                  &laquo; Previous
+                </button>
+                <button id="nextPeak" class="btn btn-sm btn-primary position-absolute top-50 end-0 translate-middle-y me-2">
+                  Next &raquo;
+                </button>
               </div>
             </div>
           </section>
