@@ -125,6 +125,17 @@
         font-size: 1rem;
       }
     }
+
+    .partner-logos img {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideFadeIn 1s ease forwards;
+    }
+
+    .partner-logos img:nth-child(1) { animation-delay: 1.0s; }
+    .partner-logos img:nth-child(2) { animation-delay: 1.2s; }
+    .partner-logos img:nth-child(3) { animation-delay: 1.4s; }
+    .partner-logos img:nth-child(4) { animation-delay: 1.6s; }
   </style>
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open">
@@ -181,12 +192,20 @@
           </div>
         </div>
       </div>
+      <!-- Partner Logos Section -->
+      <div class="d-flex justify-content-center flex-wrap gap-4 mt-4 partner-logos">
+        <img src="{{ url_for('static', filename='img/mpi_logo_long.png') }}" alt="Max Planck Institute" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{ url_for('static', filename='img/hpi_logo.png') }}" alt="HPI" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{ url_for('static', filename='img/fu_berlin_logo.png') }}" alt="Freie Universität Berlin" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{ url_for('static', filename='img/charite_logo.png') }}" alt="Charité" class="partner-logo fade-in-delayed" style="height:50px;" />
+      </div>
+
     </div>
   </main>
 
   <!-- Footer -->
   <footer class="app-footer text-center py-3 border-top mt-auto">
-    <small>&copy; Anja Hess, 2025. Design by 
+    <small>&copy; Anja Hess, Yara Matani, 2025. Design by 
       <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
     </small>
   </footer>
