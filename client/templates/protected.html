@@ -275,6 +275,34 @@
                                     <input type="file" name="meta_file" accept=".txt,.tsv,.csv">
                                     <p>Add any group information <a href="./static/tables/metadata.csv"
                                     > Download example</a>.</p>
+
+                                    <!-- New dynamic sample metadata -->
+                                    <h5>Or enter metadata per sample:</h5>
+                                    <div id="samples-container">
+                                      <div class="sample-meta mb-3 p-3 border rounded">
+                                        <label>Sample ID</label>
+                                        <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
+
+                                        <label>Disease (EFO/DOID term)</label>
+                                        <input type="text" name="disease[]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
+
+                                        <label>Material Anatomical Entity (Uberon)</label>
+                                        <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
+                                      </div>
+                                    </div>
+                                    <button type="button" id="add-sample" class="btn btn-outline-primary btn-sm mt-2">
+                                      + Add Another Sample
+                                    </button>
+                                  </details>
+                                  <script>
+                                    // Add more sample metadata blocks dynamically
+                                    document.getElementById("add-sample").addEventListener("click", function () {
+                                      const container = document.getElementById("samples-container");
+                                      const clone = container.firstElementChild.cloneNode(true);
+                                      clone.querySelectorAll("input").forEach(input => input.value = "");
+                                      container.appendChild(clone);
+                                    });
+                                  </script>
                                 </details>
                                 <br></br>
                                 <footer><p>Need help? Use our <a href="{{ url_for('documentation') }}"> documentation</a>.</p></footer>
