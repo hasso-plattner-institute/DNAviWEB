@@ -1,11 +1,11 @@
 {
-    "tester": {
+    "tester@tester.com": {
         "pw": "gellyfish"
     },
-    "tester1": {
+    "tester1@tester.com": {
         "pw": "2025"
     },
-    "tester2": {
+    "tester2@tester.com": {
         "pw": "2025"
     }
 }
