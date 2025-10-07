@@ -279,16 +279,20 @@
                                     <!-- New dynamic sample metadata -->
                                     <h5>Or enter metadata per sample:</h5>
                                     <div id="samples-container">
-                                      <div class="sample-meta mb-3 p-3 border rounded">
-                                        <label>Sample ID</label>
-                                        <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
-
-                                        <label>Disease (EFO/ORDO/MONDO term)</label>
-                                        <input type="text" name="disease[]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
-
-                                        <label>Material Anatomical Entity (UBERON)</label>
-                                        <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
-                                      </div>
+                                        <div class="sample-meta mb-3 p-3 border rounded">
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                            <label>Sample ID</label>
+                                            <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
+                                            </div>
+                                            <label>Disease (EFO/ORDO/MONDO term)</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                            <input type="text" name="disease[]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
+                                            </div>
+                                            <label>Material Anatomical Entity (UBERON)</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                            <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
+                                            </div>
+                                        </div>
                                     </div>
                                     <button type="button" id="add-sample" class="btn btn-outline-primary btn-sm mt-2">
                                       + Add Another Sample
@@ -452,6 +456,9 @@
         });
       });
     </script>
+    <!--begin::Metdata from OLS Autocomplete script-->
+    <script src="{{ url_for('static', filename='./js/autocomplete_1.js') }}"></script>
+    <!--end::Metdata from OLS Autocomplete script-->
   </body>
   <!--end::Body-->
 </html>
