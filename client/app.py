@@ -12,7 +12,8 @@ import os
 import pandas as pd
 from uuid import uuid4
 import datetime
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory, g
+from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
+import requests
 import flask_login
 from flask_login import LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -94,7 +95,27 @@ def login():
         return render_template(f'login.html',
                                error=f"Login failed: incorrect email or password")
 
-
+@app.route("/ols_proxy")
+def ols_proxy():
+    """
+    Method called from autocomplete.js
+    A proxy for the OLS (Ontology Lookup Service).
+    When DNAvi asks OLS for data, the request goes here first.
+    This function takes the search text (q) and ontology name,
+    sends the request to the OLS API, and returns the OLS response as JSON.
+    return:
+        - JSON data from OLS if the request works in 10 sec, otherwise error.
+    """
+    query = request.args.get("q", "")
+    ontology = request.args.get("ontology", "efo")
+    url = f"https://www.ebi.ac.uk/ols/api/search?q={query}&ontology={ontology}&type=class&rows=10"
+    try:
+        # Wait for 10 sec
+        r = requests.get(url, timeout=10)
+        return jsonify(r.json())
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error getting url in 10 sec": str(e)}), 500
+    
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
