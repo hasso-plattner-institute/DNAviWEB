@@ -95,7 +95,7 @@ def login():
         return render_template(f'login.html',
                                error=f"Login failed: incorrect email or password")
 
-@app.route("/protect/ols_proxy")
+@app.route("/ols_proxy")
 def ols_proxy():
     """
     Method called from autocomplete.js

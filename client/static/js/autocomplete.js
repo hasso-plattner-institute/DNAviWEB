@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             // Define url to search for based on the input parameters
             const ontology = /anatomical/i.test(input.placeholder) ? "uberon" : "efo";
-            const url = `/protect/ols_proxy?q=${encodeURIComponent(query)}&ontology=${ontology}`;
+            const url = `/ols_proxy?q=${encodeURIComponent(query)}&ontology=${ontology}`;
             console.log("Fetching OLS URL:", url);
             try {
                 const res = await fetch(url);
