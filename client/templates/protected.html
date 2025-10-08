@@ -280,32 +280,295 @@
                                     <h5>Or enter metadata per sample:</h5>
                                     <div id="samples-container">
                                         <div class="sample-meta mb-3 p-3 border rounded">
-                                            <div class="suggestion-wrapper" style="position: relative;">
+                                            <!-- Sample ID -->
                                             <label>Sample ID</label>
-                                            <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
-                                            </div>
-                                            <label>Disease (EFO/ORDO/MONDO term)</label>
                                             <div class="suggestion-wrapper" style="position: relative;">
-                                            <input type="text" name="disease[]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
+                                              <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
                                             </div>
+                                            <!-- Subject ID -->
+                                            <label>Subject ID</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                              <input type="text" name="subject_id[]" class="form-control mb-2" placeholder="e.g. Donor-10031" 
+                                                      title="A unique identifier for the subject the sample derives from. Shall not contain personal sensitive data.">
+                                            </div>
+                                            <!-- Disease -->
+                                            <label>Disease (EFO/ORDO/MONDO term)</label>
+                                            <div class="disease-wrapper suggestion-wrapper" style="position: relative;">
+                                                <div class="disease-field mb-2">
+                                                    <input type="text" name="disease[0][]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add another disease</button>
+                                            </div>
+                                            <!-- Cell Type -->
+                                            <label>Cell Type (CL ontology)</label>
+                                            <div class="celltype-wrapper suggestion-wrapper" style="position: relative;">
+                                                <div class="celltype-field mb-2">
+                                                    <input type="text" name="cell_type[0][]" class="form-control mb-2 ols-search" 
+                                                          placeholder="Search cell type ontology (e.g. CL:0000127 neuron)">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add another cell type</button>
+                                            </div>
+                                            <!-- Phenotypic Abnormality -->
+                                            <label>Phenotypic Abnormality (HP term)</label>
+                                            <div class="phenotype-wrapper suggestion-wrapper" style="position: relative;">
+                                                <div class="phenotype-field mb-2">
+                                                    <input type="text" name="phenotypic_abnormality[0][]" class="form-control mb-2 ols-search" placeholder="Search HP ontology">
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add another phenotypic abnormality</button>
+                                            </div>
+                                            <!-- Material Anatomical Entity -->
                                             <label>Material Anatomical Entity (UBERON)</label>
                                             <div class="suggestion-wrapper" style="position: relative;">
-                                            <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
+                                              <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
+                                            </div>
+                                            <!-- Biological Sex -->
+                                            <label>Biological Sex</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="biological_sex[]" class="form-control mb-2" required>
+                                                    <option value="" disabled selected>Select biological sex</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                    <option value="hermaphrodite">Hermaphrodite</option>
+                                                    <option value="pseudohermaphrodite">Pseudohermaphrodite</option>
+                                                    <option value="unknown">Unknown</option>
+                                                </select>
+                                            </div>
+                                            <!-- Age -->
+                                            <label>Age</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="number" name="age[]" class="form-control mb-2" placeholder="Age in years" min="0" step="0.01"
+                                                      title="Age of the subject in years. Use decimals if needed.">
+                                            </div>
+                                            <!-- Organism -->
+                                            <label>Organism</label>
+                                            <div class="organism-wrapper suggestion-wrapper" style="position: relative;">
+                                              <div class="phenotype-field mb-2">
+                                                <input type="text" name="organism[]" class="form-control mb-2 ols-search" placeholder="Search organism e.g. human, dog">
+                                              </div>
+                                            </div>
+                                            <!-- Sample Collection Date -->
+                                            <label>Sample Collection Date</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="date" name="collection_date[]" class="form-control mb-2" 
+                                                      title="Date the sample was collected">
+                                            </div>
+                                            <!-- Case vs Control -->
+                                            <label>Case vs Control</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="case_vs_control[]" class="form-control mb-2" required>
+                                                    <option value="" disabled selected>Select status</option>
+                                                    <option value="case">Case</option>
+                                                    <option value="control">Control</option>
+                                                    <option value="not applicable">Not applicable</option>
+                                                </select>
+                                            </div>
+                                            <!-- Condition Under Study -->
+                                            <label>Condition Under Study</label>
+                                            <div class="condition-wrapper suggestion-wrapper" style="position: relative;">
+                                                <div class="condition-field mb-2">
+                                                    <input type="text" name="condition_under_study[0][]" 
+                                                          class="form-control mb-2 ols-search" 
+                                                          placeholder="Search condition under study (e.g. NCIT:C161319)">
+                                                </div>
+                                            </div>
+                                            <!-- Is Deceased -->
+                                            <label>Is Deceased?</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="is_deceased[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Infection suspected -->
+                                            <label>Is Infection Suspected?</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="is_infection_suspected[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Infection Strain -->
+                                            <label>If infection suspected, specify strain:</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="text" name="infection_strain[]" class="form-control mb-2" placeholder="e.g., Staphylococcus aureus">
+                                            </div>
+
+                                            <!-- Is Pregnant -->
+                                            <label>Is Pregnant?</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="is_pregnant[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Hospitalization Status -->
+                                            <label>Hospitalization Status</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="hospitalization_status[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select status</option>
+                                                    <option value="ambulant">Ambulant</option>
+                                                    <option value="hospitalized">Hospitalized</option>
+                                                    <option value="emergency room">Emergency Room</option>
+                                                    <option value="discharged">Discharged</option>
+                                                    <option value="standard care unit">Standard Care Unit</option>
+                                                    <option value="intensive care unit">Intensive Care Unit</option>
+                                                    <option value="operation room">Operation Room</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Extraction Kit -->
+                                            <label>Extraction Kit</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="text" name="extraction_kit[]" class="form-control mb-2" placeholder="e.g., Invitrogen kit">
+                                            </div>
+
+                                            <!-- DNA Mass -->
+                                            <label>DNA Mass</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="number" name="dna_mass[]" class="form-control mb-2" placeholder="Numeric value" step="0.01" min="0">
+                                            </div>
+
+                                            <!-- DNA Mass Units -->
+                                            <label>DNA Mass Units</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="dna_mass_units[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select unit</option>
+                                                    <option value="pg">pg</option>
+                                                    <option value="ng">ng</option>
+                                                    <option value="µg">µg</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Carrying Liquid Volume -->
+                                            <label>Carrying Liquid Volume</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="number" name="carrying_liquid_volume[]" class="form-control mb-2" placeholder="Numeric value" step="0.01" min="0">
+                                            </div>
+
+                                            <!-- Carrying Liquid Volume Unit -->
+                                            <label>Carrying Liquid Volume Unit</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="carrying_liquid_volume_unit[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select unit</option>
+                                                    <option value="µL">µL</option>
+                                                    <option value="mL">mL</option>
+                                                    <option value="L">L</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- In vitro / In vivo -->
+                                            <label>In vitro / In vivo</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="in_vitro_in_vivo[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select</option>
+                                                    <option value="in_vitro">In vitro</option>
+                                                    <option value="in_vivo">In vivo</option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Gel Electrophoresis Device -->
+                                            <label>Gel Electrophoresis Device</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <input type="text" name="device[]" class="form-control mb-2" placeholder="Enter device">
+                                            </div>
+                                            <!-- Ladder Type -->
+                                            <label>Gel Electrophoresis Ladder Type</label>
+                                            <div class="suggestion-wrapper" style="position: relative;">
+                                                <select name="ladder_type[]" class="form-control mb-2">
+                                                    <option value="" disabled selected>Select ladder type</option>
+                                                    <option value="ladder type 1">Lader type 1</option>
+                                                    <option value="ladder type 1">Lader type 2</option>
+                                                    <option value="ladder type 1">Lader type 3</option>
+                                                    <option value="Custom">Custom</option>
+                                                </select>
+                                                <input type="text" name="ladder_type_custom[]" class="form-control mb-2 ladder-type-custom" placeholder="Enter custom ladder type" style="display:none;">
                                             </div>
                                         </div>
                                     </div>
                                     <button type="button" id="add-sample" class="btn btn-outline-primary btn-sm mt-2">
                                       + Add Another Sample
                                     </button>
+                                    <button id="download-csv" class="btn btn-success mb-3">Download CSV</button>
+                                    <table id="samples-table" class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Sample ID</th>
+      <th>Subject ID</th>
+      <th>Disease</th>
+      <th>Cell Type</th>
+      <th>Phenotypic Abnormality</th>
+      <th>Material</th>
+      <th>Biological Sex</th>
+      <th>Age</th>
+      <th>Organism</th>
+      <th>Collection Date</th>
+      <th>Case vs Control</th>
+      <!-- add more metadata columns as needed -->
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td contenteditable="true"></td>
+      <td>
+        <button type="button" class="btn btn-sm btn-outline-primary add-row">+</button>
+        <button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button id="download-csv" class="btn btn-success">Download CSV</button>
+
                                   </details>
                                   <script>
-                                    // Add more sample metadata blocks dynamically
+                                    // Add another sample's metadata (copy the last filled sample metadata)
                                     document.getElementById("add-sample").addEventListener("click", function () {
                                       const container = document.getElementById("samples-container");
-                                      const clone = container.firstElementChild.cloneNode(true);
-                                      clone.querySelectorAll("input").forEach(input => input.value = "");
+                                      const lastSample = container.lastElementChild;
+                                      const clone = lastSample.cloneNode(true);
                                       container.appendChild(clone);
                                     });
+                                    // Download csv of the metadata so far
+                                    document.getElementById("download-csv").addEventListener("click", function() {
+                                    const container = document.getElementById("samples-container");
+                                    const rows = container.querySelectorAll(".sample-meta");
+                                    if(rows.length === 0) return alert("No samples added!");
+                                    const header = Array.from(rows[0].querySelectorAll("input, select")).map(el => el.name.replace(/\[\]/, ''));
+                                    const csvRows = [header.join(",")];
+                                    rows.forEach(row => {
+                                      const values = Array.from(row.querySelectorAll("input, select")).map(el => {
+                                        let val = el.value;
+                                        if(val.includes(',')) val = `"${val}"`;
+                                        return val;
+                                      });
+                                      csvRows.push(values.join(","));
+                                    });
+                                    const csvContent = csvRows.join("\n");
+                                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = 'samples_metadata.csv';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                  });
                                   </script>
                                 </details>
                                 <br></br>

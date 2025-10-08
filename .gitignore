@@ -14,3 +14,5 @@ exchange/downloads/*
 exchange/uploads/*
 # Except README.md
 !exchange/uploads/README.md
+
+protected_table_only.html
