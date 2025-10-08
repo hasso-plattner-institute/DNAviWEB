@@ -535,6 +535,101 @@
 </table>
 <button id="download-csv" class="btn btn-success">Download CSV</button>
 
+                                  <!-- Choose Metadata to use for grouping analyses -->
+                                  <div class="mt-5 p-4 border rounded bg-white w-100">
+                                    <h4 class="mb-3">Group Analysis by Metadata</h4>
+                                    <p class="text-muted">
+                                      Select one or more metadata fields to group your results by.
+                                      <br>
+                                      <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
+                                      <br>
+                                      For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
+                                      one grouped by Disease and another grouped by Biological Sex.
+                                      <br>
+                                      <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
+                                    </p>
+
+                                    <div class="mt-3 mb-3">
+                                      <h6>Select metadata columns to group by:</h6>
+                                      <div class="row row-cols-1 row-cols-md-3 g-2 mt-2">
+                                        <!-- Column 1 -->
+                                        <div class="col">
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="subject_id" id="group_subject_id">
+                                            <label class="form-check-label" for="group_subject_id">Subject ID</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="disease" id="group_disease">
+                                            <label class="form-check-label" for="group_disease">Disease</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="cell_type" id="group_cell_type">
+                                            <label class="form-check-label" for="group_cell_type">Cell Type</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="phenotypic_abnormality" id="group_phenotype">
+                                            <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="material" id="group_material">
+                                            <label class="form-check-label" for="group_material">Material Anatomical Entity</label>
+                                          </div>
+                                        </div>
+
+                                        <!-- Column 2 -->
+                                        <div class="col">
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="biological_sex" id="group_sex">
+                                            <label class="form-check-label" for="group_sex">Biological Sex</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="age" id="group_age">
+                                            <label class="form-check-label" for="group_age">Age</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="organism" id="group_organism">
+                                            <label class="form-check-label" for="group_organism">Organism</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="case_vs_control" id="group_casecontrol">
+                                            <label class="form-check-label" for="group_casecontrol">Case vs Control</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="condition_under_study" id="group_condition">
+                                            <label class="form-check-label" for="group_condition">Condition Under Study</label>
+                                          </div>
+                                        </div>
+
+                                        <!-- Column 3 -->
+                                        <div class="col">
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="is_deceased" id="group_deceased">
+                                            <label class="form-check-label" for="group_deceased">Is Deceased</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="is_infection_suspected" id="group_infection">
+                                            <label class="form-check-label" for="group_infection">Infection Suspected</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="is_pregnant" id="group_pregnant">
+                                            <label class="form-check-label" for="group_pregnant">Is Pregnant</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="hospitalization_status" id="group_hosp">
+                                            <label class="form-check-label" for="group_hosp">Hospitalization Status</label>
+                                          </div>
+                                          <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="ladder_type" id="group_ladder">
+                                            <label class="form-check-label" for="group_ladder">Ladder Type</label>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <button id="apply-grouping" type="button" class="btn btn-outline-primary mt-3">
+                                      Apply Selected Grouping
+                                    </button>
+                                  </div>
                                   </details>
                                   <script>
                                     // Add another sample's metadata (copy the last filled sample metadata)
