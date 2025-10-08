@@ -495,45 +495,271 @@
                                       + Add Another Sample
                                     </button>
                                     <button id="download-csv" class="btn btn-success mb-3">Download CSV</button>
-                                    <table id="samples-table" class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Sample ID</th>
-      <th>Subject ID</th>
-      <th>Disease</th>
-      <th>Cell Type</th>
-      <th>Phenotypic Abnormality</th>
-      <th>Material</th>
-      <th>Biological Sex</th>
-      <th>Age</th>
-      <th>Organism</th>
-      <th>Collection Date</th>
-      <th>Case vs Control</th>
-      <!-- add more metadata columns as needed -->
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td contenteditable="true"></td>
-      <td>
-        <button type="button" class="btn btn-sm btn-outline-primary add-row">+</button>
-        <button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<button id="download-csv" class="btn btn-success">Download CSV</button>
+<div id="metadata-section">
+  <h5>Or enter metadata per sample:</h5>
+
+  <table id="metadata-table" class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Sample ID</th>
+        <th>Subject ID</th>
+        <th>Disease</th>
+        <th>Cell Type</th>
+        <th>Phenotypic Abnormality</th>
+        <th>Material</th>
+        <th>Biological Sex</th>
+        <th>Age</th>
+        <th>Organism</th>
+        <th>Collection Date</th>
+        <th>Case vs Control</th>
+        <th>Condition Under Study</th>
+        <th>Is Deceased?</th>
+        <th>Is Infection Suspected?</th>
+        <th>Infection Strain</th>
+        <th>Is Pregnant?</th>
+        <th>Hospitalization Status</th>
+        <th>Extraction Kit</th>
+        <th>DNA Mass</th>
+        <th>DNA Mass Units</th>
+        <th>Carrying Liquid Volume</th>
+        <th>Carrying Liquid Volume Unit</th>
+        <th>In vitro / In vivo</th>
+        <th>Device</th>
+        <th>Gel Ladder Type</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="metadata-row">
+        <td><input type="text" name="sample_id[]" class="form-control"></td>
+        <td><input type="text" name="subject_id[]" class="form-control"></td>
+
+        <!-- autocomplete fields-->
+        <td><input type="text" name="disease[]" class="form-control ols-search" placeholder="Search disease ontology"></td>
+        <td><input type="text" name="cell_type[]" class="form-control ols-search" placeholder="Search cell type"></td>
+        <td><input type="text" name="phenotypic_abnormality[]" class="form-control ols-search" placeholder="Search HP ontology"></td>
+        <td><input type="text" name="material[]" class="form-control ols-search" placeholder="Search UBERON"></td>
+
+        <td>
+          <select name="biological_sex[]" class="form-control">
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="hermaphrodite">Hermaphrodite</option>
+            <option value="pseudohermaphrodite">Pseudohermaphrodite</option>
+            <option value="unknown">Unknown</option>
+          </select>
+        </td>
+
+        <td><input type="number" name="age[]" class="form-control" step="0.01" min="0"></td>
+        <td><input type="text" name="organism[]" class="form-control ols-search" placeholder="Search organism"></td>
+        <td><input type="date" name="collection_date[]" class="form-control"></td>
+
+        <td>
+          <select name="case_vs_control[]" class="form-control">
+            <option value="">Select</option>
+            <option value="case">Case</option>
+            <option value="control">Control</option>
+            <option value="not applicable">Not applicable</option>
+          </select>
+        </td>
+
+        <td><input type="text" name="condition_under_study[]" class="form-control ols-search" placeholder="Condition"></td>
+
+        <td>
+          <select name="is_deceased[]" class="form-control">
+            <option value="">Select</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </td>
+
+        <td>
+          <select name="is_infection_suspected[]" class="form-control">
+            <option value="">Select</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </td>
+
+        <td><input type="text" name="infection_strain[]" class="form-control"></td>
+
+        <td>
+          <select name="is_pregnant[]" class="form-control">
+            <option value="">Select</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </td>
+
+        <td>
+          <select name="hospitalization_status[]" class="form-control">
+            <option value="">Select</option>
+            <option value="ambulant">Ambulant</option>
+            <option value="hospitalized">Hospitalized</option>
+            <option value="emergency room">Emergency Room</option>
+            <option value="discharged">Discharged</option>
+            <option value="standard care unit">Standard Care Unit</option>
+            <option value="intensive care unit">Intensive Care Unit</option>
+            <option value="operation room">Operation Room</option>
+          </select>
+        </td>
+
+        <td><input type="text" name="extraction_kit[]" class="form-control"></td>
+        <td><input type="number" name="dna_mass[]" class="form-control" step="0.01" min="0"></td>
+
+        <td>
+          <select name="dna_mass_units[]" class="form-control">
+            <option value="">Select</option>
+            <option value="pg">pg</option>
+            <option value="ng">ng</option>
+            <option value="µg">µg</option>
+          </select>
+        </td>
+
+        <td><input type="number" name="carrying_liquid_volume[]" class="form-control" step="0.01" min="0"></td>
+
+        <td>
+          <select name="carrying_liquid_volume_unit[]" class="form-control">
+            <option value="">Select</option>
+            <option value="µL">µL</option>
+            <option value="mL">mL</option>
+            <option value="L">L</option>
+          </select>
+        </td>
+
+        <td>
+          <select name="in_vitro_in_vivo[]" class="form-control">
+            <option value="">Select</option>
+            <option value="in_vitro">In vitro</option>
+            <option value="in_vivo">In vivo</option>
+          </select>
+        </td>
+
+        <td><input type="text" name="device[]" class="form-control"></td>
+
+        <td>
+          <select name="ladder_type[]" class="form-control ladder-type-select">
+            <option value="">Select</option>
+            <option value="ladder type 1">Ladder type 1</option>
+            <option value="ladder type 2">Ladder type 2</option>
+            <option value="ladder type 3">Ladder type 3</option>
+            <option value="custom">Custom</option>
+          </select>
+          <input type="text" name="ladder_type_custom[]" class="form-control ladder-type-custom" placeholder="Enter custom ladder" style="display:none;margin-top:4px;">
+        </td>
+
+        <td class="actions-cell">
+          <button type="button" class="btn btn-sm btn-outline-primary add-row">+</button>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="mt-2">
+    <button type="button" id="download-csv" class="btn btn-outline-success">
+      <i class="bi bi-download"></i> Download CSV
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const table = document.getElementById('metadata-table');
+  const tbody = table.querySelector('tbody');
+
+  function tryInitOls(root) {
+    if (typeof window.initOlsAutocomplete === 'function') {
+      try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
+    }
+  }
+
+  // Click handler (add/remove)
+  table.addEventListener('click', function (e) {
+    const addBtn = e.target.closest('.add-row');
+    const removeBtn = e.target.closest('.remove-row');
+    if (addBtn) {
+      const currentRow = addBtn.closest('tr');
+      const newRow = currentRow.cloneNode(true);
+      const srcFields = currentRow.querySelectorAll('input, select, textarea');
+      const dstFields = newRow.querySelectorAll('input, select, textarea');
+      srcFields.forEach((src, i) => {
+        const dst = dstFields[i];
+        if (!dst) return;
+        if (dst.tagName.toLowerCase() === 'select') {
+          dst.selectedIndex = src.selectedIndex;
+        } else {
+          dst.value = src.value;
+        }
+      });
+      newRow.querySelectorAll('.ladder-type-custom').forEach(el => el.style.display = 'none');
+      const ladderSel = newRow.querySelector('.ladder-type-select');
+      if (ladderSel && ladderSel.value === 'custom') {
+        const custom = newRow.querySelector('.ladder-type-custom');
+        if (custom) custom.style.display = 'block';
+      }
+
+      const actionsCell = newRow.querySelector('.actions-cell');
+      if (actionsCell) {
+        actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
+                                 '<button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>';
+      }
+
+      currentRow.after(newRow);
+      initializeAutocomplete(newRow);
+      return;
+    }
+    if (removeBtn) {
+      const row = removeBtn.closest('tr');
+      if (!row) return;
+      if (tbody.querySelectorAll('tr').length > 1) {
+        row.remove();
+      } else {
+        row.querySelectorAll('input, select, textarea').forEach(el => {
+          if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
+          else el.value = '';
+        });
+      }
+      return;
+    }
+  });
+
+  table.addEventListener('change', function (e) {
+    const sel = e.target.closest('.ladder-type-select');
+    if (!sel) return;
+    const custom = sel.closest('td').querySelector('.ladder-type-custom');
+    if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
+  });
+
+  // Download CSV
+  document.getElementById('download-csv').addEventListener('click', function () {
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    if (rows.length === 0) { alert('No rows to export'); return; }
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim().replace(/,/g, ' '));
+    const csv = [headers.join(',')];
+    rows.forEach(row => {
+      const fields = Array.from(row.querySelectorAll('input, select, textarea'));
+      const values = fields.map(f => {
+        let v = f.value || '';
+        if (typeof v === 'string' && v.includes(',')) v = `"${v}"`;
+        return v;
+      });
+      csv.push(values.join(','));
+    });
+    const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'metadata_samples.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  initializeAutocomplete(table);
+});
+</script>
 
                                   <!-- Choose Metadata to use for grouping analyses -->
                                   <div class="mt-5 p-4 border rounded bg-white w-100">
