@@ -1,12 +1,11 @@
+
 /*
+Initialize OLS autocomplete for a single input element
 Implement Autocomplete Search Box with debounce technique
 this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
-document.addEventListener("DOMContentLoaded", () => {
-    const inputs = document.querySelectorAll(".ols-search");
-    // Loop on every input in html and set autocomplet
-    inputs.forEach(input => {
+function initializeAutocomplete(input) {
         // Styling the suggestion box for recommendations
         const suggestionBox = document.createElement("div");
         suggestionBox.classList.add("autocomplete-box");
@@ -34,7 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             // Define url to search for based on the input parameters
-            const ontology = /anatomical/i.test(input.placeholder) ? "uberon" : "efo";
+            const detectOntology = (placeholder) => {
+                if (/disease/i.test(placeholder)) return "efo";
+                if (/anatomical/i.test(placeholder)) return "uberon";
+                if (/cell type/i.test(placeholder)) return "cl";
+                if (/phenotypic/i.test(placeholder)) return "hp";
+                if (/organism/i.test(placeholder)) return "ncbitaxon";
+                if (/condition/i.test(placeholder)) return "ncit"; 
+                return "efo";
+            };
+            const ontology = detectOntology(input.placeholder);
             const url = `/ols_proxy?q=${encodeURIComponent(query)}&ontology=${ontology}`;
             console.log("Fetching OLS URL:", url);
             try {
@@ -90,5 +98,61 @@ document.addEventListener("DOMContentLoaded", () => {
                 suggestionBox.style.display = "none";
             }
         });
+    };
+
+/*
+Implement Autocomplete Search Box with debounce technique
+this way not for every letter typed an expensive API call is made
+Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
+*/
+document.addEventListener("DOMContentLoaded", () => {
+    const inputs = document.querySelectorAll(".ols-search");
+    // Loop on every input in html and set autocomplet
+    inputs.forEach(input => initializeAutocomplete(input));
+    // Handle added disease/cell type inputs
+    document.addEventListener('click', function(e) {
+        // Add disease
+        if (e.target.classList.contains('add-disease-btn')) {
+            const wrapper = e.target.closest('.disease-wrapper');
+            const newField = document.createElement('div');
+            newField.classList.add('disease-field', 'mb-2');
+            newField.innerHTML = `
+                <input type="text" name="disease[0][]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-disease-btn">Remove</button>
+            `;
+            wrapper.insertBefore(newField, e.target);
+            initializeAutocomplete(newField.querySelector('.ols-search'));
+        }
+        // Add cell type
+        if (e.target.classList.contains('add-celltype-btn')) {
+            const wrapper = e.target.closest('.celltype-wrapper');
+            const newField = document.createElement('div');
+            newField.classList.add('celltype-field', 'mb-2');
+            newField.innerHTML = `
+                <input type="text" name="cell_type[0][]" class="form-control mb-2 ols-search" 
+                       placeholder="Search cell type ontology (e.g. CL:0000127 neuron)">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-celltype-btn">Remove</button>
+            `;
+            wrapper.insertBefore(newField, e.target);
+            initializeAutocomplete(newField.querySelector('.ols-search'));
+        }
+        // Add phenotypic abnormality
+        if (e.target.classList.contains('add-phenotype-btn')) {
+            const wrapper = e.target.closest('.phenotype-wrapper');
+            const newField = document.createElement('div');
+            newField.classList.add('phenotype-field', 'mb-2');
+            newField.innerHTML = `
+                <input type="text" name="phenotypic_abnormality[0][]" class="form-control mb-2 ols-search" 
+                    placeholder="Search HP ontology (e.g. HP:0000118)">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-phenotype-btn">Remove</button>
+            `;
+            wrapper.insertBefore(newField, e.target);
+            initializeAutocomplete(newField.querySelector('.ols-search'));
+        }
+        // Add remove buttons
+        if (e.target.classList.contains('remove-disease-btn') || e.target.classList.contains('remove-celltype-btn') || e.target.classList.contains('remove-phenotype-btn')) {
+            e.target.parentElement.remove();
+        }
     });
 });
+
