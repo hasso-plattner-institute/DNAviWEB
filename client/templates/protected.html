@@ -280,6 +280,17 @@
                                     <h5>Or enter metadata per sample:</h5>
                                     <div id="samples-container">
                                         <div class="sample-meta mb-3 p-3 border rounded">
+                                            <!-- Delete sample button -->
+                                            <div class="text-end mt-2">
+                                              <button type="button" class="btn btn-sm btn-outline-danger remove-sample-btn" title="Remove Sample">
+                                                <!-- Trash Icon SVG -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3-.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5z"/>
+                                                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3h11V2h-11v1z"/>
+                                                </svg>
+                                              </button>
+                                            </div>
+
                                             <!-- Sample ID -->
                                             <label>Sample ID</label>
                                             <div class="suggestion-wrapper" style="position: relative;">
@@ -547,7 +558,7 @@
                                             <label class="form-check-label" for="group_age">Age</label>
                                           </div>
                                           <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="organism" id="group_organism">
+                                            <input class="form-check-input" type="ch-eckbox" value="organism" id="group_organism">
                                             <label class="form-check-label" for="group_organism">Organism</label>
                                           </div>
                                           <div class="form-check">
@@ -592,6 +603,18 @@
                                   </div>
                                   </details>
                                   <script>
+                                    // Don't show delete button on first metadata sample block
+                                    function updateDeleteButtons() {
+                                      const samples = document.querySelectorAll("#samples-container .sample-meta");
+                                      samples.forEach((sample, index) => {
+                                        const deleteBtn = sample.querySelector(".remove-sample-btn");
+                                        if(deleteBtn) {
+                                          deleteBtn.style.display = index === 0 ? "none" : "inline-block";
+                                        }
+                                      });
+                                    }
+
+                                    updateDeleteButtons();
                                     // Add another sample's metadata (copy the last filled sample metadata)
                                     document.getElementById("add-sample").addEventListener("click", function () {
                                       const container = document.getElementById("samples-container");
@@ -601,6 +624,7 @@
                                       container.appendChild(clone);
                                       const olsInputs = clone.querySelectorAll(".ols-search");
                                       olsInputs.forEach(input => initializeAutocomplete(input));
+                                      updateDeleteButtons();
                                     });
 
                                     // Download csv of the metadata so far
@@ -628,6 +652,21 @@
                                     a.click();
                                     document.body.removeChild(a);
                                   });
+
+                                  // Allow deleting a sample block
+                                  document.getElementById("samples-container").addEventListener("click", function(e) {
+                                    const btn = e.target.closest(".remove-sample-btn");
+                                    if(btn) {
+                                      const block = btn.closest(".sample-meta");
+                                      const container = document.getElementById("samples-container");
+                                      if(block && block !== container.firstElementChild) {
+                                        block.remove();
+                                      } else {
+                                        alert("The first sample cannot be deleted!");
+                                      }
+                                    }
+                                  });
+
                                   </script>
                                 </details>
                                 <br></br>
@@ -648,7 +687,7 @@
                                 </form>
 
                                 <!-- ------------------------------------------------------------------------------ -->
-                                <!-- DISPLAY ERROR MESSAGES HERE
+                                <!-- DISPLAY ERROR MESSAGES HERE-->
                                 <!-- ------------------------------------------------------------------------------ -->
                                 <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
                                 {% with messages = get_flashed_messages() %}
@@ -663,7 +702,7 @@
                                 {% block body %}{% endblock %}
 
                                 <!-- ------------------------------------------------------------------------------ -->
-                                <!-- FILE MISSING
+                                <!-- FILE MISSING-->
                                 <!-- ------------------------------------------------------------------------------ -->
                                     <br></br>
                                     {% if missing_error %}
@@ -672,7 +711,7 @@
                                     {% endif %}
 
                                 <!-- ------------------------------------------------------------------------------ -->
-                                <!-- OTHER ERROR
+                                <!-- OTHER ERROR-->
                                 <!-- ------------------------------------------------------------------------------ -->
                                     {% if error %}
                                     <br></br>
