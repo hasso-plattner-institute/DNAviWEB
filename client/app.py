@@ -142,7 +142,6 @@ def gallery():
     return render_template(f'gallery.html')
 
 @app.route('/documentation', methods=['GET','POST'])
-@login_required
 def documentation():
     return render_template(f'documentation.html')
 
@@ -160,7 +159,6 @@ def contact():
 
 
 @app.route('/submissions_dashboard', methods=['GET','POST'])
-@login_required
 def submissions_dashboard():
     email = get_email()
     user_downloads = os.path.join(app.config['DOWNLOAD_FOLDER'], email)
@@ -183,6 +181,10 @@ def submissions_dashboard():
         submissions=submissions,
         num_submissions=len(submissions)
     )
+
+@app.route("/instructions")
+def instructions():
+    return render_template("instructions.html")
 
 ##############################################################################
 # PROCESS INPUT
@@ -296,14 +298,12 @@ def logout():
     return 'Logged out'
 
 @app.route('/results/<output_id>/<path:filename>')
-@login_required
 def serve_result_file(output_id, filename):
     email = get_email()
     directory = os.path.join(f"{app.config['DOWNLOAD_FOLDER']}{email}/", output_id)
     return send_from_directory(directory, filename)
 
 @app.route('/results/<output_id>', methods=['GET'])
-@login_required
 def results(output_id):
     email = get_email()
     result_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], email, output_id)

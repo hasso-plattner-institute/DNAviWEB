@@ -117,20 +117,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const newField = document.createElement('div');
             newField.classList.add('disease-field', 'mb-2');
             newField.innerHTML = `
-                <input type="text" name="disease[0][]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
-                <button type="button" class="btn btn-sm btn-outline-danger remove-disease-btn">Remove</button>
-            `;
+                <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-disease-btn">Remove</button>`;
             wrapper.insertBefore(newField, e.target);
             initializeAutocomplete(newField.querySelector('.ols-search'));
         }
+        
         // Add cell type
         if (e.target.classList.contains('add-celltype-btn')) {
             const wrapper = e.target.closest('.celltype-wrapper');
             const newField = document.createElement('div');
             newField.classList.add('celltype-field', 'mb-2');
             newField.innerHTML = `
-                <input type="text" name="cell_type[0][]" class="form-control mb-2 ols-search" 
-                       placeholder="Search cell type ontology (e.g. CL:0000127 neuron)">
+                <input type="text" name="cell_type[0][]" class="form-control form-control-sm ols-search">
                 <button type="button" class="btn btn-sm btn-outline-danger remove-celltype-btn">Remove</button>
             `;
             wrapper.insertBefore(newField, e.target);
@@ -142,8 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const newField = document.createElement('div');
             newField.classList.add('phenotype-field', 'mb-2');
             newField.innerHTML = `
-                <input type="text" name="phenotypic_abnormality[0][]" class="form-control mb-2 ols-search" 
-                    placeholder="Search HP ontology (e.g. HP:0000118)">
+                <input type="text" name="phenotypic_abnormality[0][]" class="form-control mb-2 ols-search">
                 <button type="button" class="btn btn-sm btn-outline-danger remove-phenotype-btn">Remove</button>
             `;
             wrapper.insertBefore(newField, e.target);

@@ -70,37 +70,8 @@
       crossorigin="anonymous"
     />
   </head>
-
+  <!--begin::Body-->
   <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
-    <!-- Start Loading -->
-    <div id="loading-overlay">
-      <div class="spinner"></div>
-      <p>Preparing your results… please wait.</p>
-    </div>
-    <style>
-      #loading-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(255, 255, 255, 0.9);
-        z-index: 9999;
-        text-align: center;
-        padding-top: 20%;
-        font-size: 1.5em;
-        color: #007bff;
-      }
-      .spinner {
-        border: 8px solid #f3f3f3;
-        border-top: 8px solid #007bff;
-        border-radius: 50%;
-        width: 60px; height: 60px;
-        animation: spin 1s linear infinite;
-        margin: 20px auto;
-      }
-      @keyframes spin {100% {transform: rotate(360deg);}}
-    </style>
-    <!--end::Loading-->
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
       <!--begin::Header-->
@@ -190,7 +161,7 @@
               </li>
 
               <li class="nav-item">
-                 <a href="{{ url_for('protect') }}" class="nav-link">
+                 <a href="{{ url_for('instructions') }}" class="nav-link">
                   <i class="bi bi-graph-up"></i>
                   <p>
                     New Analysis
@@ -227,514 +198,679 @@
             <!--end::Row-->
           </div>
           <!--end::Container-->
+          
+
+          <!--begin::Progression Tab -->
+          <div class="container my-4">
+            <div class="progress" style="height: 40px;">
+              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
+                1. Instructions
+              </div>
+              <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
+                2. Upload Files
+              </div>
+              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
+                6. Results
+              </div>
+            </div>
+          </div>
+          <!--end::Progression Tab -->
+
+          <!--begin::Navigation buttons -->
+          <div class="d-flex justify-content-between mt-4 me-3">
+              <!--begin::prev button -->
+              <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary">
+                  <i class="bi bi-arrow-left"></i> Previous
+              </a>
+              <!--end::Prev button -->
+          </div>
+          <!--end::Navigation buttons -->
         </div>
+        <!--end::App Content Header-->
         <div class="app-content">
           <main id="content-box" class="order-first">
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <!-- HEADER WITH LOGO -->
-            <!-- --------------------------------------------------------------------------------------------------- -->
             <section class="work-section section" id="section-2">
+              <form method="POST" enctype="multipart/form-data">
                 <div class="container">
-                    <style> img {float: right;} </style>
-                    <div class="center">
-                    <br></br>
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- DNA GEL OR CSV -->
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <div class="card mb-4 shadow-sm">
+                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
                     </div>
-            <!-- --------------------------------------------------------------------------------------------------- -->
-            <!-- 1: INPUT SECTION -->
-            <!-- --------------------------------------------------------------------------------------------------- -->
-                    <div class="row">
-                        <div class="item col-md-4">
-                            <div class="effect-julia item">
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- DNA GEL OR CSV -->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <img src="./static/img/all_input_descr.svg" alt="Minerva" width=100%; height=auto>
-                                <h3>1. Upload DNA Table or Gel</h3>
-                                <form method="POST" enctype="multipart/form-data">
-                                <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg">
-                                <p>Max. 16 MB file size allowed. <a href="./static/tables/examples.zip">
-                                    Download examples</a>.</p>
-                                 <br></br>
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- LADDER ANNOTATION CSV-->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <details> <summary>Required: annotate DNA ladder</summary>
-                                    <a href="./static/tables/ladder.csv"> Download example</a>.</p>
-                                    <img src="./static/img/annotate.svg" alt="Minerva" width=60%; height=auto>
-                                    <form method="POST" enctype="multipart/form-data">
-                                    <input type="file" name="ladder_file" accept=".txt,.tsv,.csv">
-                                    <p>Next, annotate basepairs (bp). Note: peaks annotated as "marker" will be excluded from analysis.
+                    <div class="card-body">
+                      <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
+                      <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded">
+                    </div>
+                  </div>
+                  <br></br>
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- LADDER ANNOTATION CSV-->
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <div class="card mb-4 shadow-sm">
+                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
+                    </div>
+                    <div class="card-body">
+                      <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
+                      <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
+                    </div>
+                  </div>
+                  <br></br>
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- METADATA -->
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!--begin::metadata-->
+                  <div class="card mb-4 shadow-sm">
+                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
+                    </div>
+                    <div class="card-body">
+                      <!--begin::metadata two options header-->
+                      <div class="p-4" style="font-size: 0.95rem; color: #2c3e50; line-height: 1.7; background-color: #F9FBFD; border-radius: 1rem; border: 1px solid #E3EEF6; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                        
+                        <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Optional Step</h6>
+                        <p>You can skip this section if you do not have metadata, DNAvi will still perform the analysis.</p>
+                        
+                        <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
+                        
+                        <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
+                        <ul class="mb-3 ps-3">
+                          <li>Fill out the metadata table for all your samples directly on this page.</li>
+                          <li>Or, download our template metadata file, after filling it, upload it here.</li>
+                        </ul>
+                      </div>
+                      <!--end::metadata two options header-->
 
-                                </details>
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- METADATA CSV-->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <details> <summary>Optional: Add metadata</summary>
-                                    <img src="./static/img/metadata.svg" alt="Minerva" width=60%; height=auto>
-                                     <form method="POST" enctype="multipart/form-data">
-                                    <input type="file" name="meta_file" accept=".txt,.tsv,.csv">
-                                    <p>Add any group information <a href="./static/tables/metadata.csv"
-                                    > Download example</a>.</p>
+                      <!--begin::Option 1 - Online Table-->
+                      <div class="p-3 mb-3" 
+                            style="background-color: #EAF6FE; border-left: 4px solid #4FA8E5; border-radius: 0.75rem;">
+                        <div class="d-flex align-items-center mb-2">
+                          <i class="bi bi-table text-primary me-2" style="font-size: 1.2rem;"></i>
+                          <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
+                        </div>
+                        <p class="mb-2">
+                          Fill out the table below for all your samples directly on this page.  
+                          <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
+                          <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
+                          <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
+                          <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
+                          <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Hybrid Option</h6>
+                          <p>You can also fill metadata for a few samples here, download the partially completed table, edit it locally, and upload it again when ready.</p>
+                        </p>
 
-                                    <!-- New dynamic sample metadata -->
-                                    <h5>Or enter metadata per sample:</h5>
-                                    <div id="samples-container">
-                                        <div class="sample-meta mb-3 p-3 border rounded">
-                                            <!-- Delete sample button -->
-                                            <div class="text-end mt-2">
-                                              <button type="button" class="btn btn-sm btn-outline-danger remove-sample-btn" title="Remove Sample">
-                                                <!-- Trash Icon SVG -->
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm3-.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5z"/>
-                                                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3h11V2h-11v1z"/>
-                                                </svg>
-                                              </button>
-                                            </div>
+                        <!--begin::Metadata AG Grid table container -->
+                        <div class="metadata-table-container mb-4">
+                          <!--begin::Metadata AG Grid table header-->
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                              <button id="toggle-optional-cols" class="btn btn-sm btn-outline-secondary">
+                                Hide Optional Columns
+                              </button>
+                              <button id="download-csv" class="btn btn-success mb-3">
+                                Download CSV
+                              </button>
+                            </div>
+                          </div>
+                          <!--end::Metadata AG Grid table header-->
 
-                                            <!-- Sample ID -->
-                                            <label>Sample ID</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                              <input type="text" name="sample_id[]" class="form-control mb-2" placeholder="e.g. Sample_1">
-                                            </div>
-                                            <!-- Subject ID -->
-                                            <label>Subject ID</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                              <input type="text" name="subject_id[]" class="form-control mb-2" placeholder="e.g. Donor-10031" 
-                                                      title="A unique identifier for the subject the sample derives from. Shall not contain personal sensitive data.">
-                                            </div>
-                                            <!-- Disease -->
-                                            <label>Disease (EFO/ORDO/MONDO term)</label>
-                                            <div class="disease-wrapper suggestion-wrapper" style="position: relative;">
-                                                <div class="disease-field mb-2">
-                                                    <input type="text" name="disease[0][]" class="form-control mb-2 ols-search" placeholder="Search disease ontology">
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add another disease</button>
-                                            </div>
-                                            <!-- Cell Type -->
-                                            <label>Cell Type (CL ontology)</label>
-                                            <div class="celltype-wrapper suggestion-wrapper" style="position: relative;">
-                                                <div class="celltype-field mb-2">
-                                                    <input type="text" name="cell_type[0][]" class="form-control mb-2 ols-search" 
-                                                          placeholder="Search cell type ontology (e.g. CL:0000127 neuron)">
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add another cell type</button>
-                                            </div>
-                                            <!-- Phenotypic Abnormality -->
-                                            <label>Phenotypic Abnormality (HP term)</label>
-                                            <div class="phenotype-wrapper suggestion-wrapper" style="position: relative;">
-                                                <div class="phenotype-field mb-2">
-                                                    <input type="text" name="phenotypic_abnormality[0][]" class="form-control mb-2 ols-search" placeholder="Search HP ontology">
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add another phenotypic abnormality</button>
-                                            </div>
-                                            <!-- Material Anatomical Entity -->
-                                            <label>Material Anatomical Entity (UBERON)</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                              <input type="text" name="material[]" class="form-control mb-2 ols-search" placeholder="Search anatomical entity">
-                                            </div>
-                                            <!-- Biological Sex -->
-                                            <label>Biological Sex</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="biological_sex[]" class="form-control mb-2" required>
-                                                    <option value="" disabled selected>Select biological sex</option>
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>
-                                                    <option value="hermaphrodite">Hermaphrodite</option>
-                                                    <option value="pseudohermaphrodite">Pseudohermaphrodite</option>
-                                                    <option value="unknown">Unknown</option>
-                                                </select>
-                                            </div>
-                                            <!-- Age -->
-                                            <label>Age</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="number" name="age[]" class="form-control mb-2" placeholder="Age in years" min="0" step="0.01"
-                                                      title="Age of the subject in years. Use decimals if needed.">
-                                            </div>
-                                            <!-- Organism -->
-                                            <label>Organism</label>
-                                            <div class="organism-wrapper suggestion-wrapper" style="position: relative;">
-                                              <div class="phenotype-field mb-2">
-                                                <input type="text" name="organism[]" class="form-control mb-2 ols-search" placeholder="Search organism e.g. human, dog">
-                                              </div>
-                                            </div>
-                                            <!-- Sample Collection Date -->
-                                            <label>Sample Collection Date</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="date" name="collection_date[]" class="form-control mb-2" 
-                                                      title="Date the sample was collected">
-                                            </div>
-                                            <!-- Case vs Control -->
-                                            <label>Case vs Control</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="case_vs_control[]" class="form-control mb-2" required>
-                                                    <option value="" disabled selected>Select status</option>
-                                                    <option value="case">Case</option>
-                                                    <option value="control">Control</option>
-                                                    <option value="not applicable">Not applicable</option>
-                                                </select>
-                                            </div>
-                                            <!-- Condition Under Study -->
-                                            <label>Condition Under Study</label>
-                                            <div class="condition-wrapper suggestion-wrapper" style="position: relative;">
-                                                <div class="condition-field mb-2">
-                                                    <input type="text" name="condition_under_study[0][]" 
-                                                          class="form-control mb-2 ols-search" 
-                                                          placeholder="Search condition under study (e.g. NCIT:C161319)">
-                                                </div>
-                                            </div>
-                                            <!-- Is Deceased -->
-                                            <label>Is Deceased?</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="is_deceased[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select</option>
-                                                    <option value="true">Yes</option>
-                                                    <option value="false">No</option>
-                                                </select>
-                                            </div>
+                          <!--begin::metadata AG Grid table-->
+                          <div class="table-wrapper">
+                            <table id="metadata-table" class="table table-hover align-middle shadow-sm">
+                              <thead class="table-light sticky-top">
+                                <tr>
+                                  <th>Sample ID</th>
+                                  <th>Subject ID</th>
+                                  <th>Diseases</th>
+                                  <th>Cell Types</th>
+                                  <th>Phenotypic Abnormalities</th>
 
-                                            <!-- Infection suspected -->
-                                            <label>Is Infection Suspected?</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="is_infection_suspected[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select</option>
-                                                    <option value="true">Yes</option>
-                                                    <option value="false">No</option>
-                                                </select>
-                                            </div>
+                                  <!-- Optional columns -->
+                                  <th class="optional-col">Material Anatomical Entity</th>
+                                  <th class="optional-col">Biological Sex</th>
+                                  <th class="optional-col">Age</th>
+                                  <th class="optional-col">Organism</th>
+                                  <th class="optional-col">Sample Collection Date</th>
+                                  <th class="optional-col">Case vs Control</th>
+                                  <th class="optional-col">Condition Under Study</th>
+                                  <th class="optional-col">Is Deceased?</th>
+                                  <th class="optional-col">Is Pregnant?</th>
+                                  <th class="optional-col">Is Infection Suspected?</th>
+                                  <th class="optional-col">Infection Strain</th>
+                                  <th class="optional-col">Hospitalization Status</th>
+                                  <th class="optional-col">Extraction Kit</th>
+                                  <th class="optional-col">DNA Mass</th>
+                                  <th class="optional-col">DNA Mass Units</th>
+                                  <th class="optional-col">Carrying Liquid Volume</th>
+                                  <th class="optional-col">Carrying Liquid Volume Unit</th>
+                                  <th class="optional-col">In vitro / In vivo</th>
+                                  <th class="optional-col">Gel Electrophoresis Device</th>
+                                  <th class="optional-col">Ladder Type</th>
+                                  <th>Actions</th>
+                                </tr>
+                              </thead>
 
-                                            <!-- Infection Strain -->
-                                            <label>If infection suspected, specify strain:</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="text" name="infection_strain[]" class="form-control mb-2" placeholder="e.g., Staphylococcus aureus">
-                                            </div>
-
-                                            <!-- Is Pregnant -->
-                                            <label>Is Pregnant?</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="is_pregnant[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select</option>
-                                                    <option value="true">Yes</option>
-                                                    <option value="false">No</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Hospitalization Status -->
-                                            <label>Hospitalization Status</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="hospitalization_status[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select status</option>
-                                                    <option value="ambulant">Ambulant</option>
-                                                    <option value="hospitalized">Hospitalized</option>
-                                                    <option value="emergency room">Emergency Room</option>
-                                                    <option value="discharged">Discharged</option>
-                                                    <option value="standard care unit">Standard Care Unit</option>
-                                                    <option value="intensive care unit">Intensive Care Unit</option>
-                                                    <option value="operation room">Operation Room</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Extraction Kit -->
-                                            <label>Extraction Kit</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="text" name="extraction_kit[]" class="form-control mb-2" placeholder="e.g., Invitrogen kit">
-                                            </div>
-
-                                            <!-- DNA Mass -->
-                                            <label>DNA Mass</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="number" name="dna_mass[]" class="form-control mb-2" placeholder="Numeric value" step="0.01" min="0">
-                                            </div>
-
-                                            <!-- DNA Mass Units -->
-                                            <label>DNA Mass Units</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="dna_mass_units[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select unit</option>
-                                                    <option value="pg">pg</option>
-                                                    <option value="ng">ng</option>
-                                                    <option value="µg">µg</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Carrying Liquid Volume -->
-                                            <label>Carrying Liquid Volume</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="number" name="carrying_liquid_volume[]" class="form-control mb-2" placeholder="Numeric value" step="0.01" min="0">
-                                            </div>
-
-                                            <!-- Carrying Liquid Volume Unit -->
-                                            <label>Carrying Liquid Volume Unit</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="carrying_liquid_volume_unit[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select unit</option>
-                                                    <option value="µL">µL</option>
-                                                    <option value="mL">mL</option>
-                                                    <option value="L">L</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- In vitro / In vivo -->
-                                            <label>In vitro / In vivo</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="in_vitro_in_vivo[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select</option>
-                                                    <option value="in_vitro">In vitro</option>
-                                                    <option value="in_vivo">In vivo</option>
-                                                </select>
-                                            </div>
-
-                                            <!-- Gel Electrophoresis Device -->
-                                            <label>Gel Electrophoresis Device</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <input type="text" name="device[]" class="form-control mb-2" placeholder="Enter device">
-                                            </div>
-                                            <!-- Ladder Type -->
-                                            <label>Gel Electrophoresis Ladder Type</label>
-                                            <div class="suggestion-wrapper" style="position: relative;">
-                                                <select name="ladder_type[]" class="form-control mb-2">
-                                                    <option value="" disabled selected>Select ladder type</option>
-                                                    <option value="ladder type 1">Lader type 1</option>
-                                                    <option value="ladder type 1">Lader type 2</option>
-                                                    <option value="ladder type 1">Lader type 3</option>
-                                                    <option value="Custom">Custom</option>
-                                                </select>
-                                                <input type="text" name="ladder_type_custom[]" class="form-control mb-2 ladder-type-custom" placeholder="Enter custom ladder type" style="display:none;">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="button" id="add-sample" class="btn btn-outline-primary btn-sm mt-2">
-                                      + Add Another Sample
-                                    </button>
-                                    <button id="download-csv" class="btn btn-success mb-3">Download CSV</button>
-                                  <!-- Choose Metadata to use for grouping analyses -->
-                                  <div class="mt-5 p-4 border rounded bg-white w-100">
-                                    <h4 class="mb-3">Group Analysis by Metadata</h4>
-                                    <p class="text-muted">
-                                      Select one or more metadata fields to group your results by.
-                                      <br>
-                                      <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
-                                      <br>
-                                      For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
-                                      one grouped by Disease and another grouped by Biological Sex.
-                                      <br>
-                                      <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
-                                    </p>
-
-                                    <div class="mt-3 mb-3">
-                                      <h6>Select metadata columns to group by:</h6>
-                                      <div class="row row-cols-1 row-cols-md-3 g-2 mt-2">
-                                        <!-- Column 1 -->
-                                        <div class="col">
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="subject_id" id="group_subject_id">
-                                            <label class="form-check-label" for="group_subject_id">Subject ID</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="disease" id="group_disease">
-                                            <label class="form-check-label" for="group_disease">Disease</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="cell_type" id="group_cell_type">
-                                            <label class="form-check-label" for="group_cell_type">Cell Type</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="phenotypic_abnormality" id="group_phenotype">
-                                            <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="material" id="group_material">
-                                            <label class="form-check-label" for="group_material">Material Anatomical Entity</label>
-                                          </div>
-                                        </div>
-
-                                        <!-- Column 2 -->
-                                        <div class="col">
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="biological_sex" id="group_sex">
-                                            <label class="form-check-label" for="group_sex">Biological Sex</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="age" id="group_age">
-                                            <label class="form-check-label" for="group_age">Age</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="ch-eckbox" value="organism" id="group_organism">
-                                            <label class="form-check-label" for="group_organism">Organism</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="case_vs_control" id="group_casecontrol">
-                                            <label class="form-check-label" for="group_casecontrol">Case vs Control</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="condition_under_study" id="group_condition">
-                                            <label class="form-check-label" for="group_condition">Condition Under Study</label>
-                                          </div>
-                                        </div>
-
-                                        <!-- Column 3 -->
-                                        <div class="col">
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="is_deceased" id="group_deceased">
-                                            <label class="form-check-label" for="group_deceased">Is Deceased</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="is_infection_suspected" id="group_infection">
-                                            <label class="form-check-label" for="group_infection">Infection Suspected</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="is_pregnant" id="group_pregnant">
-                                            <label class="form-check-label" for="group_pregnant">Is Pregnant</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="hospitalization_status" id="group_hosp">
-                                            <label class="form-check-label" for="group_hosp">Hospitalization Status</label>
-                                          </div>
-                                          <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="ladder_type" id="group_ladder">
-                                            <label class="form-check-label" for="group_ladder">Ladder Type</label>
-                                          </div>
-                                        </div>
+                              <tbody>
+                                <tr class="metadata-row">
+                                  <!-- Mandatory -->
+                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" required placeholder="e.g. Sample_1"></td>
+                                  <td><input type="text" name="subject_id[]" class="form-control form-control-sm" required placeholder="e.g. Donor-10031"></td>
+                                  <td>
+                                    <div class="disease-wrapper">
+                                      <div class="disease-field mb-2">
+                                        <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" required placeholder="Search disease ontology">
                                       </div>
+                                      <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add</button>
                                     </div>
+                                  </td>
+                                  <td>
+                                    <div class="celltype-wrapper">
+                                      <div class="celltype-field mb-2">
+                                        <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" required placeholder="Search cell type ontology">
+                                      </div>
+                                      <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div class="phenotype-wrapper">
+                                      <div class="phenotype-field mb-2">
+                                        <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" required placeholder="Search HP term">
+                                      </div>
+                                      <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add</button>
+                                    </div>
+                                  </td>
 
-                                    <button id="apply-grouping" type="button" class="btn btn-outline-primary mt-3">
-                                      Apply Selected Grouping
-                                    </button>
-                                  </div>
-                                  </details>
-                                  <script>
-                                    // Don't show delete button on first metadata sample block
-                                    function updateDeleteButtons() {
-                                      const samples = document.querySelectorAll("#samples-container .sample-meta");
-                                      samples.forEach((sample, index) => {
-                                        const deleteBtn = sample.querySelector(".remove-sample-btn");
-                                        if(deleteBtn) {
-                                          deleteBtn.style.display = index === 0 ? "none" : "inline-block";
-                                        }
-                                      });
-                                    }
+                                  <!-- Optional -->
+                                  <td class="optional-col"><input type="text" name="material[]" class="form-control form-control-sm ols-search" placeholder="Search anatomical entity"></td>
+                                  <td class="optional-col">
+                                    <select name="sex[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Male</option>
+                                      <option>Female</option>
+                                      <option>Unknown</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Years"></td>
+                                  <td class="optional-col"><input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="e.g. Homo sapiens"></td>
+                                  <td class="optional-col"><input type="date" name="collection_date[]" class="form-control form-control-sm"></td>
+                                  <td class="optional-col">
+                                    <select name="case_control[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Case</option>
+                                      <option>Control</option>
+                                      <option>Not applicable</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="e.g. Diabetes"></td>
+                                  <td class="optional-col">
+                                    <select name="is_deceased[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Yes</option>
+                                      <option>No</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col">
+                                    <select name="is_pregnant[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Yes</option>
+                                      <option>No</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col">
+                                    <select name="is_infection_suspected[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Yes</option>
+                                      <option>No</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="e.g., S. aureus"></td>
+                                  <td class="optional-col">
+                                    <select name="hospitalization_status[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Ambulant</option>
+                                      <option>Hospitalized</option>
+                                      <option>ICU</option>
+                                      <option>Discharged</option>
+                                      <option>Standard care unit</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="text" name="extraction_kit[]" class="form-control form-control-sm" placeholder="e.g. Invitrogen kit"></td>
+                                  <td class="optional-col"><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Value"></td>
+                                  <td class="optional-col">
+                                    <select name="dna_mass_units[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>pg</option>
+                                      <option>ng</option>
+                                      <option>µg</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Volume"></td>
+                                  <td class="optional-col">
+                                    <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>µL</option>
+                                      <option>mL</option>
+                                      <option>L</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col">
+                                    <select name="in_vitro_in_vivo[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>In vitro</option>
+                                      <option>In vivo</option>
+                                    </select>
+                                  </td>
+                                  <td class="optional-col"><input type="text" name="device[]" class="form-control form-control-sm" placeholder="Device"></td>
+                                  <td class="optional-col">
+                                    <select name="ladder_type[]" class="form-select form-select-sm">
+                                      <option value="">Select ladder</option>
+                                      <option>Ladder type 1</option>
+                                      <option>Ladder type 2</option>
+                                      <option>Ladder type 3</option>
+                                      <option>Custom</option>
+                                    </select>
+                                  </td>
 
-                                    updateDeleteButtons();
-                                    // Add another sample's metadata (copy the last filled sample metadata)
-                                    document.getElementById("add-sample").addEventListener("click", function () {
-                                      const container = document.getElementById("samples-container");
-                                      const lastSample = container.lastElementChild;
-                                      const clone = lastSample.cloneNode(true);
-                                      // New sample block and init autocomplete for all
-                                      container.appendChild(clone);
-                                      const olsInputs = clone.querySelectorAll(".ols-search");
-                                      olsInputs.forEach(input => initializeAutocomplete(input));
-                                      updateDeleteButtons();
-                                    });
-
-                                    // Download csv of the metadata so far
-                                    document.getElementById("download-csv").addEventListener("click", function() {
-                                    const container = document.getElementById("samples-container");
-                                    const rows = container.querySelectorAll(".sample-meta");
-                                    if(rows.length === 0) return alert("No samples added!");
-                                    const header = Array.from(rows[0].querySelectorAll("input, select")).map(el => el.name.replace(/\[\]/, ''));
-                                    const csvRows = [header.join(",")];
-                                    rows.forEach(row => {
-                                      const values = Array.from(row.querySelectorAll("input, select")).map(el => {
-                                        let val = el.value;
-                                        if(val.includes(',')) val = `"${val}"`;
-                                        return val;
-                                      });
-                                      csvRows.push(values.join(","));
-                                    });
-                                    const csvContent = csvRows.join("\n");
-                                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                                    const url = URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = 'samples_metadata.csv';
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    document.body.removeChild(a);
-                                  });
-
-                                  // Allow deleting a sample block
-                                  document.getElementById("samples-container").addEventListener("click", function(e) {
-                                    const btn = e.target.closest(".remove-sample-btn");
-                                    if(btn) {
-                                      const block = btn.closest(".sample-meta");
-                                      const container = document.getElementById("samples-container");
-                                      if(block && block !== container.firstElementChild) {
-                                        block.remove();
-                                      } else {
-                                        alert("The first sample cannot be deleted!");
-                                      }
-                                    }
-                                  });
-
-                                  </script>
-                                </details>
-                                <br></br>
-                                <footer><p>Need help? Use our <a href="{{ url_for('documentation') }}"> documentation</a>.</p></footer>
-                            </div>
+                                  <td class="actions-cell text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-success add-row">+</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">−</button>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          <!--end::metadata AG Grid table-->
                         </div>
+                        <!--end::Metadata AG Grid table container -->
 
-                       <!-- ---------------------------------------------------------------------------------------- -->
-                       <!-- SUBMISSION -->
-                       <!-- ---------------------------------------------------------------------------------------- -->
-                        <div class="item col-md-4 one">
-                            <div class="tm-work-item-inner">
-                                <img src="./static/img/submit.svg" alt="Minerva" width=100%; height=auto>
-                                <h3>2. Submit for Analysis</h3>
-                                <p>Your DNA file will be analysed for peaks, height normalized,
-                                    and grouped in case you provided metadata. Be patient, this may take a while.</p>
-                                <button type="submit" class="btn btn-success" >Submit & Save</button>
-                                </form>
+                      </div>
+                      <!--end::Option 1-->
 
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- DISPLAY ERROR MESSAGES HERE-->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                                {% with messages = get_flashed_messages() %}
-                                {% if messages %}
-                                    <ul class=flashes>
-                                    {% for message in messages %}
-                                    <li>{{ message }}</li>
-                                    {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                {% endwith %}
-                                {% block body %}{% endblock %}
-
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- FILE MISSING-->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                    <br></br>
-                                    {% if missing_error %}
-                                    <br></br>
-                                     <p class=error><strong>Error:</strong> {{ missing_error }} </p>
-                                    {% endif %}
-
-                                <!-- ------------------------------------------------------------------------------ -->
-                                <!-- OTHER ERROR-->
-                                <!-- ------------------------------------------------------------------------------ -->
-                                    {% if error %}
-                                    <br></br>
-                                    <p class=error><strong>Error:</strong> {{ error }} </p>
-                                    <br></br>
-                                    {% endif %}
-                            </div>
+                      <!--begin::Option 2 - Upload File-->
+                      <div class="p-3 mb-3" 
+                            style="background-color: #E7F4FB; border-left: 4px solid #89CFF0; border-radius: 0.75rem;">
+                        <div class="d-flex align-items-center mb-2">
+                          <i class="bi bi-upload text-info me-2" style="font-size: 1.2rem;"></i>
+                          <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 2: Upload Metadata File</h6>
                         </div>
-                       <!-- ---------------------------------------------------------------------------------------- -->
-                       <!-- DOWNLOAD INFORMATION-->
-                       <!-- ---------------------------------------------------------------------------------------- -->
-                        <div class="item col-md-4 two">
-                            <div class="tm-work-item-inner">
-                                <img src="./static/img/download.svg" alt="Minerva" width=100%; height=auto>
-                                <h3>3. Explore Analysis Results & Download</h3>
-                                <p>View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots. 
-                                   You are allowed to use this for your work only if you cite DNAvi.</p>
-                            </div>
-                        </div>
+                        <p class="mb-2">  
+                          If you prefer working offline, download our template file, fill it out, and upload it here.
+                        </p>
+                        <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
+                        <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
+                      </div>
+                      <!--end::Option 2-->
                     </div>
-                </div>
+                  </div>
+                  <!--end::metadata -->
+                  <style>
+                  .metadata-table-container {
+                    background: #fafafa;
+                    border-radius: 12px;
+                    padding: 1rem;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                  }
+                  .table-wrapper {
+                    overflow-x: auto;
+                    border-radius: 10px;
+                  }
+                  #metadata-table {
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    width: 100%;
+                    font-size: 0.9rem;
+                  }
+                  #metadata-table thead th {
+                    position: sticky;
+                    top: 0;
+                    background: #f8f9fa;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                    z-index: 2;
+                  }
+                  #metadata-table th, #metadata-table td {
+                    min-width: 120px;
+                    white-space: nowrap;
+                    vertical-align: middle;
+                  }
+                  #metadata-table tbody tr:hover {
+                    background-color: #f6faff;
+                  }
+                  .optional-col {
+                    transition: all 0.3s ease;
+                  }
+                  .hidden-col {
+                    display: none;
+                  }
+                  #metadata-table th {
+                    position: relative;
+                    user-select: none;
+                  }
+                  #metadata-table th .resizer {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    width: 6px;
+                    cursor: col-resize;
+                    user-select: none;
+                    height: 100%;
+                    z-index: 3;
+                  }
+                  #metadata-table th .resizer:hover {
+                    background-color: rgba(0, 123, 255, 0.2);
+                  }
+                  </style>
+
+                  <script>
+                  // Toggle optional columns
+                  document.getElementById("toggle-optional-cols").addEventListener("click", () => {
+                    document.querySelectorAll(".optional-col").forEach(col => col.classList.toggle("hidden-col"));
+                  });
+
+                  // Enable column resizing
+                  document.querySelectorAll("#metadata-table th").forEach(th => {
+                    th.classList.add('resizable');
+                    let startX, startWidth;
+                    const resizer = document.createElement('div');
+                    resizer.classList.add('resizer');
+                    th.appendChild(resizer);
+
+                    resizer.addEventListener('mousedown', e => {
+                      startX = e.pageX;
+                      startWidth = th.offsetWidth;
+                      document.addEventListener('mousemove', resize);
+                      document.addEventListener('mouseup', stopResize);
+                    });
+
+                    function resize(e) {
+                      th.style.width = (startWidth + (e.pageX - startX)) + 'px';
+                    }
+                    function stopResize() {
+                      document.removeEventListener('mousemove', resize);
+                    }
+                  });
+
+                  xs
+                  document.addEventListener("DOMContentLoaded", () => {
+                    const table = document.getElementById("metadata-table");
+                    if (table) makeTableResizable(table);
+                  });
+                  </script>
+
+
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                      const table = document.getElementById('metadata-table');
+                      const tbody = table.querySelector('tbody');
+
+                      function tryInitOls(root) {
+                        if (typeof window.initOlsAutocomplete === 'function') {
+                          try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
+                        }
+                      }
+
+                      // Click handler (add/remove)
+                      table.addEventListener('click', function (e) {
+                        const addBtn = e.target.closest('.add-row');
+                        const removeBtn = e.target.closest('.remove-row');
+                        if (addBtn) {
+                          const currentRow = addBtn.closest('tr');
+                          const newRow = currentRow.cloneNode(true);
+                          const srcFields = currentRow.querySelectorAll('input, select, textarea');
+                          const dstFields = newRow.querySelectorAll('input, select, textarea');
+                          srcFields.forEach((src, i) => {
+                            const dst = dstFields[i];
+                            if (!dst) return;
+                            if (dst.tagName.toLowerCase() === 'select') {
+                              dst.selectedIndex = src.selectedIndex;
+                            } else {
+                              dst.value = src.value;
+                            } 
+                          });
+                          newRow.querySelectorAll('.ladder-type-custom').forEach(el => el.style.display = 'none');
+                          const ladderSel = newRow.querySelector('.ladder-type-select');
+                          if (ladderSel && ladderSel.value === 'custom') {
+                            const custom = newRow.querySelector('.ladder-type-custom');
+                            if (custom) custom.style.display = 'block';
+                          }
+
+                          const actionsCell = newRow.querySelector('.actions-cell');
+                          if (actionsCell) {
+                            actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
+                                                    '<button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>';
+                          }
+
+                          currentRow.after(newRow);
+                          // reinitialize OLS autocomplete for all new .ols-search inputs in the new row
+                          const newOlsInputs = newRow.querySelectorAll(".ols-search");
+                          newOlsInputs.forEach(input => {
+                            if (typeof window.initOlsAutocomplete === 'function') {
+                              window.initOlsAutocomplete(input);
+                            } else if (typeof initializeAutocomplete === 'function') {
+                              initializeAutocomplete(input);
+                            }
+                          });
+                          return;
+                        }
+                        if (removeBtn) {
+                          const row = removeBtn.closest('tr');
+                          if (!row) return;
+                          if (tbody.querySelectorAll('tr').length > 1) {
+                            row.remove();
+                          } else {
+                            row.querySelectorAll('input, select, textarea').forEach(el => {
+                              if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
+                              else el.value = '';
+                            });
+                          }
+                          return;
+                        }
+                      });
+
+                      table.addEventListener('change', function (e) {
+                        const sel = e.target.closest('.ladder-type-select');
+                        if (!sel) return;
+                        const custom = sel.closest('td').querySelector('.ladder-type-custom');
+                        if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
+                      });
+
+                      // Download CSV
+                      document.getElementById('download-csv').addEventListener('click', function () {
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        if (rows.length === 0) { alert('No rows to export'); return; }
+                        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim().replace(/,/g, ' '));
+                        const csv = [headers.join(',')];
+                        rows.forEach(row => {
+                          const fields = Array.from(row.querySelectorAll('input, select, textarea'));
+                          const values = fields.map(f => {
+                            let v = f.value || '';
+                            if (typeof v === 'string' && v.includes(',')) v = `"${v}"`;
+                            return v;
+                          });
+                          csv.push(values.join(','));
+                        });
+                        const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'metadata_samples.csv';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      });
+                      initializeAutocomplete(table);
+                    });
+                  </script>
+
+                  <!-- Choose Metadata to use for grouping analyses -->
+                  <div class="mt-5 p-4 border rounded bg-white w-100">
+                    <h4 class="mb-3">Group Analysis by Metadata</h4>
+                    <p class="text-muted">
+                      Select one or more metadata fields to group your results by.
+                      <br>
+                      <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
+                      <br>
+                      For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
+                      one grouped by Disease and another grouped by Biological Sex.
+                      <br>
+                      <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
+                    </p>
+
+                    <div class="mt-3 mb-3">
+                      <h6>Select metadata columns to group by:</h6>
+                      <div class="row row-cols-1 row-cols-md-3 g-2 mt-2">
+                        <!-- Column 1 -->
+                        <div class="col">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="subject_id" id="group_subject_id">
+                            <label class="form-check-label" for="group_subject_id">Subject ID</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="disease" id="group_disease">
+                            <label class="form-check-label" for="group_disease">Disease</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="cell_type" id="group_cell_type">
+                            <label class="form-check-label" for="group_cell_type">Cell Type</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="phenotypic_abnormality" id="group_phenotype">
+                            <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="material" id="group_material">
+                            <label class="form-check-label" for="group_material">Material Anatomical Entity</label>
+                          </div>
+                        </div>
+
+                        <!-- Column 2 -->
+                        <div class="col">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="biological_sex" id="group_sex">
+                            <label class="form-check-label" for="group_sex">Biological Sex</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="age" id="group_age">
+                            <label class="form-check-label" for="group_age">Age</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="ch-eckbox" value="organism" id="group_organism">
+                            <label class="form-check-label" for="group_organism">Organism</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="case_vs_control" id="group_casecontrol">
+                            <label class="form-check-label" for="group_casecontrol">Case vs Control</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="condition_under_study" id="group_condition">
+                            <label class="form-check-label" for="group_condition">Condition Under Study</label>
+                          </div>
+                        </div>
+
+                        <!-- Column 3 -->
+                        <div class="col">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="is_deceased" id="group_deceased">
+                            <label class="form-check-label" for="group_deceased">Is Deceased</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="is_infection_suspected" id="group_infection">
+                            <label class="form-check-label" for="group_infection">Infection Suspected</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="is_pregnant" id="group_pregnant">
+                            <label class="form-check-label" for="group_pregnant">Is Pregnant</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="hospitalization_status" id="group_hosp">
+                            <label class="form-check-label" for="group_hosp">Hospitalization Status</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ladder_type" id="group_ladder">
+                            <label class="form-check-label" for="group_ladder">Ladder Type</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- ---------------------------------------------------------------------------------------- -->
+                  <!-- SUBMISSION -->
+                  <!-- ---------------------------------------------------------------------------------------- -->
+                  <h3>2. Submit for Analysis</h3>
+                  <p>Your DNA file will be analysed for peaks, height normalized,
+                      and grouped in case you provided metadata. Be patient, this may take a while.</p>
+                  <button type="submit" class="btn btn-success" >Submit & Save</button>
+
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- DISPLAY ERROR MESSAGES HERE-->
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                  {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      <ul class=flashes>
+                      {% for message in messages %}
+                      <li>{{ message }}</li>
+                      {% endfor %}
+                      </ul>
+                      {% endif %}
+                  {% endwith %}
+                  {% block body %}{% endblock %}
+
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- FILE MISSING-->
+                  <!-- ------------------------------------------------------------------------------ -->
+                      <br></br>
+                      {% if missing_error %}
+                      <br></br>
+                      <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                      {% endif %}
+
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- OTHER ERROR-->
+                  <!-- ------------------------------------------------------------------------------ -->
+                      {% if error %}
+                      <br></br>
+                      <p class=error><strong>Error:</strong> {{ error }} </p>
+                      <br></br>
+                      {% endif %}
+                  <!-- ------------------------------------------------------------------------------ -->
+                  <!-- OTHER ERROR-->
+                  <!-- ------------------------------------------------------------------------------ -->
+              </form>
             </section>
         </div>
+
+        <!--begin: Loading results -->
+        <div id="loading-overlay">
+          <div class="spinner"></div>
+          <p>Preparing your results… please wait.</p>
+        </div>
+        <style>
+          #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            text-align: center;
+            padding-top: 20%;
+            font-size: 1.5em;
+            color: #007bff;
+          }
+          .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px; height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+          }
+          @keyframes spin {100% {transform: rotate(360deg);}}
+        </style>
+        <!--end::Loading results-->
         <!--end::App Content-->
       </main>
       <!--end::App Main-->
