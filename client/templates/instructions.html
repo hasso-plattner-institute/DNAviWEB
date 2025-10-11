@@ -112,7 +112,7 @@
       <!--begin::Sidebar-->
       <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
         <div class="sidebar-brand">
-          <a class="d-flex align-items-center">
+          <a class="d-flex align-items-center" style="text-decoration: none;">
             <img
               src="{{ url_for('static', filename='img/logo.svg') }}"
               alt="DNAvi Logo"
@@ -159,43 +159,49 @@
 
       <!--begin::App Main-->
       <main class="app-main">
+        <!--begin::App Content Header-->
         <div class="app-content-header">
           <div class="container-fluid">
-            <div class="row align-items-center">
-              <div class="col-sm-6">
-                <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
+            <!--begin::Row-->
+            <div class="row">
+              <div class="row align-items-center">
+                <div class="col-sm-6">
+                  <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
+                </div>
+                <div class="col-sm-6">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="{{ url_for('home')}}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
+                  </ol>
+                </div>
               </div>
-              <div class="col-sm-6">
-                <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
-                </ol>
+            </div>
+            <!--end::Row-->
+          </div>
+          <!--begin::Progression Tab -->
+          <div class="container my-4">
+            <div class="progress" style="height: 40px;">
+              <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:34%">
+                1. Instructions
+              </div>
+              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
+                2. Upload Files
+              </div>
+              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
+                3. Results
               </div>
             </div>
           </div>
-        </div>
-        <!--begin::Progression Tab -->
-        <div class="container my-4">
-          <div class="progress" style="height: 40px;">
-            <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:34%">
-              1. Instructions
-            </div>
-            <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-              2. Upload Files
-            </div>
-            <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-              3. Results
-            </div>
+          <!--end::Progression Tab -->
+
+          <!--begin::Next button -->
+          <div class="d-flex justify-content-end mt-3 me-3">
+            <a href="{{ url_for('protect') }}" class="btn btn-primary">Next<i class="bi bi-arrow-right"></i> </a>
           </div>
+          <!--end::Next button -->
         </div>
-        <!--end::Progression Tab -->
-
-        <!--begin::Next button -->
-        <div class="d-flex justify-content-end mt-3 me-3">
-          <a href="{{ url_for('protect') }}" class="btn btn-primary">Next<i class="bi bi-arrow-right"></i> </a>
-        </div>
-        <!--end::Next button -->
-
+        <!--end::App Content Header-->
+        
         <div class="app-content">
           <main id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
