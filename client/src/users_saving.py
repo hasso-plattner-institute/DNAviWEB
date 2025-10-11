@@ -1,7 +1,7 @@
 import json
 import os
 from flask_login import current_user
-from flask import g
+from flask import g, session
 from uuid import uuid4
 from .client_constants import USERS_FILE
 
@@ -10,15 +10,15 @@ USERS = {}
 def get_email():
     """
     Returns the current user's email if logged in,
-    otherwise generates a temporary guest ID for this flask request.
+    if the user is not logged in, generates a unique guest ID the first time 
+    and stores it in the session, so subsequent requests from same session use the same guest ID.
     """
     if current_user.is_authenticated:
         return current_user.id
     else:
-        # Only generate a guest ID once per request
-        if not hasattr(g, 'email'):
-            g.email = f"guest_{uuid4().hex[:8]}"
-        return g.email
+        if 'guest_id' not in session:
+            session['guest_id'] = f"guest_{uuid4().hex[:8]}"
+        return session['guest_id']
 
 def load_users():
     """
