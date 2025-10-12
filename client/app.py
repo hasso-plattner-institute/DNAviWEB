@@ -14,8 +14,7 @@ from uuid import uuid4
 import datetime
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
-import flask_login
-from flask_login import LoginManager, UserMixin, logout_user, login_required
+from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required
 from werkzeug.utils import secure_filename
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
@@ -212,11 +211,11 @@ def protect():
         if data_inpt == '' or not allowed_file(data_inpt):
             error = "Missing DNA file (table/image) or format not allowed"
             return render_template(f'protected.html',
-                               missing_error=error)
+                               missing_error=error, user_logged_in = current_user.is_authenticated)
         if ladder_inpt == '':
             error = "Missing Ladder file."
             return render_template(f'protected.html',
-                               missing_error=error)
+                               missing_error=error, user_logged_in = current_user.is_authenticated)
 
         ######################################################################
         #        UNIQUE ID, CREATE PROCESSING DIRECTORY, SAVE FILES
@@ -247,13 +246,26 @@ def protect():
         g.output_id = output_id # Output id global for later cleaning
 
         ######################################################################
-        #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                        #
+        #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                    #
         ######################################################################
         if error:
             return render_template(f'protected.html',
-                               error=error)
+                               error=error, user_logged_in = current_user.is_authenticated)
 
         statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{email}/{output_id}")
+        ######################################################################
+        #         SAVE TO DATABASE IF USER AGREED                       #
+        ######################################################################
+        save_to_db = request.form.get('save_to_db')
+        if save_to_db == 'yes':
+            None
+            # TODO: Save to DB VM1
+        else:
+            None
+            # TODO: Temporary analysis only saved on VM2, DELETE after session data from VM1
+        ######################################################################
+        #                RETURN ANALYSIS RESULTS                             #
+        ######################################################################
         #download(f"{output_id}.zip")    
         return render_template(
             "results.html",
@@ -263,7 +275,7 @@ def protect():
             output_id=output_id
         )
 
-    return render_template(f'protected.html', error=error)
+    return render_template(f'protected.html', error=error, user_logged_in = current_user.is_authenticated)
 
 ##############################################################################
 # APP ROUTES

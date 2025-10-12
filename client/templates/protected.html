@@ -814,7 +814,7 @@
                   <h3>2. Submit for Analysis</h3>
                   <p>Your DNA file will be analysed for peaks, height normalized,
                       and grouped in case you provided metadata. Be patient, this may take a while.</p>
-                  <button type="submit" class="btn btn-success" >Submit & Save</button>
+                  <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
 
                   <!-- ------------------------------------------------------------------------------ -->
                   <!-- DISPLAY ERROR MESSAGES HERE-->
@@ -851,6 +851,43 @@
                   <!-- ------------------------------------------------------------------------------ -->
                   <!-- OTHER ERROR-->
                   <!-- ------------------------------------------------------------------------------ -->
+                  <!--begin::Popup do you consent to save to db?-->
+                  <div class="modal fade" id="saveConsent" tabindex="-1" aria-labelledby="saveConsentLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content rounded-3 shadow-lg">
+                        <div class="modal-header bg-primary text-white">
+                          <h5 class="modal-title" id="saveConsentLabel">Save Your Data?</h5>
+                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>
+                            Do you agree to save your uploaded files and analysis results to the DNAvi database?
+                          </p>
+                          <ul>
+                            {% if user_logged_in %}
+                              <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
+                              <li>Your stored data will also help drive future discoveries in cell-free DNA research.</li>
+                              <li>If you choose not to save, your files will be deleted after this session ends.</li>
+                            {% else %}
+                              <li>By saving your analysis, you help drive future discoveries in cell-free DNA research.</li>
+                            {% endif %}
+                          </ul>
+                          <p class="text-muted small mb-0">
+                            By clicking ‘Yes, Save’, you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                          </p>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-between">
+                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            No, just analyze once
+                          </button>
+                          <button type="button" class="btn btn-success" id="confirm-save-btn">
+                            Yes, save my data
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!--end::Popup do you consent to save to db?-->
               </form>
             </section>
         </div>
@@ -969,6 +1006,9 @@
     <!--begin::Metdata from OLS Autocomplete script-->
     <script src="{{ url_for('static', filename='./js/metadata_utils.js') }}"></script>
     <!--end::Metdata from OLS Autocomplete script-->
+    <!--begin::database utils-->
+    <script src="{{ url_for('static', filename='./js/database_utils.js') }}"></script>
+    <!--end::database-->
   </body>
   <!--end::Body-->
 </html>
