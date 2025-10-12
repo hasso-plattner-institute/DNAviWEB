@@ -12,6 +12,7 @@ import threading
 import os
 import pandas as pd
 from uuid import uuid4
+import logging
 import datetime
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
@@ -224,9 +225,9 @@ def save_analysis_to_db(output_id, email, save_to_db):
     # Send files to VM1
     try:
         response = requests.post(VM1_API_URL, files=files_to_send, data=data)
-        print(f"[save_analysis_to_db] VM1 response: {response.status_code} {response.text}")
+        logging.info(f"[save_analysis_to_db] VM1 response: {response.status_code} {response.text}")
     except Exception as e:
-        print(f"[save_analysis_to_db] Error sending files to VM1: {e}")
+        logging.info(f"[save_analysis_to_db] Error sending files to VM1: {e}")
     finally:
         # Close all files
         for f in files_to_send.values():
