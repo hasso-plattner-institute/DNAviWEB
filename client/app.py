@@ -15,7 +15,7 @@ from uuid import uuid4
 import datetime
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
-from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required
+from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required, login_user
 from werkzeug.utils import secure_filename
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
