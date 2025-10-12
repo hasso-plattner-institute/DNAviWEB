@@ -227,12 +227,11 @@ def save_analysis_to_db(output_id, email, save_to_db):
     for f in other_files:
         all_files.append(os.path.join(user_folder, f))
     # Prepare files to send
-    files_to_send = {}
-    for i, path in enumerate(all_files):
-        if os.path.isfile(path):
-            filename = os.path.basename(path)
-            files_to_send[f"file_{i}"] = (filename, open(path, "rb"))
-
+    files_to_send = []
+    for path in all_files:
+   	 if os.path.isfile(path):
+        	filename = os.path.basename(path)
+        	files_to_send.append(("files", (filename, open(path, "rb"))))
     data = {
         "email": email,
         "sample_id": output_id,
@@ -246,10 +245,9 @@ def save_analysis_to_db(output_id, email, save_to_db):
     except Exception as e:
         logging.info(f"[save_analysis_to_db] Error sending files to VM1: {e}")
     finally:
-        # Close all files
-        for f in files_to_send.values():
-            f[1].close()
-    
+        # Close all opened file
+        for _, file_tuple in files_to_send:
+            file_tuple[1].close()
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
