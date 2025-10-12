@@ -186,19 +186,51 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
-def save_analysis_to_db(request_id, email, save_to_db):
+VM1_API_URL = "http://10.131.22.143:8000/upload"
+
+def save_analysis_to_db(output_id, email, save_to_db):
     """
     Save user data permanently in database on VM1, if consent is given.
     """
-    # If user consented to saving to db
-    if save_to_db == 'yes':
-        # Permanently save to DB (VM1)
-        print("--- SAVED DATA TO DATABASE SUCCESSFULLY! ---")
-        pass
-    # No consent
-    else:
-        pass
-    # TODO: DELETE FROM VM2 ON SESSION END
+    # No consent to save data to db, do nothing
+    if save_to_db != 'yes':
+        return
+    # User consented, save
+    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], email, output_id)
+    if not os.path.exists(user_folder):
+        print(f"Folder not found: {user_folder}")
+        return 
+    # Save only result files to file system in vm1
+    statistics_files, peaks_files, other_files = get_result_files(user_folder)
+    # Combine all paths
+    all_files = []
+    for f in statistics_files:
+        all_files.append(os.path.join(user_folder, f['name']))
+    for f in peaks_files:
+        all_files.append(os.path.join(user_folder, f))
+    for f in other_files:
+        all_files.append(os.path.join(user_folder, f))
+    # Prepare files to send
+    files_to_send = {}
+    for path in all_files:
+        if os.path.isfile(path):
+            filename = os.path.basename(path)
+            files_to_send[f"files[{filename}]"] = (filename, open(path, "rb")) 
+    data = {
+        "email": email,
+        "sample_id": output_id,
+        "description": f"Results for submission {output_id}"
+    }
+    # Send files to VM1
+    try:
+        response = requests.post(VM1_API_URL, files=files_to_send, data=data)
+        print(f"[save_analysis_to_db] VM1 response: {response.status_code} {response.text}")
+    except Exception as e:
+        print(f"[save_analysis_to_db] Error sending files to VM1: {e}")
+    finally:
+        # Close all files
+        for f in files_to_send.values():
+            f[1].close()
     
 ##############################################################################
 # PROCESS INPUT
@@ -288,6 +320,7 @@ def protect():
             statistics_files=statistics_files,
             output_id=output_id
         )
+        # TODO: DELETE FROM VM2 ON SESSION END
 
     return render_template(f'protected.html', error=error, user_logged_in = current_user.is_authenticated)
 
