@@ -201,6 +201,10 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
+
+##############################################################################
+#                          SAVE ANALYSIS TO DB                               #                 
+##############################################################################
 # Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000/upload"
 
@@ -229,9 +233,9 @@ def save_analysis_to_db(output_id, email, save_to_db):
     # Prepare files to send
     files_to_send = []
     for path in all_files:
-   	 if os.path.isfile(path):
-        	filename = os.path.basename(path)
-        	files_to_send.append(("files", (filename, open(path, "rb"))))
+        if os.path.isfile(path):
+            filename = os.path.basename(path)
+            files_to_send.append(("files", (filename, open(path, "rb"))))
     data = {
         "email": email,
         "sample_id": output_id,
@@ -240,14 +244,15 @@ def save_analysis_to_db(output_id, email, save_to_db):
     # Send files to VM1
     try:
         logging.info("Sending files to VM1...")
-        response = requests.post(VM1_API_URL, files=files_to_send, data=data)
-        logging.info(f"[save_analysis_to_db] VM1 response: {response.status_code} {response.text}")
-    except Exception as e:
-        logging.info(f"[save_analysis_to_db] Error sending files to VM1: {e}")
+        response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=10)
+        logging.info("[save_analysis_to_db] VM1 response: %s %s", response.status_code, response.text)
+    except requests.exceptions.RequestException as e:
+        logging.info("[save_analysis_to_db] Error sending files to VM1: %s", e)
     finally:
         # Close all opened file
         for _, file_tuple in files_to_send:
             file_tuple[1].close()
+
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
