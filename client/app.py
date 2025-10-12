@@ -98,7 +98,7 @@ def login():
 @app.route("/ols_proxy")
 def ols_proxy():
     """
-    Method called from autocomplete.js
+    Method called from metadata_utils.js
     A proxy for the OLS (Ontology Lookup Service).
     When DNAvi asks OLS for data, the request goes here first.
     This function takes the search text (q) and ontology name,

@@ -154,3 +154,109 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+/**
+ ** Ladder options to show based on chosen gel electrophoresis device.
+ */
+const ladderOptions = {
+  "2100 Bioanalyzer Instrument, Agilent": [
+    "DNA 1000", "DNA 12000", "DNA 7500"
+  ],
+  "4150 TapeStation System, Agilent": [
+    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
+  ],
+  "4200 TapeStation System, Agilent": [
+    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
+  ],
+  "5200 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "5300 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "5400 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "Qsep 1 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ],
+  "Qsep 100 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ],
+  "Qsep 400 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ]
+};
+
+/**
+ ** Update ladder options displayed to the user automatically when a device is chosen.
+ */
+document.addEventListener('change', function (e) {
+  if (e.target.matches('.device-select')) {
+    const row = e.target.closest('tr');
+    const ladderSelect = row.querySelector('.ladder-select');
+    // Load chosen device
+    const selectedDevice = e.target.value;
+    const ladders = ladderOptions[selectedDevice] || [];
+    // Set display ladder type to default Select
+    ladderSelect.innerHTML = '<option value="">Select</option>';
+    // Create ladder options based on device
+    ladders.forEach(ladder => {
+      const opt = document.createElement('option');
+      opt.textContent = ladder;
+      opt.value = ladder;
+      ladderSelect.appendChild(opt);
+    });
+    // Always enable also Custom option
+    const customOpt = document.createElement('option');
+    customOpt.textContent = 'Custom';
+    customOpt.value = 'custom';
+    ladderSelect.appendChild(customOpt);
+  }
+});
+
+/**
+ * This method handles any select that has the custom option.
+ * In that case when the custom is selected the select is 
+ * converted into text option and user can type their custom
+ * value.
+ */
+document.addEventListener('change', function (e) {
+  if (e.target.tagName === 'SELECT' && e.target.value === 'custom') {
+    const select = e.target;
+    // Creat a text input
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = select.name;
+    input.className = select.className;
+    input.placeholder = 'Enter custom value';
+    input.required = true;
+    input.value = '';
+    // Replace select with text
+    select.parentNode.replaceChild(input, select);
+    // Switch back to select if text is deleted by user
+    input.addEventListener('blur', () => {
+      if (input.value.trim() === '') {
+        input.parentNode.replaceChild(select, input);
+        select.value = '';
+      }
+    });
+  }
+});
