@@ -89,7 +89,7 @@ def login():
         print("SUCCESS LOGGING IN")
         user = User()
         user.id = email
-        flask_login.login_user(user)
+        login_user(user)
         return redirect(url_for('submissions_dashboard'))
     else:
         return render_template(f'login.html',
