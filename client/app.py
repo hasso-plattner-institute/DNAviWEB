@@ -32,7 +32,7 @@ template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
 #############################Logging####################################
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LOG_FILE = os.path.join(BASE_DIR, "logs", "connect_to_vm1.log")
+LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
@@ -42,6 +42,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+logging.info("Test log message at startup")
 #############################Logging####################################
 load_users()
 
