@@ -332,7 +332,7 @@
                                   <th class="optional-col">Is Infection Suspected?</th>
                                   <th class="optional-col">Infection Strain</th>
                                   <th class="optional-col">Hospitalization Status</th>
-                                  <th class="optional-col">Extraction Kit</th>
+                                  <th class="optional-col">Extraction Kit (DNA Isolation Method)</th>
                                   <th class="optional-col">DNA Mass</th>
                                   <th class="optional-col">DNA Mass Units</th>
                                   <th class="optional-col">Carrying Liquid Volume</th>
@@ -428,7 +428,26 @@
                                       <option>Standard care unit</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="text" name="extraction_kit[]" class="form-control form-control-sm" placeholder="e.g. Invitrogen kit"></td>
+                                  <td class="optional-col">
+                                    <select name="extraction_kit[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
+                                      <option>Phenol-Chloroform</option>
+                                      <option>Qiagen Virus/Pathogen Kit</option>
+                                      <option>QIAamp Circulating Nucleic Acid Kit</option>
+                                      <option>MacheryNagel Nucleospin Plasma XS</option>
+                                      <option>MacheryNagel Gel and PCR Clean-up</option>
+                                      <option>Epigentek FitAmp™ Circulating DNA Quantification Kit</option>
+                                      <option>Analytik Jena, Polymer Mediated Enrichment (PME) free-circulating DNA Kit-ICP16</option>
+                                      <option>Zymo ZR Serum DNA Kit</option>
+                                      <option>Norgen Plasma/Serum Cell-Free Circulating DNA Purification Kit</option>
+                                      <option>Perkin Elmer chemagic Circulating NA</option>
+                                      <option>Roche cobas® DNA Sample Preparation kit</option>
+                                      <option>BioChain cfPure Cell-Free DNA Extraction Kit</option>
+                                      <option>Thermo Fisher Scientific MagMAX Cell-Free DNA Isolation Kit</option>
+                                      <option>Roche MagNA Pure 24 System</option>
+                                      <option value="custom">Custom</option>
+                                    </select>
+                                  </td>
                                   <td class="optional-col"><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Value"></td>
                                   <td class="optional-col">
                                     <select name="dna_mass_units[]" class="form-select form-select-sm">
@@ -454,17 +473,27 @@
                                       <option>In vivo</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="text" name="device[]" class="form-control form-control-sm" placeholder="Device"></td>
                                   <td class="optional-col">
-                                    <select name="ladder_type[]" class="form-select form-select-sm">
-                                      <option value="">Select ladder</option>
-                                      <option>Ladder type 1</option>
-                                      <option>Ladder type 2</option>
-                                      <option>Ladder type 3</option>
-                                      <option>Custom</option>
+                                    <select name="device[]" class="form-select form-select-sm device-select">
+                                      <option value="">Select</option>
+                                      <option value="2100 Bioanalyzer Instrument, Agilent">2100 Bioanalyzer Instrument, Agilent</option>
+                                      <option value="4150 TapeStation System, Agilent">4150 TapeStation System, Agilent</option>
+                                      <option value="4200 TapeStation System, Agilent">4200 TapeStation System, Agilent</option>
+                                      <option value="5200 Fragment Analyzer System, Agilent">5200 Fragment Analyzer System, Agilent</option>
+                                      <option value="5300 Fragment Analyzer System, Agilent">5300 Fragment Analyzer System, Agilent</option>
+                                      <option value="5400 Fragment Analyzer System, Agilent">5400 Fragment Analyzer System, Agilent</option>
+                                      <option value="Qsep 1 Bio-Fragment Analyzer, Nippon">Qsep 1 Bio-Fragment Analyzer, Nippon</option>
+                                      <option value="Qsep 100 Bio-Fragment Analyzer, Nippon">Qsep 100 Bio-Fragment Analyzer, Nippon</option>
+                                      <option value="Qsep 400 Bio-Fragment Analyzer, Nippon">Qsep 400 Bio-Fragment Analyzer, Nippon</option>
+                                      <option value="custom">Custom</option>
+                                      </select>
+                                  </td>
+                                  <td class="optional-col">
+                                    <select name="ladder_type[]" class="form-select form-select-sm ladder-select">
+                                      <option value="">Select</option>
+                                      <option value="custom">Custom</option>
                                     </select>
                                   </td>
-
                                   <td class="actions-cell text-center">
                                     <button type="button" class="btn btn-sm btn-outline-success add-row">+</button>
                                     <button type="button" class="btn btn-sm btn-outline-danger remove-row">−</button>
@@ -947,7 +976,7 @@
       });
     </script>
     <!--begin::Metdata from OLS Autocomplete script-->
-    <script src="{{ url_for('static', filename='./js/autocomplete.js') }}"></script>
+    <script src="{{ url_for('static', filename='./js/metadata_utils.js') }}"></script>
     <!--end::Metdata from OLS Autocomplete script-->
   </body>
   <!--end::Body-->
