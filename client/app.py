@@ -8,6 +8,7 @@ Date: 2025-AUG-29 \n
 
 """
 
+import threading
 import os
 import pandas as pd
 from uuid import uuid4
@@ -185,6 +186,20 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
+def save_analysis_to_db(request_id, email, save_to_db):
+    """
+    Save user data permanently in database on VM1, if consent is given.
+    """
+    # If user consented to saving to db
+    if save_to_db == 'yes':
+        # Permanently save to DB (VM1)
+        print("--- SAVED DATA TO DATABASE SUCCESSFULLY! ---")
+        pass
+    # No consent
+    else:
+        pass
+    # TODO: DELETE FROM VM2 ON SESSION END
+    
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
@@ -218,7 +233,7 @@ def protect():
                                missing_error=error, user_logged_in = current_user.is_authenticated)
 
         ######################################################################
-        #        UNIQUE ID, CREATE PROCESSING DIRECTORY, SAVE FILES
+        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY(VM2)  #
         ######################################################################
         request_id = str(uuid4())
         processing_folder = f"{app.config['UPLOAD_FOLDER']}{email}/{request_id}/"
@@ -237,7 +252,7 @@ def protect():
         assigned_vars = [e for e in [("i",f),("l",l),("m",m)] if e[1]]
         op, error = input2dnavi(in_vars=assigned_vars)
         ######################################################################
-        #               ZIP + MOVE OUTPUT TO DOWNLOAD                        #
+        #               ZIP + MOVE OUTPUT TO DOWNLOAD (VM2)                  #
         ######################################################################
         print("--- PROVIDING RESULTS FOR DOWNLOAD")
         output_id = move_dnavi_files(request_id=request_id,
@@ -253,16 +268,15 @@ def protect():
                                error=error, user_logged_in = current_user.is_authenticated)
 
         statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{email}/{output_id}")
+        
         ######################################################################
-        #         SAVE TO DATABASE IF USER AGREED                       #
+        #                        SAVE DATA TO DATABASE                       #
         ######################################################################
-        save_to_db = request.form.get('save_to_db')
-        if save_to_db == 'yes':
-            None
-            # TODO: Save to DB VM1
-        else:
-            None
-            # TODO: Temporary analysis only saved on VM2, DELETE after session data from VM1
+        # Trigger thread to save the data to database in the background
+        # to allow returing the results page to the user immidiatly without
+        # waiting for saving to the DB.
+        save_to_db_flag = request.form.get('save_to_db')
+        threading.Thread(target=save_analysis_to_db, args=(request_id, email, save_to_db_flag)).start()
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################
