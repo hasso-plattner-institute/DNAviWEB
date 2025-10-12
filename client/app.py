@@ -230,7 +230,8 @@ def save_analysis_to_db(output_id, email, save_to_db):
     for path in all_files:
         if os.path.isfile(path):
             filename = os.path.basename(path)
-            files_to_send[f"files[{filename}]"] = (filename, open(path, "rb")) 
+            files_to_send["file"] = (filename, open(path, "rb"))
+
     data = {
         "email": email,
         "sample_id": output_id,
