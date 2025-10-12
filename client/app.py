@@ -201,6 +201,7 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
+# Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000/upload"
 
 def save_analysis_to_db(output_id, email, save_to_db):
@@ -227,10 +228,10 @@ def save_analysis_to_db(output_id, email, save_to_db):
         all_files.append(os.path.join(user_folder, f))
     # Prepare files to send
     files_to_send = {}
-    for path in all_files:
+    for i, path in enumerate(all_files):
         if os.path.isfile(path):
             filename = os.path.basename(path)
-            files_to_send["file"] = (filename, open(path, "rb"))
+            files_to_send[f"file_{i}"] = (filename, open(path, "rb"))
 
     data = {
         "email": email,
