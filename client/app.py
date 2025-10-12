@@ -30,6 +30,19 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
+#############################Logging####################################
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE = os.path.join(BASE_DIR, "logs", "connect_to_vm1.log")
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE, mode="a"), 
+        logging.StreamHandler()
+    ]
+)
+#############################Logging####################################
 load_users()
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
@@ -224,6 +237,7 @@ def save_analysis_to_db(output_id, email, save_to_db):
     }
     # Send files to VM1
     try:
+        logging.info("Sending files to VM1...")
         response = requests.post(VM1_API_URL, files=files_to_send, data=data)
         logging.info(f"[save_analysis_to_db] VM1 response: {response.status_code} {response.text}")
     except Exception as e:
