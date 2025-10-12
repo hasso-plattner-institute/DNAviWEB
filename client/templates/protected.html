@@ -298,9 +298,6 @@
                           <!--begin::Metadata AG Grid table header-->
                           <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
-                              <button id="toggle-optional-cols" class="btn btn-sm btn-outline-secondary">
-                                Hide Optional Columns
-                              </button>
                               <button id="download-csv" class="btn btn-success mb-3">
                                 Download CSV
                               </button>
@@ -313,13 +310,11 @@
                             <table id="metadata-table" class="table table-hover align-middle shadow-sm">
                               <thead class="table-light sticky-top">
                                 <tr>
-                                  <th>Sample ID</th>
-                                  <th>Subject ID</th>
-                                  <th>Diseases</th>
-                                  <th>Cell Types</th>
-                                  <th>Phenotypic Abnormalities</th>
-
-                                  <!-- Optional columns -->
+                                  <th class="optional-col">Sample ID</th>
+                                  <th class="optional-col">Subject ID</th>
+                                  <th class="optional-col">Diseases</th>
+                                  <th class="optional-col">Cell Types</th>
+                                  <th class="optional-col">Phenotypic Abnormalities</th>
                                   <th class="optional-col">Material Anatomical Entity</th>
                                   <th class="optional-col">Biological Sex</th>
                                   <th class="optional-col">Age</th>
@@ -346,13 +341,12 @@
 
                               <tbody>
                                 <tr class="metadata-row">
-                                  <!-- Mandatory -->
-                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" required placeholder="e.g. Sample_1"></td>
-                                  <td><input type="text" name="subject_id[]" class="form-control form-control-sm" required placeholder="e.g. Donor-10031"></td>
+                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" placeholder="e.g. Sample_1"></td>
+                                  <td><input type="text" name="subject_id[]" class="form-control form-control-sm" placeholder="e.g. Donor-10031"></td>
                                   <td>
                                     <div class="disease-wrapper">
                                       <div class="disease-field mb-2">
-                                        <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" required placeholder="Search disease ontology">
+                                        <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" placeholder="Search disease ontology">
                                       </div>
                                       <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add</button>
                                     </div>
@@ -360,7 +354,7 @@
                                   <td>
                                     <div class="celltype-wrapper">
                                       <div class="celltype-field mb-2">
-                                        <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" required placeholder="Search cell type ontology">
+                                        <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" placeholder="Search cell type ontology">
                                       </div>
                                       <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>
                                     </div>
@@ -368,15 +362,14 @@
                                   <td>
                                     <div class="phenotype-wrapper">
                                       <div class="phenotype-field mb-2">
-                                        <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" required placeholder="Search HP term">
+                                        <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" placeholder="Search HP term">
                                       </div>
                                       <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add</button>
                                     </div>
                                   </td>
 
-                                  <!-- Optional -->
-                                  <td class="optional-col"><input type="text" name="material[]" class="form-control form-control-sm ols-search" placeholder="Search anatomical entity"></td>
-                                  <td class="optional-col">
+                                  <td><input type="text" name="material[]" class="form-control form-control-sm ols-search" placeholder="Search anatomical entity"></td>
+                                  <td>
                                     <select name="sex[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Male</option>
@@ -384,10 +377,10 @@
                                       <option>Unknown</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Years"></td>
-                                  <td class="optional-col"><input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="e.g. Homo sapiens"></td>
-                                  <td class="optional-col"><input type="date" name="collection_date[]" class="form-control form-control-sm"></td>
-                                  <td class="optional-col">
+                                  <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Years"></td>
+                                  <td><input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="e.g. Homo sapiens"></td>
+                                  <td><input type="date" name="collection_date[]" class="form-control form-control-sm"></td>
+                                  <td>
                                     <select name="case_control[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Case</option>
@@ -395,30 +388,30 @@
                                       <option>Not applicable</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="e.g. Diabetes"></td>
-                                  <td class="optional-col">
+                                  <td><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="e.g. Diabetes"></td>
+                                  <td>
                                     <select name="is_deceased[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Yes</option>
                                       <option>No</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="is_pregnant[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Yes</option>
                                       <option>No</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="is_infection_suspected[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Yes</option>
                                       <option>No</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="e.g., S. aureus"></td>
-                                  <td class="optional-col">
+                                  <td><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="e.g., S. aureus"></td>
+                                  <td>
                                     <select name="hospitalization_status[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Ambulant</option>
@@ -428,7 +421,7 @@
                                       <option>Standard care unit</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="extraction_kit[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>Phenol-Chloroform</option>
@@ -451,8 +444,8 @@
                                       <option value="custom">Custom</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Value"></td>
-                                  <td class="optional-col">
+                                  <td ><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Value"></td>
+                                  <td>
                                     <select name="dna_mass_units[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>pg</option>
@@ -460,8 +453,8 @@
                                       <option>µg</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col"><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Volume"></td>
-                                  <td class="optional-col">
+                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Volume"></td>
+                                  <td>
                                     <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>µL</option>
@@ -469,14 +462,14 @@
                                       <option>L</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="in_vitro_in_vivo[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
                                       <option>In vitro</option>
                                       <option>In vivo</option>
                                     </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="device[]" class="form-select form-select-sm device-select">
                                       <option value="">Select</option>
                                       <option value="2100 Bioanalyzer Instrument, Agilent">2100 Bioanalyzer Instrument, Agilent</option>
@@ -491,7 +484,7 @@
                                       <option value="custom">Custom</option>
                                       </select>
                                   </td>
-                                  <td class="optional-col">
+                                  <td>
                                     <select name="ladder_type[]" class="form-select form-select-sm ladder-select">
                                       <option value="">Select</option>
                                       <option value="custom">Custom</option>
@@ -680,11 +673,6 @@
                   </style>
 
                   <script>
-                  // Toggle optional columns
-                  document.getElementById("toggle-optional-cols").addEventListener("click", () => {
-                    document.querySelectorAll(".optional-col").forEach(col => col.classList.toggle("hidden-col"));
-                  });
-
                   // Enable column resizing
                   document.querySelectorAll("#metadata-table th").forEach(th => {
                     th.classList.add('resizable');
