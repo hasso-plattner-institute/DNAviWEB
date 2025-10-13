@@ -329,7 +329,7 @@ def protect():
         # to allow returing the results page to the user immidiatly without
         # waiting for saving to the DB.
         save_to_db_flag = request.form.get('save_to_db')
-        threading.Thread(target=save_analysis_to_db, args=(request_id, email, save_to_db_flag)).start()
+        threading.Thread(target=save_analysis_to_db, args=(output_id, email, save_to_db_flag)).start()
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################
