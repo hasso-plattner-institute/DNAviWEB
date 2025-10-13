@@ -229,7 +229,7 @@
         <div class="app-content">
           <main id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
-              <form method="POST" enctype="multipart/form-data">
+              <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
                   <!-- ------------------------------------------------------------------------------ -->
                   <!-- DNA GEL OR CSV -->
@@ -298,10 +298,10 @@
                           <!--begin::Metadata AG Grid table header-->
                           <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
-                              <button id="download-csv" class="btn btn-primary mb-3">
+                              <button id="download-csv" type="button" class="btn btn-primary mb-3">
                                 Download CSV
                               </button>
-                              <button id="submit-metadata-table" class="btn btn-primary mb-3">
+                              <button id="submit-metadata-table" type="button" class="btn btn-primary mb-3">
                                 Submit Table
                               </button>
                             </div>
@@ -815,12 +815,10 @@
                         if (!csv) { alert('No rows to submit'); return; }
                         const blob = new Blob([csv], { type: 'text/csv' });
                         const form = document.getElementById('upload-form');
-                        const oldInput = form.querySelector('input[name="meta_file"][type="hidden"]');
-                        if (oldInput) oldInput.remove();
-                        // Create a hidden input to hold the CSV Blob
+                        const fileInput = form.querySelector('input[name="meta_file"]');
                         const dataTransfer = new DataTransfer();
                         dataTransfer.items.add(new File([blob], 'meta_file.csv'));
-                        form.querySelector('input[name="meta_file"]').files = dataTransfer.files;
+                        fileInput.files = dataTransfer.files;
                         alert('Metadata table prepared. You can now click the main submit button to start the analysis.');
                        });
 

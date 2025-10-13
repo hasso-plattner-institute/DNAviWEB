@@ -247,7 +247,8 @@ def check_meta(filename):
     """
 
     Check if the metadata file is formatted correctly
-
+    remove any column (except SAMPLE) with null/empty values
+    
     :param filename: str, path to metadata file
 
     :return: raise error if file does not have correct format
