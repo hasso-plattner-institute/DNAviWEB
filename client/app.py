@@ -299,6 +299,16 @@ def protect():
         if meta_inpt:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
             request.files['meta_file'].save(m)
+            # List of metadata columns (values) chosen by user to group by
+            group_columns = request.form.getlist('metadata_group_columns_checkbox')
+            selected_columns = ['SAMPLE'] # Always keep SAMPLE
+            if group_columns:
+                selected_columns += group_columns
+            meta_df = pd.read_csv(m)
+            meta_df = meta_df[selected_columns]
+            # Remove all not selected columns
+            meta_df.to_csv(m, index=False)
+            print("Metadata columns selected for grouping:", selected_columns)
 
         ######################################################################
         #                       RUN THE ANALYSIS                             #
