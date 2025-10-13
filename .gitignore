@@ -1,8 +1,6 @@
 DNAviEnv/
 .env
 __pycache__/
-lib/
-lib/DNAvi/tests/electropherogram/
 client/log/dnavi.log
 
 # Ignore everything in downloads
