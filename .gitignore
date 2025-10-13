@@ -1,7 +1,7 @@
 DNAviEnv/
 .env
 __pycache__/
-client/log/dnavi.log
+client/log/*.log
 
 # Ignore everything in downloads
 exchange/downloads/*
