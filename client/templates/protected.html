@@ -298,8 +298,11 @@
                           <!--begin::Metadata AG Grid table header-->
                           <div class="d-flex justify-content-between align-items-center mb-2">
                             <div>
-                              <button id="download-csv" class="btn btn-success mb-3">
+                              <button id="download-csv" class="btn btn-primary mb-3">
                                 Download CSV
+                              </button>
+                              <button id="submit-metadata-table" class="btn btn-primary mb-3">
+                                Submit Table
                               </button>
                             </div>
                           </div>
@@ -310,7 +313,7 @@
                             <table id="metadata-table" class="table table-hover align-middle shadow-sm">
                               <thead class="table-light sticky-top">
                                 <tr>
-                                  <th class="optional-col">Sample ID</th>
+                                  <th class="optional-col">SAMPLE</th>
                                   <th class="optional-col">Subject ID</th>
                                   <th class="optional-col">Diseases</th>
                                   <th class="optional-col">Cell Types</th>
@@ -780,33 +783,71 @@
                         if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
                       });
 
-                      // Download CSV
-                      document.getElementById('download-csv').addEventListener('click', function () {
-                        const rows = Array.from(tbody.querySelectorAll('tr'));
-                        if (rows.length === 0) { alert('No rows to export'); return; }
-                        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim().replace(/,/g, ' '));
-                        const csv = [headers.join(',')];
-                        rows.forEach(row => {
-                          const fields = Array.from(row.querySelectorAll('input, select, textarea'));
-                          const values = fields.map(f => {
-                            let v = f.value || '';
-                            if (typeof v === 'string' && v.includes(',')) v = `"${v}"`;
-                            return v;
+                      /**
+                       * Convert metadata online table to csv
+                       */
+                      function tableToCSV(table) {
+                          const tbody = table.querySelector('tbody');
+                          const rows = Array.from(tbody.querySelectorAll('tr'));
+                          if (rows.length === 0) return null;
+                          const headers = Array.from(table.querySelectorAll('thead th'))
+                                              .map(th => th.textContent.trim().replace(/,/g, ' '));
+                          const csv = [headers.join(',')];
+                          rows.forEach(row => {
+                              const fields = Array.from(row.querySelectorAll('input, select, textarea'));
+                              const values = fields.map(f => {
+                                  let v = f.value || '';
+                                  if (typeof v === 'string' && v.includes(',')) v = `"${v}"`; // escape commas
+                                  return v;
+                              });
+                              csv.push(values.join(','));
                           });
-                          csv.push(values.join(','));
-                        });
-                        const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+
+                          return csv.join('\n');
+                      }
+                      /**
+                       * If users clicks Submit metadata table, convert it to csv and add file to form data
+                       */
+                      document.getElementById('submit-metadata-table').addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const table = document.getElementById('metadata-table');
+                        const csv = tableToCSV(table);
+                        if (!csv) { alert('No rows to submit'); return; }
+                        const blob = new Blob([csv], { type: 'text/csv' });
+                        const form = document.getElementById('upload-form');
+                        const oldInput = form.querySelector('input[name="meta_file"][type="hidden"]');
+                        if (oldInput) oldInput.remove();
+                        // Create a hidden input to hold the CSV Blob
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(new File([blob], 'meta_file.csv'));
+                        form.querySelector('input[name="meta_file"]').files = dataTransfer.files;
+                        alert('Metadata table prepared. You can now click the main submit button to start the analysis.');
+                       });
+
+                      /**
+                       * Download metdata table as csv button 
+                       */
+                      document.getElementById('download-csv').addEventListener('click', function () {
+                        const table = document.getElementById('metadata-table');
+                        const csv = tableToCSV(table);
+                        if (!csv) { 
+                          alert('No rows to export'); 
+                          return; 
+                        }
+                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = 'metadata_samples.csv';
+                        a.download = 'meta_file.csv';
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);
                         URL.revokeObjectURL(url);
                       });
+
                       initializeAutocomplete(table);
                     });
+                    
                   </script>
                   <!-- ---------------------------------------------------------------------------------------- -->
                   <!-- SUBMISSION -->
