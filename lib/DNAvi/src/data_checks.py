@@ -285,6 +285,20 @@ def check_meta(filename):
         print("--- Duplicate sample names in metadata. Please give each "
               "sample a unique ID and try again.")
         exit()
+        
+    ######################################################################
+    # 4. Remove any column (except SAMPLE) with null/empty values
+    ######################################################################
+    cols_to_check = [col for col in df.columns if col != "SAMPLE"]
+    for col in cols_to_check:
+        if df[col].isnull().any() or (df[col] == "").any():
+            print(f"--- Column '{col}' contains null/empty values and will be removed")
+            df.drop(columns=[col], inplace=True)
 
+    ######################################################################
+    # 5. Save the cleaned CSV
+    ######################################################################
+    df.to_csv(filename, index=False)
+    print("--- Metadata check complete. Cleaned file saved.")
     return filename
 # END OF SCRIPT
