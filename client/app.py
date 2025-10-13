@@ -32,6 +32,7 @@ template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
 #############################Logging####################################
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = BASE_DIR.rstrip("/")
 LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 logging.basicConfig(
