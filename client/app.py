@@ -16,6 +16,9 @@ import logging
 import datetime
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
+from database.schema.sample import Sample
+from sqlalchemy.orm import Session
+from database.config import engine
 from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required, login_user
 from werkzeug.utils import secure_filename
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
@@ -209,9 +212,50 @@ def instructions():
 # Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000/upload"
 
-def save_analysis_to_db(output_id, email, save_to_db):
+def save_data_to_db():
     """
-    Save user data permanently in database on VM1, if consent is given.
+    Save dummy metadata into the 'sample' table for testing.
+    """
+    logging.info("Saving dummy metadata to 'sample' table to test")
+    try:
+        with Session(engine) as session:
+            dummy_sample = Sample(
+                sample_description="test",
+                ladder_id=1,
+                organism_taxon_term_id="test",
+                organism_common_name="test",
+                individual_object_id=uuid4(),
+                sample_collection_date=datetime.date(2024, 10, 10),
+                age_at_collection="20",
+                sampling_site_term_id="test",
+                contact_id="test",
+                is_deceased=False,
+                is_infection_suspected=False,
+                infection_strain="test",
+                is_pregnant=False,
+                hospitalization_status="test",
+                extraction_kit="test",
+                dna_mass=2,
+                dna_mass_units="test",
+                carrying_liquid_volume=1.2,
+                carrying_liquid_volume_unit="test",
+                in_vitro_in_vivo="test",
+                gel_image_path="test",
+                device_id="test"
+            )
+
+            session.add(dummy_sample)
+            session.commit()
+
+            logging.info("Dummy metadata successfully saved to DB.")
+
+    except Exception as e:
+        logging.error("Error saving dummy metadata: %s", e)
+    
+    
+def save_data(output_id, email, save_to_db):
+    """
+    Save user data permanently in database and file system on VM1, if consent is given.
     """
     # No consent to save data to db, do nothing
     if save_to_db != 'yes':
@@ -221,6 +265,9 @@ def save_analysis_to_db(output_id, email, save_to_db):
     if not os.path.exists(user_folder):
         print(f"Folder not found: {user_folder}")
         return 
+    ##############################################################################
+    #                          SAVE TO FILE SYSTEM VM_1                          #                 
+    ##############################################################################
     # Save only result files to file system in vm1
     statistics_files, peaks_files, other_files = get_result_files(user_folder)
     # Combine all paths
@@ -246,14 +293,19 @@ def save_analysis_to_db(output_id, email, save_to_db):
     try:
         logging.info("Sending files to VM1...")
         response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=10)
-        logging.info("[save_analysis_to_db] VM1 response: %s %s", response.status_code, response.text)
+        logging.info("[save_data] VM1 response: %s %s", response.status_code, response.text)
     except requests.exceptions.RequestException as e:
-        logging.info("[save_analysis_to_db] Error sending files to VM1: %s", e)
+        logging.info("[save_data] Error sending files to VM1: %s", e)
     finally:
         # Close all opened file
         for _, file_tuple in files_to_send:
             file_tuple[1].close()
-
+    
+    ########################s######################################################
+    #                          SAVE TO DATABASE VM_1                             #                 
+    ##############################################################################
+    #save_data_to_db()
+    
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
@@ -340,7 +392,7 @@ def protect():
         # to allow returing the results page to the user immidiatly without
         # waiting for saving to the DB.
         save_to_db_flag = request.form.get('save_to_db')
-        threading.Thread(target=save_analysis_to_db, args=(output_id, email, save_to_db_flag)).start()
+        threading.Thread(target=save_data, args=(output_id, email, save_to_db_flag)).start()
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################

@@ -338,6 +338,8 @@
                                   <th class="optional-col">In vitro / In vivo</th>
                                   <th class="optional-col">Gel Electrophoresis Device</th>
                                   <th class="optional-col">Ladder Type</th>
+                                  <th class="optional-col">Treatments</th>
+                                  <th class="optional-col">Ethnicity</th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
@@ -493,6 +495,15 @@
                                       <option value="custom">Custom</option>
                                     </select>
                                   </td>
+                                  <td>
+                                    <div class="treatment-wrapper">
+                                      <div class="treatment mb-2">
+                                        <input type="text" name="treatment[0][]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
+                                      </div>
+                                      <button type="button" class="btn btn-sm btn-outline-primary add-treatment-btn">+ Add</button>
+                                    </div>
+                                  </td>
+                                  <td><input type="text" name="Ethnicity[]" class="form-control form-control-sm ols-search" placeholder="Ethnicity"></td>
                                   <td class="actions-cell text-center">
                                     <button type="button" class="btn btn-sm btn-outline-success add-row">+</button>
                                     <button type="button" class="btn btn-sm btn-outline-danger remove-row">−</button>
@@ -641,6 +652,14 @@
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ladder Type" id="group_ladder">
                                 <label class="form-check-label" for="group_ladder">Ladder Type</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Treatment" id="group_treatment">
+                                <label class="form-check-label" for="group_treatment">Treatments</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ethnicity" id="group_ethnicity">
+                                <label class="form-check-label" for="group_ethnicity">Ethnicity</label>
                               </div>
                             </div>
                           </div>

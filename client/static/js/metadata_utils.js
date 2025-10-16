@@ -34,12 +34,13 @@ function initializeAutocomplete(input) {
             }
             // Define url to search for based on the input parameters
             const detectOntology = (placeholder) => {
-                if (/disease/i.test(placeholder)) return "efo";
+                if (/disease/i.test(placeholder) || /ethnicity/i.test(placeholder)) return "efo";
                 if (/anatomical/i.test(placeholder)) return "uberon";
                 if (/cell type/i.test(placeholder)) return "cl";
                 if (/phenotypic/i.test(placeholder)) return "hp";
                 if (/organism/i.test(placeholder)) return "ncbitaxon";
-                if (/condition/i.test(placeholder)) return "ncit"; 
+                if (/condition/i.test(placeholder)) return "ncit";
+                if (/treatment/i.test(placeholder)) return "dron";  
                 return "efo";
             };
             const ontology = detectOntology(input.placeholder);
@@ -147,8 +148,19 @@ document.addEventListener("DOMContentLoaded", () => {
             wrapper.insertBefore(newField, e.target);
             initializeAutocomplete(newField.querySelector('.ols-search'));
         }
+        // Add treatments
+        if (e.target.classList.contains('add-treatment-btn')) {
+            const wrapper = e.target.closest('.treatment-wrapper');
+            const newField = document.createElement('div');
+            newField.classList.add('treatment-field', 'mb-2');
+            newField.innerHTML = `
+                <input type="text" name="treatment[0][]" class="form-control form-control-sm ols-search">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-treatment-btn">Remove</button>`;
+            wrapper.insertBefore(newField, e.target);
+            initializeAutocomplete(newField.querySelector('.ols-search'));
+        }
         // Add remove buttons
-        if (e.target.classList.contains('remove-disease-btn') || e.target.classList.contains('remove-celltype-btn') || e.target.classList.contains('remove-phenotype-btn')) {
+        if (e.target.classList.contains('remove-disease-btn') || e.target.classList.contains('remove-celltype-btn') || e.target.classList.contains('remove-phenotype-btn') || e.target.classList.contains('remove-treatment-btn')) {
             e.target.parentElement.remove();
         }
     });
