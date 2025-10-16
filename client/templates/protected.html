@@ -313,33 +313,33 @@
                             <table id="metadata-table" class="table table-hover align-middle shadow-sm">
                               <thead class="table-light sticky-top">
                                 <tr>
-                                  <th class="optional-col">SAMPLE</th>
-                                  <th class="optional-col">Subject ID</th>
-                                  <th class="optional-col">Diseases</th>
-                                  <th class="optional-col">Cell Types</th>
-                                  <th class="optional-col">Phenotypic Abnormalities</th>
-                                  <th class="optional-col">Material Anatomical Entity</th>
-                                  <th class="optional-col">Biological Sex</th>
-                                  <th class="optional-col">Age</th>
-                                  <th class="optional-col">Organism</th>
-                                  <th class="optional-col">Sample Collection Date</th>
-                                  <th class="optional-col">Case vs Control</th>
-                                  <th class="optional-col">Condition Under Study</th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Unique sample identifier">SAMPLE <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="This property describes the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="when the sample was taken from the individual.">Sample Collection Date <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Specifies whether the sample is affected (case) or unaffected (control).">Case vs Control <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Describes the specific condition, treatment, or situation being investigated for the sample. The sample may or may not be affected by this condition under study, belonging to the case or control groups respectively.">Condition Under Study <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">Is Deceased?</th>
                                   <th class="optional-col">Is Pregnant?</th>
-                                  <th class="optional-col">Is Infection Suspected?</th>
-                                  <th class="optional-col">Infection Strain</th>
-                                  <th class="optional-col">Hospitalization Status</th>
-                                  <th class="optional-col">Extraction Kit (DNA Isolation Method)</th>
-                                  <th class="optional-col">DNA Mass</th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Indicates whether sepsis or a bacterial infection is suspected. If Yes, specify the strain involved.">Is Infection Suspected? <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Name of the suspected infection strain.">Infection Strain <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Specifies the hospital setting of the individual at the time of sample collection.">Hospitalization Status <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Extraction kit used.">Extraction Kit (DNA Isolation Method) <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Sample DNA amount.">DNA Mass <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">DNA Mass Units</th>
-                                  <th class="optional-col">Carrying Liquid Volume</th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Volume of DNA carrying liquid (eg. 5mL urine)">Carrying Liquid Volume <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">Carrying Liquid Volume Unit</th>
                                   <th class="optional-col">In vitro / In vivo</th>
-                                  <th class="optional-col">Gel Electrophoresis Device</th>
-                                  <th class="optional-col">Ladder Type</th>
-                                  <th class="optional-col">Treatments</th>
-                                  <th class="optional-col">Ethnicity</th>
+                                  <th class="optional-col">Gel Electrophoresis Device </th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight ladder used in gel electrophoresis">Ladder Type <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatments <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity <i class="bi bi-info-circle text-muted"></i></th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
@@ -377,9 +377,11 @@
                                   <td>
                                     <select name="sex[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
-                                      <option>Male</option>
-                                      <option>Female</option>
-                                      <option>Unknown</option>
+                                      <option>male</option>
+                                      <option>female</option>
+                                      <option>hermaphrodite</option>
+                                      <option>pseudohermaphrodite</option>
+                                      <option>unknown</option>
                                     </select>
                                   </td>
                                   <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Enter years"></td>
@@ -421,9 +423,11 @@
                                       <option value="">Select</option>
                                       <option>Ambulant</option>
                                       <option>Hospitalized</option>
-                                      <option>ICU</option>
+                                      <option>Emergency room</option>
                                       <option>Discharged</option>
                                       <option>Standard care unit</option>
+                                      <option>Intensive care unit</option>
+                                      <option>Operation room</option>
                                     </select>
                                   </td>
                                   <td>
