@@ -184,10 +184,6 @@ class Sample(Base):
         )
     )
 
-    # TODO: Do we need this? It is part of the experiment entity not suitable here according to EGS
-    # gene_descriptor_term_id = Column(String(50), ForeignKey('ontology_term.term_id',
-    # ondelete='CASCADE'))
-
     # ---------contact details-------------
     contact_id: Mapped[str] = mapped_column(
         UUID(as_uuid=True),
@@ -227,15 +223,12 @@ class Sample(Base):
         comment="Status of hospitalization for the individual."
     )
 
-    # TODO: Frontend should offer common kits from invitrogen and leave custom option.
     extraction_kit: Mapped[str | None] =  mapped_column(
         String(50),
         nullable=True,
         comment="Extraction kit used."
     )
 
-    # DNA mass
-    # TODO: Frontend add this option
     dna_mass: Mapped[float | None] = mapped_column(
         Float,
         nullable=True,
