@@ -14,12 +14,20 @@ from sqlalchemy import (
     UUID,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
 from database.schema.in_vitro_in_vivo_enum import in_vitro_in_vivo_enum
 from database.schema.mass_unit_enum import mass_unit_enum
 from database.schema.volume_unit_enum import volume_unit_enum
 from database.schema.base import Base
 from database.schema.hospitalization_status_enum import hospitalization_status_enum
 
+sample_status_enum = PG_ENUM(
+    'case',
+    'control',
+    'not applicable',
+    name='sample_status_enum',
+    create_type=True
+)
 
 class Sample(Base):
     """    
@@ -39,9 +47,16 @@ class Sample(Base):
     
     - sample_id: Start with 1 increment by 1 for each new sample
     
-    - sample_description (in EGA objectDescription): An informative sample description that
-    
-    describes the sample and differentiates it from others.
+    - sample_name (in EGA objectDescription): Sample description extracted from the metadata the user typed. 
+        
+    ---------submission table-------------
+    - submission_id: Each submission to DNAvi is identified with a unique output identifier.
+
+    ---------subject table-------------
+    - subject_id: Unique identifier of the subject that the sample was extracted from.
+
+    ---------ladder table-------------
+    - ladder_id: Unique identifier of the ladder used in the submission of this sample.
     
     ---------organismDescriptor-------------
     EGA: This property describes the material entity 
@@ -54,17 +69,11 @@ class Sample(Base):
     nature of the EGA, it is expected to be of human provenance.
 
     - organism_taxon_term_id: Taxonomic classification of the organism (e.g. 'NCBITaxon:9606' and 
-    'homo sapiens' for humans) curated by the NCBI Taxonomy (search for organisms here:
-    https://www.ncbi.nlm.nih.gov/taxonomy; or use the OLS: 
-    https://www.ebi.ac.uk/ols/ontologies/ncbitaxon).
-    You can find further details at 'https://www.uniprot.org/help/taxonomic_identifier'.
-    This is appropriate for individual organisms and some environmental samples.
-    
-    - organism_common_name: Common name (e.g. 'human') used to designate a plant, animal or 
-    other organism, as opposed to the scientific name.
-    Example: "human", "goat", "horse"
-    
-    - subject_id: Unique identifier of the individual that the sample was extracted from.
+     'homo sapiens' for humans) curated by the NCBI Taxonomy (search for organisms here:
+      https://www.ncbi.nlm.nih.gov/taxonomy; or use the OLS: 
+      https://www.ebi.ac.uk/ols/ontologies/ncbitaxon).
+      You can find further details at 'https://www.uniprot.org/help/taxonomic_identifier'.
+      This is appropriate for individual organisms and some environmental samples.
     
     ---------sampleCollection-------------
     Node containing the provenance details (when and where) of the sample. This information does not
@@ -78,16 +87,32 @@ class Sample(Base):
     - age_at_collection: Precise age in ISO8601 format of the individual. For example, 'P3Y6M4D'
     represents a duration of three years, six months and four days.
 
-    - sampling_site_term_id: A site or entity from which a sample (i.e. a statistically 
+    - sampling_site_term_id(materialAnatomicalEntity): A site or entity from which a sample
+      (i.e. a statistically 
     representative of the whole) is extracted from the whole. Search for your sample collection
     site at http://purl.obolibrary.org/obo/UBERON_0000465. For example: in the case of a nasal swab,
     it would be 'nasal cavity'; in a liver biopsy it would be 'liver'.
-    
-    # ---------submission table-------------
-    - contact_id: Reference to the contact who submitted the sample
-    
-    # ---------None EGA Metadata-------------
-    # --------- sampleAttributes-------------
+
+
+    ---------sampleStatus-------------
+    - case_vs_control
+    - condition_under_study_term_id
+    Statuses of the sample. Used to specify the condition(s) under study **if** the diagnosis of 
+    the individual is not enough to describe the status of the sample. In other words, 
+    if the differenciation between affected and unaffected groups is done at the
+    sample level and not at the individual level.
+    This differentiation exists when the study design is of case-control
+    [[EFO:0001427](http://www.ebi.ac.uk/efo/EFO_0001427)]. 
+    For example, if two samples derive from an individual with 'renal cell carcinoma',
+    one deriving from the affected tissue and the other from an unaffected tissue,
+    this node can be used to specify whether the sample belongs to the unaffected group
+    (i.e. control) or the affected one (i.e. case). On the other hand, if two samples derived
+    from different probands each, one person being affected and the other unaffected
+    by the condition under study, this node **is not** required. \nSame could be applied,
+    for instance, for treated or untreated samples, but not for treated or untreated individuals.
+
+    ---------None EGA Metadata-------------
+    --------- sampleAttributes-------------
     EGA Defintion: Custom attributes of a sample: reusable attributes to encode tag-value pairs
     (e.g. Tag being 'age' and its Value '30') with optional units (e.g. 'years'). Its properties are
     inherited from the common-definitions.json schema.
@@ -113,6 +138,11 @@ class Sample(Base):
    - carrying_liquid_volume: Volume of DNA carrying liquid (numeric).
    
    - carrying_liquid_volume_unit: Unit of DNA carrying liquid (µL, mL, L).
+   
+   - in_vitro_in_vivo: in vivo if the sample was directly extracted from a living organism, 
+     otherwise if it came from a lab setup it is in vitro.
+   
+   - ethnicity_term_id: Ethnicity of the subject.
     """
 
     __tablename__ = 'sample'
@@ -123,10 +153,23 @@ class Sample(Base):
       autoincrement=True
     )
 
-    # objectDescription
-    sample_description: Mapped[int] = mapped_column(
-      String(255),
-      nullable=True
+    sample_name: Mapped[str] = mapped_column(
+      String(50),
+      nullable=False
+    )
+
+    submission_id: Mapped[str] = mapped_column(
+      UUID(as_uuid=True),
+      ForeignKey('submission.submission_id', ondelete='CASCADE'),
+      nullable=False
+    )
+
+    # ---------subject table-------------
+    # Unique identifier 128 bits rare to collide
+    subject_id: Mapped[str] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey('subject.subject_id', ondelete='CASCADE'),
+        nullable=True
     )
 
     # ---------ladder table-------------
@@ -140,21 +183,8 @@ class Sample(Base):
     # organismDescriptor.organismTaxon
     organism_taxon_term_id: Mapped[str] = mapped_column(
         String(50),
-        ForeignKey('ontology_term.term_id', ondelete='CASCADE')
-    )
-
-    # organismDescriptor.commonName
-    organism_common_name: Mapped[str | None] = mapped_column(
-        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
-    )
-
-    # ---------individual -------------
-    # Unique identifier 128 bits rare to collide
-    individual_object_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('individual.individual_object_id', ondelete='CASCADE'),
-        nullable=False
     )
 
     # ---------sampleCollection fields-------------
@@ -184,12 +214,18 @@ class Sample(Base):
         )
     )
 
-    # ---------contact details-------------
-    contact_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey('contact_details.contact_id', ondelete='CASCADE'),
-        nullable=False,
-        comment="Reference to the contact who submitted the sample"
+    # ---------sampleStatus-------------
+    case_vs_control: Mapped[str] = mapped_column(
+        sample_status_enum,
+        nullable=True,
+        comment="Whether the sample is a 'case', 'control', or 'not applicable'."
+    )
+
+    condition_under_study_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True,
+        comment="Ontology term ID for the condition under study."
     )
 
     # ---------None EGA Metadata-------------
@@ -262,17 +298,9 @@ class Sample(Base):
         comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )
 
-    gel_image_path: Mapped[str | None] = mapped_column(
-        String(255),
+    ethnictiy: Mapped[str | None] = mapped_column(
         nullable=True,
-        comment="Path to gel electrophoresis image file of the sample."
-    )
-
-    device_id: Mapped[int | None] = mapped_column(
-        Integer,
-        ForeignKey("gel_electrophoresis_devices.device_id"),
-        nullable=True,
-        comment="ID of the gel electrophoresis device used for this sample."
+        comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )
 
     # Relationships
@@ -282,12 +310,14 @@ class Sample(Base):
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     sample_treatments: Mapped[List["SampleTreatment"]] = relationship(back_populates="sample")
     sample_pixels: Mapped[List["SamplePixel"]] = relationship(back_populates="sample")
-    sample_statuses: Mapped[List["SampleStatus"]] = relationship(back_populates="sample")
     sample_cell_types: Mapped[List["SampleCellType"]] = relationship(back_populates="sample")
     sample_types: Mapped[List["SampleType"]] = relationship(back_populates="sample")
-    # One contact can be appear in multiple rows in the sample table
-    # (One parent to Many children)
-    # Parent: contact
-    # Child: sample
-    # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-    contact: Mapped["ContactDetails"] = relationship(back_populates="samples")
+    sample_diseases: Mapped[List["SampleDisease"]] = relationship(back_populates="sample")
+    sample_phenotypic_abnormalities: Mapped[List["SamplePhenotypicAbnormality"]] = relationship(back_populates="sample")
+    
+from database.schema.sample_disease import SampleDisease
+from database.schema.sample_phenotypic_abnormality import SamplePhenotypicAbnormality
+from database.schema.sample_treatment import SampleTreatment
+from database.schema.sample_pixel import SamplePixel
+from database.schema.sample_cell_type import SampleCellType
+from database.schema.sample_type import SampleType

@@ -21,7 +21,7 @@ class Ladder(Base):
 
     ladder_type: Mapped[str] = mapped_column(
         String(50),
-        nullable=False,
+        nullable=True,
         comment=("Kind of molecular weight ladder used in  gel electrophoresis (offer"
                  "common ladder types by companies eg HSD5000, and custom option).")
     )
@@ -29,6 +29,7 @@ class Ladder(Base):
     gel_electrophoresis_device_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("gel_electrophoresis_devices.device_id", ondelete="CASCADE"),
+        nullable=True,
         comment="Reference to the gel electrophoresis device used."
     )
 
@@ -41,3 +42,6 @@ class Ladder(Base):
     ladder_peaks: Mapped[list["LadderPeak"]] = relationship(
         back_populates="ladder"
     )
+
+from database.schema.ladder_pixel import LadderPixel
+from database.schema.ladder_peak import LadderPeak

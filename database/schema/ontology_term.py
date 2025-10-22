@@ -45,19 +45,21 @@ class OntologyTerm(Base):
     # Parent: ontology_term
     # Child: sample_disease
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-    sample_diseases: Mapped[List["SampleDisease"]] = relationship(
+    diseases: Mapped[List["SampleDisease"]] = relationship(
         back_populates="ontology_term"
     )
-    sample_phenotypic_abnormalities: Mapped[
+    phenotypic_abnormalities: Mapped[
         List["SamplePhenotypicAbnormality"]] = relationship(
-        back_populates="sample"
-    )
-    sample_treatments: Mapped[List["SampleTreatment"]] = relationship(
         back_populates="ontology_term"
     )
-    sample_statuses: Mapped[List["SampleStatus"]] = relationship(
+    treatments: Mapped[List["SampleTreatment"]] = relationship(
         back_populates="ontology_term"
     )
-    sample_cell_types: Mapped[List["SampleCellType"]] = relationship(
+    cell_types: Mapped[List["SampleCellType"]] = relationship(
         back_populates="ontology_term"
     )
+
+from database.schema.sample_disease import SampleDisease
+from database.schema.sample_phenotypic_abnormality import SamplePhenotypicAbnormality
+from database.schema.sample_treatment import SampleTreatment
+from database.schema.sample_cell_type import SampleCellType

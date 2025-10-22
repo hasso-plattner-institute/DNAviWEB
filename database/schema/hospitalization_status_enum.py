@@ -7,13 +7,13 @@ from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
 class HospitalizationStatusEnum(str, Enum):
-    AMBULANT = "ambulant"
-    HOSPITALIZED = "hospitalized"
-    EMERGENCY_ROOM = "emergency room"
-    DISCHARGED = "discharged"
-    STANDARD_CARE_UNIT = "standard care unit"
-    INTENSIVE_CARE_UNIT = "intensive care unit"
-    OPERATION_ROOM = "operation room"
+    AMBULANT = "Ambulant"
+    HOSPITALIZED = "Hospitalized"
+    EMERGENCY_ROOM = "Emergency room"
+    DISCHARGED = "Discharged"
+    STANDARD_CARE_UNIT = "Standard care unit"
+    INTENSIVE_CARE_UNIT = "Intensive care unit"
+    OPERATION_ROOM = "Operation room"
 
 hospitalization_status_enum = SQLEnum(
     HospitalizationStatusEnum,

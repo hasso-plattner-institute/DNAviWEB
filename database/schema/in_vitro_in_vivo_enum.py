@@ -6,8 +6,8 @@ from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
 class InVitroInVivoEnum(str, Enum):
-    IN_VITRO = "in_vitro"
-    IN_VIVO = "in_vivo"
+    IN_VITRO = "In vitro"
+    IN_VIVO = "In vivo"
 
 in_vitro_in_vivo_enum = SQLEnum(
     InVitroInVivoEnum,

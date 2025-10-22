@@ -43,4 +43,7 @@ class SampleTreatment(Base):
     # Parent: ontology_term
     # Child: sample_treatment
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-    ontology_term: Mapped["OntologyTerm"] = relationship(back_populates="sample_treatments")
+    ontology_term: Mapped["OntologyTerm"] = relationship(back_populates="treatments")
+
+from database.schema.sample import Sample
+from database.schema.ontology_term import OntologyTerm
