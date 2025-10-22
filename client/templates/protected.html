@@ -539,6 +539,9 @@
                                 </tr>
                               </tbody>
                             </table>
+                            <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
+                              + Add Custom Column
+                            </button>
                           </div>
                           <!--end::metadata AG Grid table-->
                         </div>
@@ -928,6 +931,32 @@
                     });
                     
                   </script>
+
+                  <script>
+                    /**
+                     * Handle adding custom columns button
+                     */
+                    document.getElementById('addColumnBtn').addEventListener('click', function () {
+                      const columnName = prompt("Enter new column name:");
+                      if (!columnName) return;
+                      const table = document.getElementById('metadata-table');
+                      const headerRow = table.querySelector('thead tr');
+                      const newHeader = document.createElement('th');
+                      newHeader.textContent = columnName;
+                      headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+                      const rows = table.querySelectorAll('tbody tr');
+                      rows.forEach(row => {
+                        const newCell = document.createElement('td');
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
+                        input.className = 'form-control form-control-sm';
+                        newCell.appendChild(input);
+                        row.insertBefore(newCell, row.lastElementChild);
+                      });
+                    });
+                  </script>
+
                   <!-- ---------------------------------------------------------------------------------------- -->
                   <!-- SUBMISSION -->
                   <!-- ---------------------------------------------------------------------------------------- -->
