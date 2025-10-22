@@ -132,7 +132,7 @@
                     <tr>
                       <th>Submission ID</th>
                       <th>Date Submitted</th>
-                      <th>Delete</th>
+                      <!-- <th>Delete</th> -->
                     </tr>
                   </thead>
                  <tbody>
@@ -145,6 +145,7 @@
                       <time datetime="{{ sub.submission_date | datetimeformat }}">{{ sub.submission_date | datetimeformat }}</time>
                     </td>
                     <td>
+                      <!--
                       <div class="d-flex flex-column align-items-start">
                         <button class="btn btn-sm btn-danger mb-1 delete-submission" data-id="{{ sub.submission_id }}">
                           <i class="bi bi-trash"></i> Delete
@@ -156,6 +157,7 @@
                           with your Submission ID.
                         </small>
                       </div>
+                      -->
                     </td> 
                   </tr>
                   {% endfor %}
