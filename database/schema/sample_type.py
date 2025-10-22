@@ -60,3 +60,5 @@ class SampleType(Base):
     sample: Mapped["Sample"] = relationship(
         back_populates="sample_types"
     )
+
+from database.schema.sample import Sample

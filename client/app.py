@@ -16,7 +16,8 @@ import logging
 import datetime
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
-from database.schema.sample import Sample
+from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
+from database.schema.ladder import Ladder
 from sqlalchemy.orm import Session
 from database.config import engine
 from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required, login_user
@@ -216,42 +217,18 @@ def save_data_to_db():
     """
     Save dummy metadata into the 'sample' table for testing.
     """
-    logging.info("Saving dummy metadata to 'sample' table to test")
-    try:
-        with Session(engine) as session:
-            dummy_sample = Sample(
-                sample_description="test",
-                ladder_id=1,
-                organism_taxon_term_id="test",
-                organism_common_name="test",
-                individual_object_id=uuid4(),
-                sample_collection_date=datetime.date(2024, 10, 10),
-                age_at_collection="20",
-                sampling_site_term_id="test",
-                contact_id="test",
-                is_deceased=False,
-                is_infection_suspected=False,
-                infection_strain="test",
-                is_pregnant=False,
-                hospitalization_status="test",
-                extraction_kit="test",
-                dna_mass=2,
-                dna_mass_units="test",
-                carrying_liquid_volume=1.2,
-                carrying_liquid_volume_unit="test",
-                in_vitro_in_vivo="test",
-                gel_image_path="test",
-                device_id="test"
-            )
+    logging.info("Saving dummy metadata to test")
+    with Session(engine) as session:
+        # 1. Device
+        device = GelElectrophoresisDevice(device_name="Dummy Device")
+        session.add(device)
+        session.commit()
 
-            session.add(dummy_sample)
-            session.commit()
-
-            logging.info("Dummy metadata successfully saved to DB.")
-
-    except Exception as e:
-        logging.error("Error saving dummy metadata: %s", e)
-    
+        # 2. Ladder
+        ladder = Ladder(ladder_type="Test Ladder", gel_electrophoresis_device_id=device.device_id)
+        session.add(ladder)
+        session.commit()
+        print("Dummy data created successfully.")      
     
 def save_data(output_id, email, save_to_db):
     """
@@ -304,7 +281,7 @@ def save_data(output_id, email, save_to_db):
     ########################s######################################################
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
-    #save_data_to_db()
+    save_data_to_db()
     
 ##############################################################################
 # PROCESS INPUT

@@ -39,7 +39,7 @@ class SampleCellType(Base):
 
     cell_type_inferred: Mapped[str] = mapped_column(
         cell_type_inferred_enum,
-        nullable=False,
+        nullable=True, # TODO add in frontend
         comment=("Whether the cell type is inferred ('inferred') or explicitly"
                  "known ('not inferred').")
     )
@@ -55,5 +55,8 @@ class SampleCellType(Base):
         back_populates="sample_cell_types"
     )
     ontology_term: Mapped["OntologyTerm"] = relationship(
-        back_populates="sample_cell_types"
+        back_populates="cell_types"
     )
+    
+from database.schema.sample import Sample
+from database.schema.ontology_term import OntologyTerm

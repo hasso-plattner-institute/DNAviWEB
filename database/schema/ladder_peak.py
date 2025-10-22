@@ -34,3 +34,5 @@ class LadderPeak(Base):
     ladder: Mapped["Ladder"] = relationship(
         back_populates="ladder_peaks"
     )
+
+from database.schema.ladder import Ladder

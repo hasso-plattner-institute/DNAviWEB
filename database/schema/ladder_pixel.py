@@ -38,3 +38,5 @@ class LadderPixel(Base):
     ladder: Mapped["Ladder"] = relationship(
         back_populates="ladder_pixels"
     )
+
+from database.schema.ladder import Ladder

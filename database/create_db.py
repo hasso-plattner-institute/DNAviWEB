@@ -14,7 +14,6 @@ from database.schema import (
     contact_details,
     gel_electrophoresis_devices,
     hospitalization_status_enum,
-    individual,
     ladder,
     ladder_peak,
     ladder_pixel,
@@ -23,10 +22,11 @@ from database.schema import (
     sample_disease,
     sample_phenotypic_abnormality,
     sample_pixel,
-    sample_status,
     sample_treatment,
     sample_type,
-    sample
+    sample,
+    subject,
+    submission
     )
 
 print("Creating DNAvi database tables.")

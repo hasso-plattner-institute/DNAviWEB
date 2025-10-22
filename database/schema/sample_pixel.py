@@ -40,3 +40,5 @@ class SamplePixel(Base):
     sample: Mapped["Sample"] = relationship(
         back_populates="sample_pixels"
     )
+
+from database.schema.sample import Sample

@@ -317,6 +317,7 @@
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types <i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Types <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity <i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex <i class="bi bi-info-circle text-muted"></i></th>
@@ -363,6 +364,29 @@
                                       </div>
                                       <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>
                                     </div>
+                                  </td>
+                                  <td>
+                                    <select name="case_control[]" class="form-select form-select-sm" multiple size="3">
+                                      <option>DNA</option>
+                                      <option>RNA</option>
+                                      <option>metabolite</option>
+                                      <option>protein</option>
+                                      <option>cDNA</option>
+                                      <option>genomic DNA</option>
+                                      <option>mitochondrial DNA</option>
+                                      <option>messenger RNA</option>
+                                      <option>ncRNA</option>
+                                      <option>non polyA RNA</option>
+                                      <option>long non polyA RNA</option>
+                                      <option>nuclear RNA</option>
+                                      <option>polyA RNA</option>
+                                      <option>long polyA RNA</option>
+                                      <option>snRNA</option>
+                                      <option>total RNA</option>
+                                      <option>cell culture</option>
+                                      <option>biofilm</option>
+                                      <option>tissue culture</option>
+                                    </select>
                                   </td>
                                   <td>
                                     <div class="phenotype-wrapper">
@@ -568,6 +592,10 @@
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Cell Types" id="group_cell_type">
                                 <label class="form-check-label" for="group_cell_type">Cell Types</label>
+                              </div>
+                              <div class="form-check">
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Sample Types" id="group_sample_type">
+                                <label class="form-check-label" for="group_sample_type">Sample Types</label>
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormalities" id="group_phenotype">

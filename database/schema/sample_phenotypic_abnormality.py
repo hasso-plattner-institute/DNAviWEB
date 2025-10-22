@@ -52,5 +52,8 @@ class SamplePhenotypicAbnormality(Base):
     # Child: sample_phenotypic_abnormality
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     ontology_term: Mapped["OntologyTerm"] = relationship(
-        back_populates="sample_phenotypic_abnormalities"
+        back_populates="phenotypic_abnormalities"
     )
+
+from database.schema.sample import Sample
+from database.schema.ontology_term import OntologyTerm
