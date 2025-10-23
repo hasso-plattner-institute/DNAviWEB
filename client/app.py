@@ -177,6 +177,10 @@ def warning():
 def contact():
     return render_template(f'contact.html')
 
+@app.route("/legal_notice")
+def legal_notice():
+    return render_template(f'legal_notice.html')
+
 
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 def submissions_dashboard():
