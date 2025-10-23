@@ -8,23 +8,24 @@ Date: 2025-AUG-29 \n
 
 """
 
-import threading
 import os
 import pandas as pd
-from uuid import uuid4
 import logging
 import datetime
-from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 import requests
+import shutil
+import threading
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
 from database.schema.ladder import Ladder
 from sqlalchemy.orm import Session
 from database.config import engine
+from uuid import uuid4
+from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required, login_user
 from werkzeug.utils import secure_filename
-from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
 from .src import users_saving as users_module
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, EXAMPLE_META
+from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_email, save_users, load_users
 
 ###############################################################################
@@ -232,7 +233,7 @@ def save_data_to_db():
         ladder = Ladder(ladder_type="Test Ladder", gel_electrophoresis_device_id=device.device_id)
         session.add(ladder)
         session.commit()
-        print("Dummy data created successfully.")      
+        print("Dummy data created successfully.")
     
 def save_data(output_id, email, save_to_db):
     """
