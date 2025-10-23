@@ -307,8 +307,10 @@ def protect():
         ######################################################################
         request_dict = request.form.to_dict(flat=False)
         example_case = False
+        print(request.form)
+        print("............................")
 
-        if 'example' in request_dict:
+        if 'Example' in request_dict and request_dict['Example']==["Yes"]:
             data_inpt = EXAMPLE_TABLE
             ladder_inpt = EXAMPLE_LADDER
             meta_inpt = EXAMPLE_META
