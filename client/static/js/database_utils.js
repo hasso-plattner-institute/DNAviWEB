@@ -11,7 +11,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const submitBtn = document.getElementById("submit-analysis-btn");
   const confirmSaveBtn = document.getElementById("confirm-save-btn");
-  const form = document.querySelector("form");
+  const form = document.getElementById("upload-form"); //querySelector("form");
   const loadingOverlay = document.getElementById("loading-overlay");
 
   // When user clicks Submit
