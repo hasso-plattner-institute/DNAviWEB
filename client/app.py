@@ -326,10 +326,19 @@ def protect():
         processing_folder = f"{app.config['UPLOAD_FOLDER']}{email}/{request_id}/"
         os.makedirs(processing_folder, exist_ok=True)
         f = f"{processing_folder}{secure_filename(data_inpt)}"
-        request.files['data_file'].save(f)
-        l = f"{f.rsplit('.',1)[0]}_ladder.csv"
-        request.files['ladder_file'].save(l)
-        if meta_inpt:
+        l = f"{f.rsplit('.', 1)[0]}_ladder.csv"
+
+        # If it's the example, simply compy
+        if example_case:
+            m = f"{f.rsplit('.', 1)[0]}_meta.csv"
+            shutil.copyfile(data_inpt, f)
+            shutil.copyfile(ladder_inpt, l)
+            shutil.copyfile(meta_inpt, m)
+        else: # otherwise save user input
+            request.files['data_file'].save(f)
+            request.files['ladder_file'].save(l)
+
+        if meta_inpt and not example_case:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
             request.files['meta_file'].save(m)
             # List of metadata columns (values) chosen by user to group by
