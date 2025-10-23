@@ -310,7 +310,7 @@ def protect():
         print(request.form)
         print("............................")
 
-        if 'Example' in request_dict and request_dict['Example']==["Yes"]:
+        if 'Example' in request_dict:
             data_inpt = EXAMPLE_TABLE
             ladder_inpt = EXAMPLE_LADDER
             meta_inpt = EXAMPLE_META
