@@ -1,4 +1,15 @@
 <html lang="en">
+<style>
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: #04AA6D;
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -227,828 +238,827 @@
         <!--end::App Content Header-->
         <div class="app-content">
           <main id="content-box" class="order-first">
-            <section class="work-section section" id="section-2">
-                  <div class="container">
-                  <!-- ---------------------------------------------------------------------------------------- -->
-                  <!-- EXAMPLE -->
-                  <!-- ---------------------------------------------------------------------------------------- -->
-                  <form method="POST">
-                  <input type="hidden" name="example" value="run_example">
-                  <button type="submit" class="btn btn-success" id="submit-example">
-                  Quick test: Run DNAvi with our example data</button> <a href="./static/tables/electropherogram.csv" style="color:#b5b9bd;">Table.csv</a> <a href="./static/tables/ladder.csv" style="color:#b5b9bd;">Ladder.csv</a>  <a href="./static/tables/metadata.csv" style="color:#b5b9bd;">Metadata.csv</a>
-                  <p></p><p></p><br>
-                  </form>
-                  </div>
-              <form id="upload-form" method="POST" enctype="multipart/form-data">
-                <div class="container">
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DNA GEL OR CSV -->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <h3> Upload your own data:</h3>
-                  <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
-                    </div>
-                    <div class="card-body">
-                      <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
-                      <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
-                    </div>
-                  </div>
-                  <br></br>
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- LADDER ANNOTATION CSV-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
-                    </div>
-                    <div class="card-body">
-                      <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
-                      <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded" required>
-                    </div>
-                  </div>
-                  <br></br>
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- METADATA -->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!--begin::metadata-->
-                  <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
-                    </div>
-                    <div class="card-body">
-                      <!--begin::metadata two options header-->
-                      <p>You can skip this section if you do not have metadata, DNAvi will still perform the analysis.</p>
-                      
-                      <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
-                      <ul class="mb-3 ps-3">
-                        <li>Fill out the metadata table for all your samples directly on this page.</li>
-                        <li>Or, download our template metadata file, after filling it, upload it here.</li>
-                      </ul>
-                      <!--end::metadata two options header-->
+                <section class="work-section section" id="section-2">
 
-                      <!--begin::Option 1 - Online Table-->
-                      <div class="p-3 mb-3" 
-                            style="background-color: #EAF6FE; border-left: 4px solid #4FA8E5; border-radius: 0.75rem;">
-                        <div class="d-flex align-items-center mb-2">
-                          <i class="bi bi-table text-primary me-2" style="font-size: 1.2rem;"></i>
-                          <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
-                        </div>
-                        <p class="mb-2">
-                          Fill out the table below for all your samples directly on this page.  
-                          <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
-                          <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
-                          <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
-                          <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
-                          <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Hybrid Option</h6>
-                          <p>You can also fill metadata for a few samples here, download the partially completed table, edit it locally, and upload it again when ready.</p>
-                        </p>
-
-                        <!--begin::Metadata AG Grid table container -->
-                        <div class="metadata-table-container mb-4">
-                          <!--begin::Metadata AG Grid table header-->
-                          <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                              <button id="download-csv" type="button" class="btn btn-primary mb-3">
-                                Download CSV
-                              </button>
-                              <button id="submit-metadata-table" type="button" class="btn btn-primary mb-3">
-                                Submit Table
-                              </button>
-                            </div>
-                          </div>
-                          <!--end::Metadata AG Grid table header-->
-
-                          <!--begin::metadata AG Grid table-->
-                          <div class="table-wrapper">
-                            <table id="metadata-table" class="table table-hover align-middle shadow-sm">
-                              <thead class="table-light sticky-top">
-                                <tr>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Unique sample identifier">SAMPLE <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Types <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="This property describes the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="when the sample was taken from the individual.">Sample Collection Date <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Specifies whether the sample is affected (case) or unaffected (control).">Case vs Control <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Describes the specific condition, treatment, or situation being investigated for the sample. The sample may or may not be affected by this condition under study, belonging to the case or control groups respectively.">Condition Under Study <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col">Is Deceased?</th>
-                                  <th class="optional-col">Is Pregnant?</th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Indicates whether sepsis or a bacterial infection is suspected. If Yes, specify the strain involved.">Is Infection Suspected? <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Name of the suspected infection strain.">Infection Strain <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Specifies the hospital setting of the individual at the time of sample collection.">Hospitalization Status <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Extraction kit used.">Extraction Kit (DNA Isolation Method) <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Sample DNA amount.">DNA Mass <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col">DNA Mass Units</th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Volume of DNA carrying liquid (eg. 5mL urine)">Carrying Liquid Volume <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col">Carrying Liquid Volume Unit</th>
-                                  <th class="optional-col">In vitro / In vivo</th>
-                                  <th class="optional-col">Gel Electrophoresis Device </th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight ladder used in gel electrophoresis">Ladder Type <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatments <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity <i class="bi bi-info-circle text-muted"></i></th>
-                                  <th>Actions</th>
-                                </tr>
-                              </thead>
-
-                              <tbody>
-                                <tr class="metadata-row">
-                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" placeholder="Sample_1"></td>
-                                  <td><input type="text" name="subject_id[]" class="form-control form-control-sm" placeholder="Donor-10031"></td>
-                                  <td>
-                                    <div class="disease-wrapper">
-                                      <div class="disease-field mb-2">
-                                        <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" placeholder="Breast cancer">
-                                      </div>
-                                      <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add</button>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div class="celltype-wrapper">
-                                      <div class="celltype-field mb-2">
-                                        <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" placeholder="Red blood cell">
-                                      </div>
-                                      <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <select name="case_control[]" class="form-select form-select-sm" multiple size="3">
-                                      <option>DNA</option>
-                                      <option>RNA</option>
-                                      <option>metabolite</option>
-                                      <option>protein</option>
-                                      <option>cDNA</option>
-                                      <option>genomic DNA</option>
-                                      <option>mitochondrial DNA</option>
-                                      <option>messenger RNA</option>
-                                      <option>ncRNA</option>
-                                      <option>non polyA RNA</option>
-                                      <option>long non polyA RNA</option>
-                                      <option>nuclear RNA</option>
-                                      <option>polyA RNA</option>
-                                      <option>long polyA RNA</option>
-                                      <option>snRNA</option>
-                                      <option>total RNA</option>
-                                      <option>cell culture</option>
-                                      <option>biofilm</option>
-                                      <option>tissue culture</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <div class="phenotype-wrapper">
-                                      <div class="phenotype-field mb-2">
-                                        <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" placeholder="Hearing impairment">
-                                      </div>
-                                      <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add</button>
-                                    </div>
-                                  </td>
-
-                                  <td><input type="text" name="material[]" class="form-control form-control-sm ols-search" placeholder="Liver"></td>
-                                  <td>
-                                    <select name="sex[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>male</option>
-                                      <option>female</option>
-                                      <option>hermaphrodite</option>
-                                      <option>pseudohermaphrodite</option>
-                                      <option>unknown</option>
-                                    </select>
-                                  </td>
-                                  <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Enter years"></td>
-                                  <td><input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="Homo sapiens"></td>
-                                  <td><input type="date" name="collection_date[]" class="form-control form-control-sm"></td>
-                                  <td>
-                                    <select name="case_control[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Case</option>
-                                      <option>Control</option>
-                                      <option>Not applicable</option>
-                                    </select>
-                                  </td>
-                                  <td><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="Insulin"></td>
-                                  <td>
-                                    <select name="is_deceased[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Yes</option>
-                                      <option>No</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <select name="is_pregnant[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Yes</option>
-                                      <option>No</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <select name="is_infection_suspected[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Yes</option>
-                                      <option>No</option>
-                                    </select>
-                                  </td>
-                                  <td><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="E. coli"></td>
-                                  <td>
-                                    <select name="hospitalization_status[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Ambulant</option>
-                                      <option>Hospitalized</option>
-                                      <option>Emergency room</option>
-                                      <option>Discharged</option>
-                                      <option>Standard care unit</option>
-                                      <option>Intensive care unit</option>
-                                      <option>Operation room</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <select name="extraction_kit[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>Phenol-Chloroform</option>
-                                      <option>Qiagen Virus/Pathogen Kit</option>
-                                      <option>QIAamp Circulating Nucleic Acid Kit</option>
-                                      <option>MacheryNagel Nucleospin Plasma XS</option>
-                                      <option>MacheryNagel Gel and PCR Clean-up</option>
-                                      <option>Epigentek FitAmp™ Circulating DNA Quantification Kit</option>
-                                      <option>Analytik Jena, Polymer Mediated Enrichment (PME) free-circulating DNA Kit-ICP16</option>
-                                      <option>Zymo ZR Serum DNA Kit</option>
-                                      <option>Norgen Plasma/Serum Cell-Free Circulating DNA Purification Kit</option>
-                                      <option>Perkin Elmer chemagic Circulating NA</option>
-                                      <option>Roche cobas® DNA Sample Preparation kit</option>
-                                      <option>BioChain cfPure Cell-Free DNA Extraction Kit</option>
-                                      <option>Thermo Fisher Scientific MagMAX Cell-Free DNA Isolation Kit</option>
-                                      <option>Roche MagNA Pure 24 System</option>
-                                      <option>SanBio NEXTprep-Mag cfDNA Isolation Kit</option>
-                                      <option>Westburg PME free-circulating DNA Extraction Kit</option>
-                                      <option>Promega Maxwell RSC ccfDNA Plasma Kit</option>
-                                      <option value="custom">Custom</option>
-                                    </select>
-                                  </td>
-                                  <td ><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Enter mass"></td>
-                                  <td>
-                                    <select name="dna_mass_units[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>pg</option>
-                                      <option>ng</option>
-                                      <option>µg</option>
-                                    </select>
-                                  </td>
-                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume"></td>
-                                  <td>
-                                    <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>µL</option>
-                                      <option>mL</option>
-                                      <option>L</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <select name="in_vitro_in_vivo[]" class="form-select form-select-sm">
-                                      <option value="">Select</option>
-                                      <option>In vitro</option>
-                                      <option>In vivo</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <select name="device[]" class="form-select form-select-sm device-select">
-                                      <option value="">Select</option>
-                                      <option value="2100 Bioanalyzer Instrument, Agilent">2100 Bioanalyzer Instrument, Agilent</option>
-                                      <option value="4150 TapeStation System, Agilent">4150 TapeStation System, Agilent</option>
-                                      <option value="4200 TapeStation System, Agilent">4200 TapeStation System, Agilent</option>
-                                      <option value="5200 Fragment Analyzer System, Agilent">5200 Fragment Analyzer System, Agilent</option>
-                                      <option value="5300 Fragment Analyzer System, Agilent">5300 Fragment Analyzer System, Agilent</option>
-                                      <option value="5400 Fragment Analyzer System, Agilent">5400 Fragment Analyzer System, Agilent</option>
-                                      <option value="Qsep 1 Bio-Fragment Analyzer, Nippon">Qsep 1 Bio-Fragment Analyzer, Nippon</option>
-                                      <option value="Qsep 100 Bio-Fragment Analyzer, Nippon">Qsep 100 Bio-Fragment Analyzer, Nippon</option>
-                                      <option value="Qsep 400 Bio-Fragment Analyzer, Nippon">Qsep 400 Bio-Fragment Analyzer, Nippon</option>
-                                      <option value="custom">Custom</option>
-                                      </select>
-                                  </td>
-                                  <td>
-                                    <select name="ladder_type[]" class="form-select form-select-sm ladder-select">
-                                      <option value="">Select</option>
-                                      <option value="custom">Custom</option>
-                                    </select>
-                                  </td>
-                                  <td>
-                                    <div class="treatment-wrapper">
-                                      <div class="treatment mb-2">
-                                        <input type="text" name="treatment[0][]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
-                                      </div>
-                                      <button type="button" class="btn btn-sm btn-outline-primary add-treatment-btn">+ Add</button>
-                                    </div>
-                                  </td>
-                                  <td><input type="text" name="Ethnicity[]" class="form-control form-control-sm ols-search" placeholder="Ethnicity"></td>
-                                  <td class="actions-cell text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-success add-row">+</button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger remove-row">−</button>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                            <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
-                              + Add Custom Column
-                            </button>
-                          </div>
-                          <!--end::metadata AG Grid table-->
-                        </div>
-                        <!--end::Metadata AG Grid table container -->
-
+                    <form id="example-form" method="POST">
+                    <div class="container">
+                      <!-- ---------------------------------------------------------------------------------------- -->
+                      <!-- EXAMPLE FORM -->
+                      <!-- ---------------------------------------------------------------------------------------- -->
+                      <input type="submit" value="Quick test: Run DNAvi with our example data" name="Example"> <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">Table.csv</a> <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Ladder.csv</a>  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">Metadata.csv</a>
+                      <p></p><p></p><br>
                       </div>
-                      <!--end::Option 1-->
-
-                      <!--begin::Option 2 - Upload File-->
-                      <div class="p-3 mb-3" 
-                            style="background-color: #E7F4FB; border-left: 4px solid #4FA8E5; border-radius: 0.75rem;">
-                        <div class="d-flex align-items-center mb-2">
-                          <i class="bi bi-upload text-info me-2" style="font-size: 1.2rem;"></i>
-                          <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 2: Upload Metadata File</h6>
+                    </form>
+                    <form id="upload-form" method="POST" enctype="multipart/form-data">
+                    <div class="container">
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- DNA GEL OR CSV -->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <h3> Upload your own data:</h3>
+                      <div class="card mb-4 shadow-sm">
+                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                          <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
                         </div>
-                        <p class="mb-2">  
-                          If you prefer, download our template file, fill it out, and upload it here.
-                        </p>
-                        <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
-                        <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
-                      </div>
-                      <!--end::Option 2-->
-
-                      <!--begin::Choose Metadata to use for grouping analyses -->
-                      <div class="mt-5 p-4 border rounded bg-white w-100">
-                        <h4 class="mb-3">Group Analysis by Metadata</h4>
-                        <p class="text-muted">
-                          Select one or more metadata fields to group your results by.
-                          <br>
-                          <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
-                          <br>
-                          For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
-                          one grouped by Disease and another grouped by Biological Sex.
-                          <br>
-                          <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
-                        </p>
-
-                        <div class="mt-3 mb-3">
-                          <h6>Select metadata columns to group by:</h6>
-                          <div class="row row-cols-1 row-cols-md-3 g-2 mt-2">
-                            <!-- Column 1 -->
-                            <div class="col">
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Subject ID" id="group_subject_id">
-                                <label class="form-check-label" for="group_subject_id">Subject ID</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Diseases" id="group_disease">
-                                <label class="form-check-label" for="group_disease">Diseases</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Cell Types" id="group_cell_type">
-                                <label class="form-check-label" for="group_cell_type">Cell Types</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Sample Types" id="group_sample_type">
-                                <label class="form-check-label" for="group_sample_type">Sample Types</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormalities" id="group_phenotype">
-                                <label class="form-check-label" for="group_phenotype">Phenotypic Abnormalities</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">
-                                <label class="form-check-label" for="group_material">Material Anatomical Entity</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Biological Sex" id="group_sex">
-                                <label class="form-check-label" for="group_sex">Biological Sex</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Age" id="group_age">
-                                <label class="form-check-label" for="group_age">Age</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Organism" id="group_organism">
-                                <label class="form-check-label" for="group_organism">Organism</label>
-                              </div>
-                            </div>
-
-                            <!-- Column 2 -->
-                            <div class="col">
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Case vs Control" id="group_casecontrol">
-                                <label class="form-check-label" for="group_casecontrol">Case vs Control</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Condition Under Study" id="group_condition">
-                                <label class="form-check-label" for="group_condition">Condition Under Study</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Deceased?" id="group_deceased">
-                                <label class="form-check-label" for="group_deceased">Is Deceased?</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Pregnant?" id="group_pregnant">
-                                <label class="form-check-label" for="group_pregnant">Is Pregnant?</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Infection Suspected?" id="group_infection">
-                                <label class="form-check-label" for="group_infection">Is Infection Suspected?</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Infection Strain" id="group_infection_strain">
-                                <label class="form-check-label" for="group_infection_strain">Infection Strain</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Hospitalization Status" id="group_hosp">
-                                <label class="form-check-label" for="group_hosp">Hospitalization Status</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Extraction Kit (DNA Isolation Method)" id="group_extraction_kit">
-                                <label class="form-check-label" for="group_extraction_kit">Extraction Kit</label>
-                              </div>
-                            </div>
-
-                            <!-- Column 3 -->
-                            <div class="col">
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="DNA Mass" id="group_dna_mass">
-                                <label class="form-check-label" for="group_dna_mass">DNA Mass</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="DNA Mass Units" id="group_dna_mass_units">
-                                <label class="form-check-label" for="group_dna_mass_units">DNA Mass Units</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Carrying Liquid Volume" id="group_carrying_liquid_volume">
-                                <label class="form-check-label" for="group_carrying_liquid_volume">Carrying Liquid Volume</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Carrying Liquid Volume Unit" id="group_carrying_liquid_volume_unit">
-                                <label class="form-check-label" for="group_carrying_liquid_volume_unit">Carrying Liquid Volume Unit</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="In vitro / In vivo" id="group_in_vitro_in_vivo">
-                                <label class="form-check-label" for="group_in_vitro_in_vivo">In vitro / In vivo</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Gel Electrophoresis Device" id="group_device">
-                                <label class="form-check-label" for="group_device">Gel Electrophoresis Device</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ladder Type" id="group_ladder">
-                                <label class="form-check-label" for="group_ladder">Ladder Type</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Treatment" id="group_treatment">
-                                <label class="form-check-label" for="group_treatment">Treatments</label>
-                              </div>
-                              <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ethnicity" id="group_ethnicity">
-                                <label class="form-check-label" for="group_ethnicity">Ethnicity</label>
-                              </div>
-                            </div>
-                          </div>
+                        <div class="card-body">
+                          <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
+                          <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                         </div>
                       </div>
-                      <!--end::Choose Metadata to use for grouping analyses -->
-                    </div>
-                  </div>
-                  <!--end::metadata -->
-                  <style>
-                  .metadata-table-container {
-                    background: #fafafa;
-                    border-radius: 12px;
-                    padding: 1rem;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                  }
-                  .table-wrapper {
-                    overflow-x: auto;
-                    border-radius: 10px;
-                  }
-                  #metadata-table {
-                    border-collapse: separate;
-                    border-spacing: 0;
-                    width: 100%;
-                    font-size: 0.9rem;
-                  }
-                  #metadata-table thead th {
-                    position: sticky;
-                    top: 0;
-                    background: #f8f9fa;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                    z-index: 2;
-                  }
-                  #metadata-table th, #metadata-table td {
-                    min-width: 120px;
-                    white-space: nowrap;
-                    vertical-align: middle;
-                  }
-                  #metadata-table tbody tr:hover {
-                    background-color: #f6faff;
-                  }
-                  .optional-col {
-                    transition: all 0.3s ease;
-                  }
-                  .hidden-col {
-                    display: none;
-                  }
-                  #metadata-table th {
-                    position: relative;
-                    user-select: none;
-                  }
-                  #metadata-table th .resizer {
-                    position: absolute;
-                    right: 0;
-                    top: 0;
-                    width: 6px;
-                    cursor: col-resize;
-                    user-select: none;
-                    height: 100%;
-                    z-index: 3;
-                  }
-                  #metadata-table th .resizer:hover {
-                    background-color: rgba(0, 123, 255, 0.2);
-                  }
-                  </style>
+                      <br></br>
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- LADDER ANNOTATION CSV-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <div class="card mb-4 shadow-sm">
+                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                          <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
+                        </div>
+                        <div class="card-body">
+                          <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
+                          <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded" required>
+                        </div>
+                      </div>
+                      <br></br>
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- METADATA -->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!--begin::metadata-->
+                      <div class="card mb-4 shadow-sm">
+                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                          <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
+                        </div>
+                        <div class="card-body">
+                          <!--begin::metadata two options header-->
+                          <p>You can skip this section if you do not have metadata, DNAvi will still perform the analysis.</p>
 
-                  <script>
-                  // Enable column resizing
-                  document.querySelectorAll("#metadata-table th").forEach(th => {
-                    th.classList.add('resizable');
-                    let startX, startWidth;
-                    const resizer = document.createElement('div');
-                    resizer.classList.add('resizer');
-                    th.appendChild(resizer);
+                          <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
+                          <ul class="mb-3 ps-3">
+                            <li>Fill out the metadata table for all your samples directly on this page.</li>
+                            <li>Or, download our template metadata file, after filling it, upload it here.</li>
+                          </ul>
+                          <!--end::metadata two options header-->
 
-                    resizer.addEventListener('mousedown', e => {
-                      startX = e.pageX;
-                      startWidth = th.offsetWidth;
-                      document.addEventListener('mousemove', resize);
-                      document.addEventListener('mouseup', stopResize);
-                    });
+                          <!--begin::Option 1 - Online Table-->
+                          <div class="p-3 mb-3"
+                                style="background-color: #EAF6FE; border-left: 4px solid #4FA8E5; border-radius: 0.75rem;">
+                            <div class="d-flex align-items-center mb-2">
+                              <i class="bi bi-table text-primary me-2" style="font-size: 1.2rem;"></i>
+                              <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
+                            </div>
+                            <p class="mb-2">
+                              Fill out the table below for all your samples directly on this page.
+                              <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
+                              <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
+                              <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
+                              <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
+                              <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Hybrid Option</h6>
+                              <p>You can also fill metadata for a few samples here, download the partially completed table, edit it locally, and upload it again when ready.</p>
+                            </p>
 
-                    function resize(e) {
-                      th.style.width = (startWidth + (e.pageX - startX)) + 'px';
-                    }
-                    function stopResize() {
-                      document.removeEventListener('mousemove', resize);
-                    }
-                  });
+                            <!--begin::Metadata AG Grid table container -->
+                            <div class="metadata-table-container mb-4">
+                              <!--begin::Metadata AG Grid table header-->
+                              <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                  <button id="download-csv" type="button" class="btn btn-primary mb-3">
+                                    Download CSV
+                                  </button>
+                                  <button id="submit-metadata-table" type="button" class="btn btn-primary mb-3">
+                                    Submit Table
+                                  </button>
+                                </div>
+                              </div>
+                              <!--end::Metadata AG Grid table header-->
 
-                  xs
-                  document.addEventListener("DOMContentLoaded", () => {
-                    const table = document.getElementById("metadata-table");
-                    if (table) makeTableResizable(table);
-                  });
-                  </script>
+                              <!--begin::metadata AG Grid table-->
+                              <div class="table-wrapper">
+                                <table id="metadata-table" class="table table-hover align-middle shadow-sm">
+                                  <thead class="table-light sticky-top">
+                                    <tr>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Unique sample identifier">SAMPLE <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Types <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="This property describes the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="when the sample was taken from the individual.">Sample Collection Date <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Specifies whether the sample is affected (case) or unaffected (control).">Case vs Control <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Describes the specific condition, treatment, or situation being investigated for the sample. The sample may or may not be affected by this condition under study, belonging to the case or control groups respectively.">Condition Under Study <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col">Is Deceased?</th>
+                                      <th class="optional-col">Is Pregnant?</th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Indicates whether sepsis or a bacterial infection is suspected. If Yes, specify the strain involved.">Is Infection Suspected? <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Name of the suspected infection strain.">Infection Strain <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Specifies the hospital setting of the individual at the time of sample collection.">Hospitalization Status <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Extraction kit used.">Extraction Kit (DNA Isolation Method) <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Sample DNA amount.">DNA Mass <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col">DNA Mass Units</th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Volume of DNA carrying liquid (eg. 5mL urine)">Carrying Liquid Volume <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col">Carrying Liquid Volume Unit</th>
+                                      <th class="optional-col">In vitro / In vivo</th>
+                                      <th class="optional-col">Gel Electrophoresis Device </th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight ladder used in gel electrophoresis">Ladder Type <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatments <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
 
+                                  <tbody>
+                                    <tr class="metadata-row">
+                                      <td><input type="text" name="sample_id[]" class="form-control form-control-sm" placeholder="Sample_1"></td>
+                                      <td><input type="text" name="subject_id[]" class="form-control form-control-sm" placeholder="Donor-10031"></td>
+                                      <td>
+                                        <div class="disease-wrapper">
+                                          <div class="disease-field mb-2">
+                                            <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" placeholder="Breast cancer">
+                                          </div>
+                                          <button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add</button>
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <div class="celltype-wrapper">
+                                          <div class="celltype-field mb-2">
+                                            <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" placeholder="Red blood cell">
+                                          </div>
+                                          <button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <select name="case_control[]" class="form-select form-select-sm" multiple size="3">
+                                          <option>DNA</option>
+                                          <option>RNA</option>
+                                          <option>metabolite</option>
+                                          <option>protein</option>
+                                          <option>cDNA</option>
+                                          <option>genomic DNA</option>
+                                          <option>mitochondrial DNA</option>
+                                          <option>messenger RNA</option>
+                                          <option>ncRNA</option>
+                                          <option>non polyA RNA</option>
+                                          <option>long non polyA RNA</option>
+                                          <option>nuclear RNA</option>
+                                          <option>polyA RNA</option>
+                                          <option>long polyA RNA</option>
+                                          <option>snRNA</option>
+                                          <option>total RNA</option>
+                                          <option>cell culture</option>
+                                          <option>biofilm</option>
+                                          <option>tissue culture</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <div class="phenotype-wrapper">
+                                          <div class="phenotype-field mb-2">
+                                            <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" placeholder="Hearing impairment">
+                                          </div>
+                                          <button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add</button>
+                                        </div>
+                                      </td>
 
-                  <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                      const table = document.getElementById('metadata-table');
-                      const tbody = table.querySelector('tbody');
+                                      <td><input type="text" name="material[]" class="form-control form-control-sm ols-search" placeholder="Liver"></td>
+                                      <td>
+                                        <select name="sex[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>male</option>
+                                          <option>female</option>
+                                          <option>hermaphrodite</option>
+                                          <option>pseudohermaphrodite</option>
+                                          <option>unknown</option>
+                                        </select>
+                                      </td>
+                                      <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Enter years"></td>
+                                      <td><input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="Homo sapiens"></td>
+                                      <td><input type="date" name="collection_date[]" class="form-control form-control-sm"></td>
+                                      <td>
+                                        <select name="case_control[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Case</option>
+                                          <option>Control</option>
+                                          <option>Not applicable</option>
+                                        </select>
+                                      </td>
+                                      <td><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="Insulin"></td>
+                                      <td>
+                                        <select name="is_deceased[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Yes</option>
+                                          <option>No</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="is_pregnant[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Yes</option>
+                                          <option>No</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="is_infection_suspected[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Yes</option>
+                                          <option>No</option>
+                                        </select>
+                                      </td>
+                                      <td><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="E. coli"></td>
+                                      <td>
+                                        <select name="hospitalization_status[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Ambulant</option>
+                                          <option>Hospitalized</option>
+                                          <option>Emergency room</option>
+                                          <option>Discharged</option>
+                                          <option>Standard care unit</option>
+                                          <option>Intensive care unit</option>
+                                          <option>Operation room</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="extraction_kit[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>Phenol-Chloroform</option>
+                                          <option>Qiagen Virus/Pathogen Kit</option>
+                                          <option>QIAamp Circulating Nucleic Acid Kit</option>
+                                          <option>MacheryNagel Nucleospin Plasma XS</option>
+                                          <option>MacheryNagel Gel and PCR Clean-up</option>
+                                          <option>Epigentek FitAmp™ Circulating DNA Quantification Kit</option>
+                                          <option>Analytik Jena, Polymer Mediated Enrichment (PME) free-circulating DNA Kit-ICP16</option>
+                                          <option>Zymo ZR Serum DNA Kit</option>
+                                          <option>Norgen Plasma/Serum Cell-Free Circulating DNA Purification Kit</option>
+                                          <option>Perkin Elmer chemagic Circulating NA</option>
+                                          <option>Roche cobas® DNA Sample Preparation kit</option>
+                                          <option>BioChain cfPure Cell-Free DNA Extraction Kit</option>
+                                          <option>Thermo Fisher Scientific MagMAX Cell-Free DNA Isolation Kit</option>
+                                          <option>Roche MagNA Pure 24 System</option>
+                                          <option>SanBio NEXTprep-Mag cfDNA Isolation Kit</option>
+                                          <option>Westburg PME free-circulating DNA Extraction Kit</option>
+                                          <option>Promega Maxwell RSC ccfDNA Plasma Kit</option>
+                                          <option value="custom">Custom</option>
+                                        </select>
+                                      </td>
+                                      <td ><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Enter mass"></td>
+                                      <td>
+                                        <select name="dna_mass_units[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>pg</option>
+                                          <option>ng</option>
+                                          <option>µg</option>
+                                        </select>
+                                      </td>
+                                      <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume"></td>
+                                      <td>
+                                        <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>µL</option>
+                                          <option>mL</option>
+                                          <option>L</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="in_vitro_in_vivo[]" class="form-select form-select-sm">
+                                          <option value="">Select</option>
+                                          <option>In vitro</option>
+                                          <option>In vivo</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="device[]" class="form-select form-select-sm device-select">
+                                          <option value="">Select</option>
+                                          <option value="2100 Bioanalyzer Instrument, Agilent">2100 Bioanalyzer Instrument, Agilent</option>
+                                          <option value="4150 TapeStation System, Agilent">4150 TapeStation System, Agilent</option>
+                                          <option value="4200 TapeStation System, Agilent">4200 TapeStation System, Agilent</option>
+                                          <option value="5200 Fragment Analyzer System, Agilent">5200 Fragment Analyzer System, Agilent</option>
+                                          <option value="5300 Fragment Analyzer System, Agilent">5300 Fragment Analyzer System, Agilent</option>
+                                          <option value="5400 Fragment Analyzer System, Agilent">5400 Fragment Analyzer System, Agilent</option>
+                                          <option value="Qsep 1 Bio-Fragment Analyzer, Nippon">Qsep 1 Bio-Fragment Analyzer, Nippon</option>
+                                          <option value="Qsep 100 Bio-Fragment Analyzer, Nippon">Qsep 100 Bio-Fragment Analyzer, Nippon</option>
+                                          <option value="Qsep 400 Bio-Fragment Analyzer, Nippon">Qsep 400 Bio-Fragment Analyzer, Nippon</option>
+                                          <option value="custom">Custom</option>
+                                          </select>
+                                      </td>
+                                      <td>
+                                        <select name="ladder_type[]" class="form-select form-select-sm ladder-select">
+                                          <option value="">Select</option>
+                                          <option value="custom">Custom</option>
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <div class="treatment-wrapper">
+                                          <div class="treatment mb-2">
+                                            <input type="text" name="treatment[0][]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
+                                          </div>
+                                          <button type="button" class="btn btn-sm btn-outline-primary add-treatment-btn">+ Add</button>
+                                        </div>
+                                      </td>
+                                      <td><input type="text" name="Ethnicity[]" class="form-control form-control-sm ols-search" placeholder="Ethnicity"></td>
+                                      <td class="actions-cell text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-success add-row">+</button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-row">−</button>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                                <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
+                                  + Add Custom Column
+                                </button>
+                              </div>
+                              <!--end::metadata AG Grid table-->
+                            </div>
+                            <!--end::Metadata AG Grid table container -->
 
-                      function tryInitOls(root) {
-                        if (typeof window.initOlsAutocomplete === 'function') {
-                          try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
-                        }
+                          </div>
+                          <!--end::Option 1-->
+
+                          <!--begin::Option 2 - Upload File-->
+                          <div class="p-3 mb-3"
+                                style="background-color: #E7F4FB; border-left: 4px solid #4FA8E5; border-radius: 0.75rem;">
+                            <div class="d-flex align-items-center mb-2">
+                              <i class="bi bi-upload text-info me-2" style="font-size: 1.2rem;"></i>
+                              <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 2: Upload Metadata File</h6>
+                            </div>
+                            <p class="mb-2">
+                              If you prefer, download our template file, fill it out, and upload it here.
+                            </p>
+                            <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
+                            <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
+                          </div>
+                          <!--end::Option 2-->
+
+                          <!--begin::Choose Metadata to use for grouping analyses -->
+                          <div class="mt-5 p-4 border rounded bg-white w-100">
+                            <h4 class="mb-3">Group Analysis by Metadata</h4>
+                            <p class="text-muted">
+                              Select one or more metadata fields to group your results by.
+                              <br>
+                              <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
+                              <br>
+                              For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
+                              one grouped by Disease and another grouped by Biological Sex.
+                              <br>
+                              <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
+                            </p>
+
+                            <div class="mt-3 mb-3">
+                              <h6>Select metadata columns to group by:</h6>
+                              <div class="row row-cols-1 row-cols-md-3 g-2 mt-2">
+                                <!-- Column 1 -->
+                                <div class="col">
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Subject ID" id="group_subject_id">
+                                    <label class="form-check-label" for="group_subject_id">Subject ID</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Diseases" id="group_disease">
+                                    <label class="form-check-label" for="group_disease">Diseases</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Cell Types" id="group_cell_type">
+                                    <label class="form-check-label" for="group_cell_type">Cell Types</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Sample Types" id="group_sample_type">
+                                    <label class="form-check-label" for="group_sample_type">Sample Types</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormalities" id="group_phenotype">
+                                    <label class="form-check-label" for="group_phenotype">Phenotypic Abnormalities</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">
+                                    <label class="form-check-label" for="group_material">Material Anatomical Entity</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Biological Sex" id="group_sex">
+                                    <label class="form-check-label" for="group_sex">Biological Sex</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Age" id="group_age">
+                                    <label class="form-check-label" for="group_age">Age</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Organism" id="group_organism">
+                                    <label class="form-check-label" for="group_organism">Organism</label>
+                                  </div>
+                                </div>
+
+                                <!-- Column 2 -->
+                                <div class="col">
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Case vs Control" id="group_casecontrol">
+                                    <label class="form-check-label" for="group_casecontrol">Case vs Control</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Condition Under Study" id="group_condition">
+                                    <label class="form-check-label" for="group_condition">Condition Under Study</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Deceased?" id="group_deceased">
+                                    <label class="form-check-label" for="group_deceased">Is Deceased?</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Pregnant?" id="group_pregnant">
+                                    <label class="form-check-label" for="group_pregnant">Is Pregnant?</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Is Infection Suspected?" id="group_infection">
+                                    <label class="form-check-label" for="group_infection">Is Infection Suspected?</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Infection Strain" id="group_infection_strain">
+                                    <label class="form-check-label" for="group_infection_strain">Infection Strain</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Hospitalization Status" id="group_hosp">
+                                    <label class="form-check-label" for="group_hosp">Hospitalization Status</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Extraction Kit (DNA Isolation Method)" id="group_extraction_kit">
+                                    <label class="form-check-label" for="group_extraction_kit">Extraction Kit</label>
+                                  </div>
+                                </div>
+
+                                <!-- Column 3 -->
+                                <div class="col">
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="DNA Mass" id="group_dna_mass">
+                                    <label class="form-check-label" for="group_dna_mass">DNA Mass</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="DNA Mass Units" id="group_dna_mass_units">
+                                    <label class="form-check-label" for="group_dna_mass_units">DNA Mass Units</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Carrying Liquid Volume" id="group_carrying_liquid_volume">
+                                    <label class="form-check-label" for="group_carrying_liquid_volume">Carrying Liquid Volume</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Carrying Liquid Volume Unit" id="group_carrying_liquid_volume_unit">
+                                    <label class="form-check-label" for="group_carrying_liquid_volume_unit">Carrying Liquid Volume Unit</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="In vitro / In vivo" id="group_in_vitro_in_vivo">
+                                    <label class="form-check-label" for="group_in_vitro_in_vivo">In vitro / In vivo</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Gel Electrophoresis Device" id="group_device">
+                                    <label class="form-check-label" for="group_device">Gel Electrophoresis Device</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ladder Type" id="group_ladder">
+                                    <label class="form-check-label" for="group_ladder">Ladder Type</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Treatment" id="group_treatment">
+                                    <label class="form-check-label" for="group_treatment">Treatments</label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ethnicity" id="group_ethnicity">
+                                    <label class="form-check-label" for="group_ethnicity">Ethnicity</label>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!--end::Choose Metadata to use for grouping analyses -->
+                        </div>
+                      </div>
+                      <!--end::metadata -->
+                      <style>
+                      .metadata-table-container {
+                        background: #fafafa;
+                        border-radius: 12px;
+                        padding: 1rem;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
                       }
+                      .table-wrapper {
+                        overflow-x: auto;
+                        border-radius: 10px;
+                      }
+                      #metadata-table {
+                        border-collapse: separate;
+                        border-spacing: 0;
+                        width: 100%;
+                        font-size: 0.9rem;
+                      }
+                      #metadata-table thead th {
+                        position: sticky;
+                        top: 0;
+                        background: #f8f9fa;
+                        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                        z-index: 2;
+                      }
+                      #metadata-table th, #metadata-table td {
+                        min-width: 120px;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                      }
+                      #metadata-table tbody tr:hover {
+                        background-color: #f6faff;
+                      }
+                      .optional-col {
+                        transition: all 0.3s ease;
+                      }
+                      .hidden-col {
+                        display: none;
+                      }
+                      #metadata-table th {
+                        position: relative;
+                        user-select: none;
+                      }
+                      #metadata-table th .resizer {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        width: 6px;
+                        cursor: col-resize;
+                        user-select: none;
+                        height: 100%;
+                        z-index: 3;
+                      }
+                      #metadata-table th .resizer:hover {
+                        background-color: rgba(0, 123, 255, 0.2);
+                      }
+                      </style>
 
-                      // Click handler (add/remove)
-                      table.addEventListener('click', function (e) {
-                        const addBtn = e.target.closest('.add-row');
-                        const removeBtn = e.target.closest('.remove-row');
-                        if (addBtn) {
-                          const currentRow = addBtn.closest('tr');
-                          const newRow = currentRow.cloneNode(true);
-                          const srcFields = currentRow.querySelectorAll('input, select, textarea');
-                          const dstFields = newRow.querySelectorAll('input, select, textarea');
-                          srcFields.forEach((src, i) => {
-                            const dst = dstFields[i];
-                            if (!dst) return;
-                            if (dst.tagName.toLowerCase() === 'select') {
-                              dst.selectedIndex = src.selectedIndex;
-                            } else {
-                              dst.value = src.value;
-                            } 
-                          });
-                          newRow.querySelectorAll('.ladder-type-custom').forEach(el => el.style.display = 'none');
-                          const ladderSel = newRow.querySelector('.ladder-type-select');
-                          if (ladderSel && ladderSel.value === 'custom') {
-                            const custom = newRow.querySelector('.ladder-type-custom');
-                            if (custom) custom.style.display = 'block';
-                          }
+                      <script>
+                      // Enable column resizing
+                      document.querySelectorAll("#metadata-table th").forEach(th => {
+                        th.classList.add('resizable');
+                        let startX, startWidth;
+                        const resizer = document.createElement('div');
+                        resizer.classList.add('resizer');
+                        th.appendChild(resizer);
 
-                          const actionsCell = newRow.querySelector('.actions-cell');
-                          if (actionsCell) {
-                            actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
-                                                    '<button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>';
-                          }
+                        resizer.addEventListener('mousedown', e => {
+                          startX = e.pageX;
+                          startWidth = th.offsetWidth;
+                          document.addEventListener('mousemove', resize);
+                          document.addEventListener('mouseup', stopResize);
+                        });
 
-                          currentRow.after(newRow);
-                          // reinitialize OLS autocomplete for all new .ols-search inputs in the new row
-                          const newOlsInputs = newRow.querySelectorAll(".ols-search");
-                          newOlsInputs.forEach(input => {
+                        function resize(e) {
+                          th.style.width = (startWidth + (e.pageX - startX)) + 'px';
+                        }
+                        function stopResize() {
+                          document.removeEventListener('mousemove', resize);
+                        }
+                      });
+
+                      xs
+                      document.addEventListener("DOMContentLoaded", () => {
+                        const table = document.getElementById("metadata-table");
+                        if (table) makeTableResizable(table);
+                      });
+                      </script>
+
+
+                      <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                          const table = document.getElementById('metadata-table');
+                          const tbody = table.querySelector('tbody');
+
+                          function tryInitOls(root) {
                             if (typeof window.initOlsAutocomplete === 'function') {
-                              window.initOlsAutocomplete(input);
-                            } else if (typeof initializeAutocomplete === 'function') {
-                              initializeAutocomplete(input);
+                              try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
+                            }
+                          }
+
+                          // Click handler (add/remove)
+                          table.addEventListener('click', function (e) {
+                            const addBtn = e.target.closest('.add-row');
+                            const removeBtn = e.target.closest('.remove-row');
+                            if (addBtn) {
+                              const currentRow = addBtn.closest('tr');
+                              const newRow = currentRow.cloneNode(true);
+                              const srcFields = currentRow.querySelectorAll('input, select, textarea');
+                              const dstFields = newRow.querySelectorAll('input, select, textarea');
+                              srcFields.forEach((src, i) => {
+                                const dst = dstFields[i];
+                                if (!dst) return;
+                                if (dst.tagName.toLowerCase() === 'select') {
+                                  dst.selectedIndex = src.selectedIndex;
+                                } else {
+                                  dst.value = src.value;
+                                }
+                              });
+                              newRow.querySelectorAll('.ladder-type-custom').forEach(el => el.style.display = 'none');
+                              const ladderSel = newRow.querySelector('.ladder-type-select');
+                              if (ladderSel && ladderSel.value === 'custom') {
+                                const custom = newRow.querySelector('.ladder-type-custom');
+                                if (custom) custom.style.display = 'block';
+                              }
+
+                              const actionsCell = newRow.querySelector('.actions-cell');
+                              if (actionsCell) {
+                                actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
+                                                        '<button type="button" class="btn btn-sm btn-outline-danger remove-row">-</button>';
+                              }
+
+                              currentRow.after(newRow);
+                              // reinitialize OLS autocomplete for all new .ols-search inputs in the new row
+                              const newOlsInputs = newRow.querySelectorAll(".ols-search");
+                              newOlsInputs.forEach(input => {
+                                if (typeof window.initOlsAutocomplete === 'function') {
+                                  window.initOlsAutocomplete(input);
+                                } else if (typeof initializeAutocomplete === 'function') {
+                                  initializeAutocomplete(input);
+                                }
+                              });
+                              return;
+                            }
+                            if (removeBtn) {
+                              const row = removeBtn.closest('tr');
+                              if (!row) return;
+                              if (tbody.querySelectorAll('tr').length > 1) {
+                                row.remove();
+                              } else {
+                                row.querySelectorAll('input, select, textarea').forEach(el => {
+                                  if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
+                                  else el.value = '';
+                                });
+                              }
+                              return;
                             }
                           });
-                          return;
-                        }
-                        if (removeBtn) {
-                          const row = removeBtn.closest('tr');
-                          if (!row) return;
-                          if (tbody.querySelectorAll('tr').length > 1) {
-                            row.remove();
-                          } else {
-                            row.querySelectorAll('input, select, textarea').forEach(el => {
-                              if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
-                              else el.value = '';
-                            });
-                          }
-                          return;
-                        }
-                      });
 
-                      table.addEventListener('change', function (e) {
-                        const sel = e.target.closest('.ladder-type-select');
-                        if (!sel) return;
-                        const custom = sel.closest('td').querySelector('.ladder-type-custom');
-                        if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
-                      });
-
-                      /**
-                       * Convert metadata online table to csv
-                       */
-                      function tableToCSV(table) {
-                          const tbody = table.querySelector('tbody');
-                          const rows = Array.from(tbody.querySelectorAll('tr'));
-                          if (rows.length === 0) return null;
-                          const headers = Array.from(table.querySelectorAll('thead th'))
-                                              .map(th => th.textContent.trim().replace(/,/g, ' '));
-                          const csv = [headers.join(',')];
-                          rows.forEach(row => {
-                              const fields = Array.from(row.querySelectorAll('input, select, textarea'));
-                              const values = fields.map(f => {
-                                  let v = f.value || '';
-                                  if (typeof v === 'string' && v.includes(',')) v = `"${v}"`; // escape commas
-                                  return v;
-                              });
-                              csv.push(values.join(','));
+                          table.addEventListener('change', function (e) {
+                            const sel = e.target.closest('.ladder-type-select');
+                            if (!sel) return;
+                            const custom = sel.closest('td').querySelector('.ladder-type-custom');
+                            if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
                           });
 
-                          return csv.join('\n');
-                      }
-                      /**
-                       * If users clicks Submit metadata table, convert it to csv and add file to form data
-                       */
-                      document.getElementById('submit-metadata-table').addEventListener('click', function (e) {
-                        e.preventDefault();
-                        const table = document.getElementById('metadata-table');
-                        const csv = tableToCSV(table);
-                        if (!csv) { alert('No rows to submit'); return; }
-                        const blob = new Blob([csv], { type: 'text/csv' });
-                        const form = document.getElementById('upload-form');
-                        const fileInput = form.querySelector('input[name="meta_file"]');
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(new File([blob], 'meta_file.csv'));
-                        fileInput.files = dataTransfer.files;
-                        alert('Metadata table prepared. You can now click the main submit button to start the analysis.');
-                       });
+                          /**
+                           * Convert metadata online table to csv
+                           */
+                          function tableToCSV(table) {
+                              const tbody = table.querySelector('tbody');
+                              const rows = Array.from(tbody.querySelectorAll('tr'));
+                              if (rows.length === 0) return null;
+                              const headers = Array.from(table.querySelectorAll('thead th'))
+                                                  .map(th => th.textContent.trim().replace(/,/g, ' '));
+                              const csv = [headers.join(',')];
+                              rows.forEach(row => {
+                                  const fields = Array.from(row.querySelectorAll('input, select, textarea'));
+                                  const values = fields.map(f => {
+                                      let v = f.value || '';
+                                      if (typeof v === 'string' && v.includes(',')) v = `"${v}"`; // escape commas
+                                      return v;
+                                  });
+                                  csv.push(values.join(','));
+                              });
 
-                      /**
-                       * Download metdata table as csv button 
-                       */
-                      document.getElementById('download-csv').addEventListener('click', function () {
-                        const table = document.getElementById('metadata-table');
-                        const csv = tableToCSV(table);
-                        if (!csv) { 
-                          alert('No rows to export'); 
-                          return; 
-                        }
-                        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'meta_file.csv';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                      });
-                    });
-                    
-                  </script>
+                              return csv.join('\n');
+                          }
+                          /**
+                           * If users clicks Submit metadata table, convert it to csv and add file to form data
+                           */
+                          document.getElementById('submit-metadata-table').addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const table = document.getElementById('metadata-table');
+                            const csv = tableToCSV(table);
+                            if (!csv) { alert('No rows to submit'); return; }
+                            const blob = new Blob([csv], { type: 'text/csv' });
+                            const form = document.getElementById('upload-form');
+                            const fileInput = form.querySelector('input[name="meta_file"]');
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(new File([blob], 'meta_file.csv'));
+                            fileInput.files = dataTransfer.files;
+                            alert('Metadata table prepared. You can now click the main submit button to start the analysis.');
+                           });
 
-                  <script>
-                    /**
-                     * Handle adding custom columns button
-                     */
-                    document.getElementById('addColumnBtn').addEventListener('click', function () {
-                      const columnName = prompt("Enter new column name:");
-                      if (!columnName) return;
-                      const table = document.getElementById('metadata-table');
-                      const headerRow = table.querySelector('thead tr');
-                      const newHeader = document.createElement('th');
-                      newHeader.textContent = columnName;
-                      headerRow.insertBefore(newHeader, headerRow.lastElementChild);
-                      const rows = table.querySelectorAll('tbody tr');
-                      rows.forEach(row => {
-                        const newCell = document.createElement('td');
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
-                        input.className = 'form-control form-control-sm';
-                        newCell.appendChild(input);
-                        row.insertBefore(newCell, row.lastElementChild);
-                      });
-                    });
-                  </script>
+                          /**
+                           * Download metdata table as csv button
+                           */
+                          document.getElementById('download-csv').addEventListener('click', function () {
+                            const table = document.getElementById('metadata-table');
+                            const csv = tableToCSV(table);
+                            if (!csv) {
+                              alert('No rows to export');
+                              return;
+                            }
+                            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'meta_file.csv';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          });
+                        });
 
-                  <!-- ---------------------------------------------------------------------------------------- -->
-                  <!-- SUBMISSION -->
-                  <!-- ---------------------------------------------------------------------------------------- -->
-                  <h3>Submit for Analysis</h3>
-                  <p>Your DNA file will be analysed for peaks, height normalized,
-                      and grouped in case you provided metadata. Be patient, this may take a while.</p>
-                  <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
+                      </script>
 
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DISPLAY ERROR MESSAGES HERE-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                  {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                      <ul class=flashes>
-                      {% for message in messages %}
-                      <li>{{ message }}</li>
-                      {% endfor %}
-                      </ul>
-                      {% endif %}
-                  {% endwith %}
-                  {% block body %}{% endblock %}
+                      <script>
+                        /**
+                         * Handle adding custom columns button
+                         */
+                        document.getElementById('addColumnBtn').addEventListener('click', function () {
+                          const columnName = prompt("Enter new column name:");
+                          if (!columnName) return;
+                          const table = document.getElementById('metadata-table');
+                          const headerRow = table.querySelector('thead tr');
+                          const newHeader = document.createElement('th');
+                          newHeader.textContent = columnName;
+                          headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+                          const rows = table.querySelectorAll('tbody tr');
+                          rows.forEach(row => {
+                            const newCell = document.createElement('td');
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
+                            input.className = 'form-control form-control-sm';
+                            newCell.appendChild(input);
+                            row.insertBefore(newCell, row.lastElementChild);
+                          });
+                        });
+                      </script>
 
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- FILE MISSING-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      <br></br>
-                      {% if missing_error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ missing_error }} </p>
-                      {% endif %}
+                      <!-- ---------------------------------------------------------------------------------------- -->
+                      <!-- SUBMISSION -->
+                      <!-- ---------------------------------------------------------------------------------------- -->
+                      <h3>Submit for Analysis</h3>
+                      <p>Your DNA file will be analysed for peaks, height normalized,
+                          and grouped in case you provided metadata. Be patient, this may take a while.</p>
+                      <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
 
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      {% if error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ error }} </p>
-                      <br></br>
-                      {% endif %}
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!--begin::Popup do you consent to save to db?-->
-                  <div class="modal fade" id="saveConsent" tabindex="-1" aria-labelledby="saveConsentLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content rounded-3 shadow-lg">
-                        <div class="modal-header bg-primary text-white">
-                          <h5 class="modal-title" id="saveConsentLabel">Save Your Data?</h5>
-                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <p>
-                            Do you agree to save your uploaded files and analysis results to the DNAvi database?
-                          </p>
-                          <ul>
-                            {% if user_logged_in %}
-                              <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
-                              <li>Your stored data will also help drive future discoveries in cell-free DNA research.</li>
-                              <li>If you choose not to save, your files will be deleted after this session ends.</li>
-                            {% else %}
-                              <li>By saving your analysis, you help drive future discoveries in cell-free DNA research.</li>
-                            {% endif %}
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- DISPLAY ERROR MESSAGES HERE-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                      {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                          <ul class=flashes>
+                          {% for message in messages %}
+                          <li>{{ message }}</li>
+                          {% endfor %}
                           </ul>
-                          <p class="text-muted small mb-0">
-                            By clicking ‘Yes, Save’, you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
-                          </p>
-                        </div>
-                        <div class="modal-footer d-flex justify-content-between">
-                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            No, just analyze once
-                          </button>
-                          <button type="button" class="btn btn-success" id="confirm-save-btn">
-                            Yes, save my data
-                          </button>
+                          {% endif %}
+                      {% endwith %}
+                      {% block body %}{% endblock %}
+
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- FILE MISSING-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                          <br></br>
+                          {% if missing_error %}
+                          <br></br>
+                          <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                          {% endif %}
+
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- OTHER ERROR-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                          {% if error %}
+                          <br></br>
+                          <p class=error><strong>Error:</strong> {{ error }} </p>
+                          <br></br>
+                          {% endif %}
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- OTHER ERROR-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!--begin::Popup do you consent to save to db?-->
+                      <div class="modal fade" id="saveConsent" tabindex="-1" aria-labelledby="saveConsentLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content rounded-3 shadow-lg">
+                            <div class="modal-header bg-primary text-white">
+                              <h5 class="modal-title" id="saveConsentLabel">Save Your Data?</h5>
+                              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p>
+                                Do you agree to save your uploaded files and analysis results to the DNAvi database?
+                              </p>
+                              <ul>
+                                {% if user_logged_in %}
+                                  <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
+                                  <li>Your stored data will also help drive future discoveries in cell-free DNA research.</li>
+                                  <li>If you choose not to save, your files will be deleted after this session ends.</li>
+                                {% else %}
+                                  <li>By saving your analysis, you help drive future discoveries in cell-free DNA research.</li>
+                                {% endif %}
+                              </ul>
+                              <p class="text-muted small mb-0">
+                                By clicking ‘Yes, Save’, you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                              </p>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-between">
+                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                No, just analyze once
+                              </button>
+                              <button type="button" class="btn btn-success" id="confirm-save-btn">
+                                Yes, save my data
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <!--end::Popup do you consent to save to db?-->
-              </form>
+                      <!--end::Popup do you consent to save to db?-->
+                  </form>
             </section>
         </div>
 
