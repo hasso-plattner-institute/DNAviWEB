@@ -305,9 +305,18 @@ def protect():
         ######################################################################
         # PERFORM BASIC CHECKS
         ######################################################################
-        data_inpt = request.files['data_file'].filename
-        ladder_inpt = request.files['ladder_file'].filename
-        meta_inpt = request.files['meta_file']
+        request_dict = request.form.to_dict(flat=False)
+        example_case = False
+
+        if 'example' in request_dict:
+            data_inpt = EXAMPLE_TABLE
+            ladder_inpt = EXAMPLE_LADDER
+            meta_inpt = EXAMPLE_META
+            example_case = True
+        else:
+            data_inpt = request.files['data_file'].filename
+            ladder_inpt = request.files['ladder_file'].filename
+            meta_inpt = request.files['meta_file']
         m = None
 
         if data_inpt == '' or not allowed_file(data_inpt):
