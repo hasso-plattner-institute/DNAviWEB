@@ -255,12 +255,13 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!-- DNA GEL OR CSV -->
                       <!-- ------------------------------------------------------------------------------ -->
                       <h3> Upload your own data:</h3>
-                      <div class="card mb-4 shadow-sm">
+                        <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                          <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
+                        <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5><img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
                           <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
+                          <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
                           <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                         </div>
                       </div>
@@ -270,21 +271,54 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!-- ------------------------------------------------------------------------------ -->
                       <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                          <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
+                          <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker </h5><img src="./static/img/annotate.svg" alt="Annotate Ladder" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
-                          <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
-                          <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded" required>
-                        </div>
+                      <!-- The radio buttons -->
+                      <p>Select from defaults:</p>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000" checked ><label for="defaultOption"> D1000</label></div>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> D5000</label></div>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> gDNA</label></div>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> cfDNA</label></div>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> 1-6000 bp</label></div>
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> 10-50000 bp</label></div>
+                      <div class="radio-group"> <input type="radio" id="uploadOption" name="fileSource" value="upload" accept=".txt,.tsv,.csv">
+                      <label for="uploadOption"> Custom </label></div>
+                      <!-- The file browse input, initially shown -->
+                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="filename">
+                      <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Download custom template</a></div>
+
+                      <!-- The script to hide the file browse -->
+                      <script>
+                        // Get references to the radio buttons and the file upload container
+                        const uploadRadio = document.getElementById('uploadOption');
+                        const defaultRadios = document.getElementsByClassName('predef');
+                        const fileContainer = document.getElementById('fileUploadContainer');
+
+                        // Listen for clicks on the radio buttons
+                        uploadRadio.addEventListener('change', () => {
+                          if (uploadRadio.checked) {
+                            fileContainer.style.display = 'block'; // Show the file input
+                          }
+                        });
+                      // Hide file input when any "predef" option is selected
+                      Array.from(defaultRadios).forEach(radio => {
+                        radio.addEventListener('change', () => {
+                          if (radio.checked) {
+                            fileContainer.style.display = 'none';
+                          }
+                        });
+                      });
+                      </script></div>
                       </div>
-                      <br></br>
+                      <br>
                       <!-- ------------------------------------------------------------------------------ -->
                       <!-- METADATA -->
                       <!-- ------------------------------------------------------------------------------ -->
                       <!--begin::metadata-->
                       <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                          <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
+                          <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5><img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
                           <!--begin::metadata two options header-->
