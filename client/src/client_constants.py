@@ -25,6 +25,12 @@ UPLOAD_DIR = f"{DNAVI_ROOT}exchange/"
 UPLOAD_FOLDER =  f"{UPLOAD_DIR}uploads/"
 DOWNLOAD_FOLDER =  f"{UPLOAD_DIR}downloads/"
 USERS_FILE = f"{DNAVI_ROOT}users.json"
+
+EXAMPLE_DIR = "static/tests/"
+EXAMPLE_TABLE = f"{EXAMPLE_DIR}electropherogram.csv"
+EXAMPLE_LADDER = f"{EXAMPLE_DIR}ladder.csv"
+EXAMPLE_META = f"{EXAMPLE_DIR}metadata.csv"
+
 ####################################################################################
 # EXECUTION
 ####################################################################################
