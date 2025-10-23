@@ -102,15 +102,9 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     """
     current_folder_loc = f"{upload_folder}{request_id}"
 
-    if error:
-        output_id = f"ERROR_{request_id}"
-        interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
-    else:
-        output_id = request_id
-        interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
-
+    output_id = request_id
+    interm_destination = f"{upload_folder}{output_id}"
+    final_destination = f"{download_folder}{output_id}"
     print(interm_destination)
     print(current_folder_loc)
     print(final_destination)
