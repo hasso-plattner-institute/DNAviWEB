@@ -1,7 +1,7 @@
 """
 This module describes all ladders.
 """
-from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -26,13 +26,6 @@ class Ladder(Base):
                  "common ladder types by companies eg HSD5000, and custom option).")
     )
 
-    gel_electrophoresis_device_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey("gel_electrophoresis_devices.device_id", ondelete="CASCADE"),
-        nullable=True,
-        comment="Reference to the gel electrophoresis device used."
-    )
-
     # Relationship between parent (Ladder) and child (LadderPixel) class
     # Create a python attribute ladder_pixels, one ladder (parent)
     # has many pixels (children)
@@ -42,6 +35,10 @@ class Ladder(Base):
     ladder_peaks: Mapped[list["LadderPeak"]] = relationship(
         back_populates="ladder"
     )
+    samples: Mapped[list["Sample"]] = relationship(
+        back_populates="ladder"
+    )
 
 from database.schema.ladder_pixel import LadderPixel
 from database.schema.ladder_peak import LadderPeak
+from database.schema.sample import Sample
