@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8" />
+  <title>DNAvi | Impressum | Legal Notice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
+
+  <!-- Icons & CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
+
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+      font-family: 'Source Sans 3', sans-serif;
+      color: #343a40;
+    }
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .navbar-brand span {
+      font-size: 1.5rem;
+      color: #007bff;
+    }
+    .hero-section {
+      background: #ffffff;
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 1rem 2rem rgba(0,0,0,0.1);
+      animation: fadeInUp 1s ease forwards;
+    }
+    .hero-section h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    .hero-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    .hero-section p {
+      font-size: 1rem;
+      color: #495057;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .hero-section a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .hero-section a:hover {
+      text-decoration: underline;
+    }
+    hr {
+      border-color: #dee2e6;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 2rem 1rem;
+      }
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+      .hero-section p {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <!-- Header -->
+  <nav class="app-header navbar navbar-expand bg-body">
+    <div class="container-fluid">
+      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+        <span class="fw-bold">DNAvi</span>
+      </a>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <div class="app-content content">
+      <div class="container py-5 d-flex justify-content-center">
+        <div class="hero-section">
+          <h1>Citation</h1>
+            <p>Please cite DNAvi whenever you use it for your research.</p>
+
+            <h2>DNAvi tool</h2>
+
+            <p> Anja Hess(1,2,3), Dominik Seelow(1), and Helene Kretzmer(2,4): DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces (Unpublished).</p>
+            <p> 1. Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany</p>
+            <p> 2. Max Planck Institute for Molecular Genetics, Berlin, Germany</p>
+            <p> 3. Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany</p>
+            <p> 4. Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany</p>
+            <p></p>
+            <!-- <i class="bi bi-envelope-fill me-2"></i> -->
+            <a href="https://github.com/anjahess/DNAvi">DNAvi on GitHub</a>
+             <p></p>
+            <br>
+            <h2>DNAviWEB</h2>
+
+            <p> Anja Hess(1,2,3), Yara Matani(4), Dominik Seelow(1), and Helene Kretzmer(2,4): DNAviWEB: sequencing-free clinical analysis of cell-free DNA profiles (Unpublished). </p>
+            <p> 1. Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany</p>
+            <p> 2. Max Planck Institute for Molecular Genetics, Berlin, Germany</p>
+            <p> 3. Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany</p>
+            <p> 4. Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany</p>
+            <p></p>
+            <!-- <i class="bi bi-envelope-fill me-2"></i> -->
+            <a href="https://gitlab.hpi.de/dnavi/dnavi_webserver">DNAviWEB on GitLab</a>
+
+
+            <p></p>
+            <h2>License & Copyright </h2>
+             <p></p>
+            Copyright 2025, Hasso-Plattner-Institut (HPI)
+          <hr>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer text-center py-3 border-top mt-auto">
+    <small>&copy; Anja Hess, Yara Matani, 2025. Design by 
+      <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
+    </small>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
+</body>
+</html>
