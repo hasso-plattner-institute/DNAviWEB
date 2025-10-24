@@ -94,8 +94,9 @@
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link active" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
     </div>
@@ -106,6 +107,11 @@
     <div class="app-content content">
       <div class="container py-5 d-flex justify-content-center">
         <div class="hero-section">
+          <h1>About</h1>
+            <img src="{{ url_for('static', filename='img/DNAviWEB_graphical_abstract.png') }}" alt="DNAviWEB GA" class="mb-4" style="height:11%;align-content: center" />
+            <p>DNAviWEB  is a freely-accessible implementation of the DNAvi analysis tool for cfDNA fragmentomics analysis from electrophoresis traces. It enables instant pre-sequencing screening of cfDNA traces.</p>
+            <p></p>
+            <br>
           <h1>Citation</h1>
             <p>Please cite DNAvi whenever you use it for your research.</p>
 
@@ -131,11 +137,9 @@
             <p></p>
             <!-- <i class="bi bi-envelope-fill me-2"></i> -->
             <a href="https://gitlab.hpi.de/dnavi/dnavi_webserver">DNAviWEB on GitLab</a>
-
-
             <p></p>
             <h2>License & Copyright </h2>
-             <p></p>
+            <p></p>
             Copyright 2025, Hasso-Plattner-Institut (HPI)
           <hr>
         </div>

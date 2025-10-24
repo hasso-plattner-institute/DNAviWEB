@@ -1,13 +1,26 @@
 <html lang="en">
 <style>
 input[type=button], input[type=submit], input[type=reset] {
-  background-color: #04AA6D;
+  background-color:forestgreen;
   border: none;
   color: white;
   padding: 16px 32px;
   text-decoration: none;
   margin: 4px 2px;
   cursor: pointer;
+}
+.radio-group input[type="radio"]:after {
+  display: inline-block;
+  margin-right: 20px;
+  appearance: none;
+    border: none;
+    appearance: none;
+    background-color: rgba(255,252,229,1);
+
+}
+.radio-group label{
+  display: inline-block;
+  margin-right: 10px;
 }
 </style>
   <!--begin::Head-->
@@ -95,12 +108,10 @@ input[type=button], input[type=submit], input[type=reset] {
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
-            </li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
           </ul>
           <!--end::Start Navbar Links-->
 
@@ -199,7 +210,6 @@ input[type=button], input[type=submit], input[type=reset] {
                 </div>
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="{{ url_for('home')}}">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
                   </ol>
                 </div>
@@ -256,7 +266,7 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!-- ------------------------------------------------------------------------------ -->
                       <h3> Upload your own data:</h3>
                         <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                        <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
                         <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5><img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
@@ -270,25 +280,27 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!-- LADDER ANNOTATION CSV-->
                       <!-- ------------------------------------------------------------------------------ -->
                       <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                        <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
                           <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker </h5><img src="./static/img/annotate.svg" alt="Annotate Ladder" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
-                      <!-- The radio buttons -->
+                            <!-- The radio buttons -->
                       <p>Select from defaults:</p>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000" checked ><label for="defaultOption"> D1000</label></div>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> D5000</label></div>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> gDNA</label></div>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> cfDNA</label></div>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> 1-6000 bp</label></div>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000"><label> 10-50000 bp</label></div>
-                      <div class="radio-group"> <input type="radio" id="uploadOption" name="fileSource" value="upload" accept=".txt,.tsv,.csv">
+                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="fileSource" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" id="uploadOption" name="fileSource" value="upload" accept=".txt,.tsv,.csv">
                       <label for="uploadOption"> Custom </label></div>
-                      <!-- The file browse input, initially shown -->
-                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="filename">
-                      <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Download custom template</a></div>
 
-                      <!-- The script to hide the file browse -->
+                            <!-- The file browse input, initially shown -->
+                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="filename">
+                      <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">↓ Download template</a></div>
+
+                            <!-- The script to hide the file browse -->
                       <script>
                         // Get references to the radio buttons and the file upload container
                         const uploadRadio = document.getElementById('uploadOption');
@@ -317,7 +329,7 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!-- ------------------------------------------------------------------------------ -->
                       <!--begin::metadata-->
                       <div class="card mb-4 shadow-sm">
-                        <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                        <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
                           <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5><img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
