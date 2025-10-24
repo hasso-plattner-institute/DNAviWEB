@@ -31,6 +31,14 @@ EXAMPLE_TABLE = f"{EXAMPLE_DIR}electropherogram.csv"
 EXAMPLE_LADDER = f"{EXAMPLE_DIR}ladder.csv"
 EXAMPLE_META = f"{EXAMPLE_DIR}metadata.csv"
 
+LADDER_DIR = f"{MAINDIR}static/ladders/"
+LADDER_DICT = {"D1000": f"{LADDER_DIR}D1000.csv",
+               "HSD5000": f"{LADDER_DIR}HSD5000.csv",
+               "gDNA": f"{LADDER_DIR}gDNA.csv",
+               "cfDNA": f"{LADDER_DIR}cfDNA.csv",
+               "D1000B": f"{LADDER_DIR}D1000B.csv",
+               "D7500": f"{LADDER_DIR}D7500.csv",
+               "HSDNA": f"{LADDER_DIR}HSDNAB.csv"}
 ####################################################################################
 # EXECUTION
 ####################################################################################
