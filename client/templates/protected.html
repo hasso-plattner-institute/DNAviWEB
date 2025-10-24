@@ -286,20 +286,17 @@ input[type=button], input[type=submit], input[type=reset] {
                         <div class="card-body">
                             <!-- The radio buttons -->
                       <p>Select from defaults:</p>
-                      <div class="radio-group"> <input type="radio" class="predef" name="fileSource" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="fileSource" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" id="uploadOption" name="fileSource" value="upload" accept=".txt,.tsv,.csv">
-                      <label for="uploadOption"> Custom </label></div>
-
-                            <!-- The file browse input, initially shown -->
-                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="filename">
+                      <div class="radio-group"> <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" class="predef" name="ladder_file" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
+                      <input type="radio" id="uploadOption" name="ladder_file" value="upload" accept=".txt,.tsv,.csv"><label for="uploadOption"> Custom </label></div>
+                      <!-- The file browse input, initially shown -->
+                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="ladder_file">
                       <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">↓ Download template</a></div>
-
                             <!-- The script to hide the file browse -->
                       <script>
                         // Get references to the radio buttons and the file upload container
@@ -330,7 +327,7 @@ input[type=button], input[type=submit], input[type=reset] {
                       <!--begin::metadata-->
                       <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
-                          <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5><img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
+                          <h5 class="mb-0 fw-normal text-dark">Step 3: Add Patient Metadata</h5><img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
                           <!--begin::metadata two options header-->
