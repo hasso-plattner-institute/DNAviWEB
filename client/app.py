@@ -182,6 +182,10 @@ def contact():
 def legal_notice():
     return render_template(f'legal_notice.html')
 
+@app.route("/citation")
+def citation():
+    return render_template(f'citation.html')
+
 
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 def submissions_dashboard():
