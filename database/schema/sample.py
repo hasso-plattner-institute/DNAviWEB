@@ -303,18 +303,27 @@ class Sample(Base):
         comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )
 
+    gel_electrophoresis_device_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("gel_electrophoresis_devices.device_id", ondelete="CASCADE"),
+        nullable=True,
+        comment="Reference to the gel electrophoresis device used."
+    )
+
     # Relationships
     # One sample can be appear in multiple rows in the sample_treatment table (One to Many)
     # Parent: sample
     # Child: sample_treatment
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
+    ladder: Mapped["Ladder"] = relationship(back_populates="samples")
     sample_treatments: Mapped[List["SampleTreatment"]] = relationship(back_populates="sample")
     sample_pixels: Mapped[List["SamplePixel"]] = relationship(back_populates="sample")
     sample_cell_types: Mapped[List["SampleCellType"]] = relationship(back_populates="sample")
     sample_types: Mapped[List["SampleType"]] = relationship(back_populates="sample")
     sample_diseases: Mapped[List["SampleDisease"]] = relationship(back_populates="sample")
     sample_phenotypic_abnormalities: Mapped[List["SamplePhenotypicAbnormality"]] = relationship(back_populates="sample")
-    
+
+from database.schema.ladder import Ladder
 from database.schema.sample_disease import SampleDisease
 from database.schema.sample_phenotypic_abnormality import SamplePhenotypicAbnormality
 from database.schema.sample_treatment import SampleTreatment
