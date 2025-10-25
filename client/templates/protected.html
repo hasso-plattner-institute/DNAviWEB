@@ -223,7 +223,8 @@ input[type=button], input[type=submit], input[type=reset] {
           <div class="container my-4">
             <div class="progress" style="height: 40px;">
               <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                1. Instructions
+                <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary" style="color:white ">1. Quickstart Guide
+              </a>
               </div>
               <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
                 2. Upload Files
@@ -235,14 +236,6 @@ input[type=button], input[type=submit], input[type=reset] {
           </div>
           <!--end::Progression Tab -->
 
-          <!--begin::Navigation buttons -->
-          <div class="d-flex justify-content-between mt-4 me-3">
-              <!--begin::prev button -->
-              <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary">
-                  <i class="bi bi-arrow-left"></i> Previous
-              </a>
-              <!--end::Prev button -->
-          </div>
           <!--end::Navigation buttons -->
         </div>
         <!--end::App Content Header-->
@@ -250,8 +243,12 @@ input[type=button], input[type=submit], input[type=reset] {
           <main id="content-box" class="order-first">
                 <section class="work-section section" id="section-2">
 
-                    <form id="example-form" method="POST">
                     <div class="container">
+                        {% if contact is defined and contact.getErrors()|length %}
+    Oh no! Errors.
+{% endif %}
+                    <form id="example-form" method="POST">
+
                       <!-- ---------------------------------------------------------------------------------------- -->
                       <!-- EXAMPLE FORM -->
                       <!-- ---------------------------------------------------------------------------------------- -->
