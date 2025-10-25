@@ -1,0 +1,13 @@
+By clicking "Agree" and by using DNAvi (web or command line tool), you agree to the following:
+
+1. When using results obtained from DNAvi or DNAviWEB, you agree to cite DNAvi or DNAviWEB.
+
+2. You confirm and warrant that you have the full right and authority to provide the uploaded data to the DNAvi web server (including ethics approvals and patient consent when processing human patient data), to analyze such data, and to obtain results on such data in accordance with all applicable laws, regulations and institutional policies such as the General Data Protection Regulation (GDPR) in the European Union and the Health Insurance Portability and Accountability Act (HIPAA) in the United States. You further confirm and warrant that the data does not contain any identifiable information. 
+
+3. You understand that the DNAvi web server does not require user registration, so that your data is potentially accessible by third parties by decrypting URLs. You hereby irrevocably agree to hold the developers harmless from any form of liability if the data which you provide DNAviWEB becomes compromised.
+
+4. You understand that all submitted data is, either temporarily or, if you agreed, long-term stored on our servers, which are located in Germany (Hasso-Plattner Institut, Potsdam). It is your own responsibility to back up any data and results.
+
+5. The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software of the use or other dealings in the software.
+
+6. By using DNAvi, you confirm to understand that DNAvi web provides results that are for exploratory research use only. No diagnostic decisions should be based on DNAvi's results. 
