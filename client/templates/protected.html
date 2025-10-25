@@ -242,25 +242,61 @@ input[type=button], input[type=submit], input[type=reset] {
         <div class="app-content">
           <main id="content-box" class="order-first">
                 <section class="work-section section" id="section-2">
+                      <div class="container"
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- DISPLAY ERRORS HERE ON TOP -->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                      <div class="flash-container">
+                        {% with messages = get_flashed_messages() %}
+                          {% if messages %}
+                            <ul class="flashes">
+                              {% for message in messages %}
+                              <li>{{ message }}</li>
+                              {% endfor %}
+                            </ul>
+                          {% endif %}
+                        {% endwith %}
+                      </div>
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- FILE MISSING-->
+                      <!-- ------------------------------------------------------------------------------ -->
 
-                    <div class="container">
-                        {% if contact is defined and contact.getErrors()|length %}
-    Oh no! Errors.
-{% endif %}
-                    <form id="example-form" method="POST">
+                          {% if missing_error %}
+                          <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                          {% endif %}
 
-                      <!-- ---------------------------------------------------------------------------------------- -->
-                      <!-- EXAMPLE FORM -->
-                      <!-- ---------------------------------------------------------------------------------------- -->
+                      <!-- ------------------------------------------------------------------------------ -->
+                      <!-- OTHER ERROR-->
+                      <!-- ------------------------------------------------------------------------------ -->
+                          {% if error %}
+                          <pre class="error"><strong>Error message from DNAvi: </strong>{{ error }}</pre>
+                          <p>
+                          <strong>Note: This is the end of your error message. Please read it carefully, check out our
+                              <a href="{{ url_for('instructions') }}">quickstart guide</a> or
+                              <a href="{{ url_for('documentation') }}">documentation</a>,
+                              and try again.
+                              If this doesn't solve your issues, contact us with this error message copied,
+                              the date of your submission, and the submission ID (see dashboard) under dnavi-info@hpi.de.<br>     </strong></p>
+                          {% endif %}
+
+
+                    <!-- ---------------------------------------------------------------------------------------- -->
+                    <!-- EXAMPLE FORM -->
+                    <!-- ---------------------------------------------------------------------------------------- -->
+                      <br>
+                      <form id="example-form" method="POST">
                       <input type="submit" value="Quick test: Run DNAvi with our example data" name="Example"> <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">Table.csv</a> <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Ladder.csv</a>  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">Metadata.csv</a>
                       <p></p><p></p><br>
                       </div>
-                    </form>
-                    <form id="upload-form" method="POST" enctype="multipart/form-data">
-                    <div class="container">
+
+                      </form>
+
                       <!-- ------------------------------------------------------------------------------ -->
-                      <!-- DNA GEL OR CSV -->
+                      <!-- UPLOAD FORM STARTS: DNA GEL OR CSV -->
                       <!-- ------------------------------------------------------------------------------ -->
+                      <form id="upload-form" method="POST" enctype="multipart/form-data">
+                      <div class="container">
                       <h3> Upload your own data:</h3>
                         <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
@@ -1026,38 +1062,6 @@ input[type=button], input[type=submit], input[type=reset] {
                           and grouped in case you provided metadata. Be patient, this may take a while.</p>
                       <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
 
-                      <!-- ------------------------------------------------------------------------------ -->
-                      <!-- DISPLAY ERROR MESSAGES HERE-->
-                      <!-- ------------------------------------------------------------------------------ -->
-                      <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                      {% with messages = get_flashed_messages() %}
-                      {% if messages %}
-                          <ul class=flashes>
-                          {% for message in messages %}
-                          <li>{{ message }}</li>
-                          {% endfor %}
-                          </ul>
-                          {% endif %}
-                      {% endwith %}
-                      {% block body %}{% endblock %}
-
-                      <!-- ------------------------------------------------------------------------------ -->
-                      <!-- FILE MISSING-->
-                      <!-- ------------------------------------------------------------------------------ -->
-                          <br></br>
-                          {% if missing_error %}
-                          <br></br>
-                          <p class=error><strong>Error:</strong> {{ missing_error }} </p>
-                          {% endif %}
-
-                      <!-- ------------------------------------------------------------------------------ -->
-                      <!-- OTHER ERROR-->
-                      <!-- ------------------------------------------------------------------------------ -->
-                          {% if error %}
-                          <br></br>
-                          <p class=error><strong>Error:</strong> {{ error }} </p>
-                          <br></br>
-                          {% endif %}
                       <!-- ------------------------------------------------------------------------------ -->
                       <!-- OTHER ERROR-->
                       <!-- ------------------------------------------------------------------------------ -->
