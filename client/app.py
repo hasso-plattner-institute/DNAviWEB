@@ -24,10 +24,11 @@ from flask import Flask, jsonify, request, render_template, redirect, url_for, s
 from flask_login import current_user, LoginManager, UserMixin, logout_user, login_required, login_user
 from werkzeug.utils import secure_filename
 from .src import users_saving as users_module
-from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, EXAMPLE_META
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
+    EXAMPLE_META, LADDER_DICT
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_email, save_users, load_users
-
+from .src.errors import secure_error
 ###############################################################################
 # CONFIGURE APP
 ###############################################################################
@@ -35,7 +36,7 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
-#############################Logging####################################
+#############################Logging###########################################
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = BASE_DIR.rstrip("/")
 LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
@@ -49,11 +50,10 @@ logging.basicConfig(
     ]
 )
 logging.info("Test log message at startup")
-#############################Logging####################################
+#############################Logging############################################
 load_users()
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-
 app.secret_key = "74352743t#+#´01230435¹^xvc1u"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
@@ -201,7 +201,6 @@ def submissions_dashboard():
                     "submission_id": sub_id,
                     "submission_date": os.path.getctime(sub_path)  # creation time
                 })
-
     # Sort submissions newest first
     submissions.sort(key=lambda x: x["submission_date"], reverse=True)
 
@@ -287,7 +286,7 @@ def save_data(output_id, email, save_to_db):
         for _, file_tuple in files_to_send:
             file_tuple[1].close()
     
-    ########################s######################################################
+    ########################s#####################################################
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
     save_data_to_db()
@@ -302,19 +301,24 @@ def save_data(output_id, email, save_to_db):
 def protect():
     error=None
     output_id = None
-    #########################################################################
+    ##########################################################################
     # SET email IF USER IS AUTHENTICATED OTHERWISE GENERATE A RANDOM GUEST
-    #########################################################################
+    ##########################################################################
     email = get_email()
     if request.method == 'POST' and 'incomp_results' not in request.form:
         ######################################################################
-        # PERFORM BASIC CHECKS
+        # SET INPUT VARIABLES
         ######################################################################
         request_dict = request.form.to_dict(flat=False)
         example_case = False
-        print(request.form)
+        default_ladder = False
+        m = None
+        print(request_dict)
         print("............................")
 
+        ######################################################################
+        # CHECK IF SOME OF THE DATA ARE REPOSITORY DEFAULTS
+        ######################################################################
         if 'Example' in request_dict:
             data_inpt = EXAMPLE_TABLE
             ladder_inpt = EXAMPLE_LADDER
@@ -322,21 +326,32 @@ def protect():
             example_case = True
         else:
             data_inpt = request.files['data_file'].filename
-            ladder_inpt = request.files['ladder_file'].filename
             meta_inpt = request.files['meta_file']
-        m = None
-
-        if data_inpt == '' or not allowed_file(data_inpt):
-            error = "Missing DNA file (table/image) or format not allowed"
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
-        if ladder_inpt == '':
-            error = "Missing Ladder file."
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
+            if request_dict['ladder_file'] == ["upload"]:
+                ladder_inpt = request.files['ladder_file']
+            else:
+                default_ladder = True
+                ladder_inpt = LADDER_DICT[request_dict['ladder_file'][0]]
+                print(f"LADDER SELECTED FROM DEFAULTS {ladder_inpt}")
 
         ######################################################################
-        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY(VM2)  #
+        # BASIC QC
+        ######################################################################
+        if data_inpt == '' or not allowed_file(data_inpt):
+            error = "Missing DNA file (table/image) or format not allowed"
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
+        if ladder_inpt == '':
+            error = "Missing Ladder file."
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
+
+        ######################################################################
+        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY (VM2) #
         ######################################################################
         request_id = str(uuid4())
         processing_folder = f"{app.config['UPLOAD_FOLDER']}{email}/{request_id}/"
@@ -344,12 +359,21 @@ def protect():
         f = f"{processing_folder}{secure_filename(data_inpt)}"
         l = f"{f.rsplit('.', 1)[0]}_ladder.csv"
 
-        # If it's the example, simply compy
-        if example_case:
-            m = f"{f.rsplit('.', 1)[0]}_meta.csv"
-            shutil.copyfile(data_inpt, f)
-            shutil.copyfile(ladder_inpt, l)
-            shutil.copyfile(meta_inpt, m)
+        ######################################################################
+        #  If it's the example or default, simply compy #
+        ######################################################################
+        if example_case or default_ladder:
+            if example_case:
+                m = f"{f.rsplit('.', 1)[0]}_meta.csv"
+                shutil.copyfile(data_inpt, f)
+                shutil.copyfile(ladder_inpt, l)
+                shutil.copyfile(meta_inpt, m)
+            if default_ladder:
+                shutil.copyfile(ladder_inpt, l)
+                request.files['data_file'].save(f)
+        ######################################################################
+        #  Otherwise save user input
+        ######################################################################
         else: # otherwise save user input
             request.files['data_file'].save(f)
             request.files['ladder_file'].save(l)
@@ -387,7 +411,7 @@ def protect():
         ######################################################################
         if error:
             return render_template(f'protected.html',
-                               error=error, user_logged_in = current_user.is_authenticated)
+                               error=secure_error(error), user_logged_in = current_user.is_authenticated)
 
         statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{email}/{output_id}")
         
