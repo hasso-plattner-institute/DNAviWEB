@@ -303,9 +303,9 @@ input[type=button], input[type=submit], input[type=reset] {
                         <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5><img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
-                          <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
+                          <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
                           <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
-                          <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
+                          <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                         </div>
                       </div>
                       <br></br>
@@ -326,7 +326,7 @@ input[type=button], input[type=submit], input[type=reset] {
                       <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
                       <input type="radio" class="predef" name="ladder_file" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
                       <input type="radio" class="predef" name="ladder_file" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" id="uploadOption" name="ladder_file" value="upload" accept=".txt,.tsv,.csv"><label for="uploadOption"> Custom </label></div>
+                      <input type="radio" id="uploadOption" name="ladder_file" value="upload" accept=".csv"><label for="uploadOption"> Custom </label></div>
                       <!-- The file browse input, initially shown -->
                       <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="ladder_file">
                       <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">↓ Download template</a></div>
@@ -657,8 +657,8 @@ input[type=button], input[type=submit], input[type=reset] {
                             <p class="mb-2">
                               If you prefer, download our template file, fill it out, and upload it here.
                             </p>
-                            <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
-                            <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
+                            <p class="text-muted mb-2">Accepted format: .CSV</p>
+                            <input type="file" name="meta_file" accept=".csv" class="form-control form-control border rounded">
                           </div>
                           <!--end::Option 2-->
 
@@ -1074,9 +1074,8 @@ input[type=button], input[type=submit], input[type=reset] {
                               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <p>
-                                Do you agree to save your uploaded files and analysis results to the DNAvi database?
-                              </p>
+                              <p><strong>DNAvi is for research use only. By submitting the DNAvi analysis you automatically agree to our <a href="{{ url_for('legal_notice') }}" style="color:#b5b9bd;">Terms and Conditions</a>.</strong></p>
+                              <p>However, you can decide whether to save your uploaded files and analysis results to the DNAvi database for long-term usage.</p>
                               <ul>
                                 {% if user_logged_in %}
                                   <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
@@ -1091,12 +1090,13 @@ input[type=button], input[type=submit], input[type=reset] {
                               </p>
                             </div>
                             <div class="modal-footer d-flex justify-content-between">
+                                                              <button type="button" class="btn btn-success" id="confirm-save-btn">
+                                Agree & Store for later
+                              </button>
                               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                No, just analyze once
+                                Agree & Analyze once
                               </button>
-                              <button type="button" class="btn btn-success" id="confirm-save-btn">
-                                Yes, save my data
-                              </button>
+
                             </div>
                           </div>
                         </div>
