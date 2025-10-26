@@ -1,0 +1,189 @@
+import os
+import uuid
+import logging
+import chardet
+import pandas as pd
+import requests
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
+from database.config import engine
+from database.schema.ontology_term import OntologyTerm
+from .src.tools import get_result_files
+# Path to vm1 where the database and file system are.
+VM1_API_URL = "http://10.131.22.143:8000/upload"
+
+
+def detect_file_encoding(file_path):
+    """
+    Detect encoding of csv file (can be different depending on user's operating system)
+    """
+    with open(file_path, 'rb') as raw_file:
+        rows = raw_file.read(10000)
+        detected = chardet.detect(rows)
+        encoding = detected.get('encoding', 'utf-8')
+        logging.info("Detected encoding: %s for file %s", encoding, file_path)
+    return encoding
+
+def detect_ontology(label_col):
+    label_lower = label_col.lower()
+    if "disease" in label_lower or "ethnicity" in label_lower:
+        return "efo"
+    if "anatomical" in label_lower:
+        return "uberon"
+    if "cell type" in label_lower:
+        return "cl"
+    if "phenotypic" in label_lower:
+        return "hp"
+    if "organism" in label_lower:
+        return "ncbitaxon"
+    if "condition" in label_lower:
+        return "ncit"
+    if "treatment" in label_lower:
+        return "dron"
+    return "efo"
+
+def get_ols_term_id(label, label_col):
+    """
+    Query OLS for a label and return its ontology term id.
+    If not found, return empty string.
+    """
+    ontology = detect_ontology(label_col)
+    url = "https://www.ebi.ac.uk/ols/api/search"
+    params = {"q": label, "ontology": ontology, "type": "class", "exact": "true"}
+    try:
+        response = requests.get(url, params=params, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        if data.get("response", {}).get("numFound", 0) > 0:
+            doc = data["response"]["docs"][0]
+            return doc.get("obo_id") or doc.get("iri")
+        else:
+            return ""
+    except Exception:
+        return ""
+
+##############################################################################
+#                          SAVE ANALYSIS TO DB                               #                 
+##############################################################################
+        
+def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadata_path):
+    """
+    Save signal table, bp translation, ladder and metadata to database VM1.
+    """
+    logging.info("Saving dummy metadata to test")
+    with Session(engine) as session:
+        # Detect csv file encodings
+        signal_table_encoding = detect_file_encoding(signal_table_path)
+        bp_translation_encoding = detect_file_encoding(bp_translation_path)
+        ladder_encoding = detect_file_encoding(ladder_path)
+        metadata_encoding = detect_file_encoding(metadata_path)
+        #########################################################################################################
+        # SAVE DISEASES/CELL TYPES/PHENOTYPIC ABNORMALITIES/TREATMENTS/ETHNICITY/ORGANISM/CONDITION UNDER STUDY #           
+        #########################################################################################################
+        logging.info("Start saving ontology terms")
+        ontology_term_fields = {
+            "Diseases",
+            "Cell Types",
+            "Phenotypic Abnormalities",
+            "Treatments",
+            "Ethnicity",
+            "Organism",
+            "Condition Under Study"
+        }
+        meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
+        # Loop through each ontology terms column in metadata
+        for label_col in ontology_term_fields:
+            if label_col not in meta_df.columns:
+                continue
+            logging.info(f"Processing ontology column: {label_col}")
+            for raw_value in meta_df[label_col].dropna():
+                labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
+                for label in labels:
+                    # Skip if this label already exists in DB
+                    existing = session.query(OntologyTerm).filter(
+                        func.lower(OntologyTerm.term_label) == label.lower()
+                    ).first()
+                    if existing:
+                        logging.info(f"Ontology label '{label}' already exists, skipping insert.")
+                        continue
+                    # Get term ID from OLS
+                    term_id = get_ols_term_id(label, label_col)
+                    if not term_id:  # None or empty string
+                        term_id = str(uuid.uuid4())
+                        logging.info(f"Generated UUID for '{label}' in column '{label_col}'")
+                    stmt = (
+                        insert(OntologyTerm)
+                        .values(term_id=term_id, term_label=label)
+                        .on_conflict_do_nothing(index_elements=["term_id"])
+                    )
+                    session.execute(stmt)
+        session.commit()
+        logging.info("Ontology terms saved successfully!")
+        ##############################################################################
+        #                   SAVE SIGNAL TABLE AND BP TRANSLATION                     #
+        ##############################################################################
+
+        ##############################################################################
+        #                          SAVE LADDER                                       #                 
+        ##############################################################################
+
+
+def save_data(app, output_id, email, save_to_db):
+    """
+    Save user data permanently in database and file system on VM1, if consent is given.
+    """
+    # No consent to save data to db, do nothing
+    if save_to_db != 'yes':
+        return
+    # User consented, save
+    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], email, output_id)
+    if not os.path.exists(user_folder):
+        print(f"Folder not found: {user_folder}")
+        return 
+    ##############################################################################
+    #                          SAVE TO FILE SYSTEM VM_1                          #                 
+    ##############################################################################
+    # Save only result files to file system in vm1
+    statistics_files, peaks_files, other_result_files = get_result_files(user_folder)
+    # Combine all paths
+    all_files = []
+    for f in statistics_files:
+        all_files.append(os.path.join(user_folder, f['name']))
+    for f in peaks_files:
+        all_files.append(os.path.join(user_folder, f))
+    for f in other_result_files:
+        all_files.append(os.path.join(user_folder, f))
+    # Prepare files to send
+    files_to_send = []
+    for path in all_files:
+        if os.path.isfile(path):
+            filename = os.path.basename(path)
+            files_to_send.append(("files", (filename, open(path, "rb"))))
+    data = {
+        "email": email,
+        "sample_id": output_id,
+        "description": f"Results for submission {output_id}"
+    }
+    ##############################################################################
+    #                   SAVE ANALYSIS RESULTS TO FILE SYSTEM VM_1                #                 
+    ##############################################################################
+    try:
+        logging.info("Sending files to VM1...")
+        response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=10)
+        logging.info("[save_data] VM1 response: %s %s", response.status_code, response.text)
+    except requests.exceptions.RequestException as e:
+        logging.info("[save_data] Error sending files to VM1: %s", e)
+    finally:
+        # Close all opened file
+        for _, file_tuple in files_to_send:
+            file_tuple[1].close()
+    ##############################################################################
+    #                          SAVE TO DATABASE VM_1                             #                 
+    ##############################################################################
+    # Save signal table, bp translation, ladder and metadata to database
+    signal_table_path = os.path.join(user_folder, f"gel/signal_table.csv")
+    bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
+    metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
+    ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
+    save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadata_path)
