@@ -181,7 +181,35 @@ class Sample(Base):
 
     # ---------organismDescriptor fields-------------
     # organismDescriptor.organismTaxon
-    organism_taxon_term_id: Mapped[str] = mapped_column(
+    organism_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+
+    # ---------Disease-------------
+    disease_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+
+    # ---------Treatment-------------
+    treatment_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+
+    # ---------Phenotypic Abnormality-------------
+    phenotypic_abnormality_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+
+    # ---------Cell Type-------------
+    cell_type_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
@@ -298,7 +326,7 @@ class Sample(Base):
         comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )
 
-    ethnictiy: Mapped[str | None] = mapped_column(
+    ethnicity: Mapped[str | None] = mapped_column(
         nullable=True,
         comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )
@@ -316,17 +344,9 @@ class Sample(Base):
     # Child: sample_treatment
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     ladder: Mapped["Ladder"] = relationship(back_populates="samples")
-    sample_treatments: Mapped[List["SampleTreatment"]] = relationship(back_populates="sample")
     sample_pixels: Mapped[List["SamplePixel"]] = relationship(back_populates="sample")
-    sample_cell_types: Mapped[List["SampleCellType"]] = relationship(back_populates="sample")
     sample_types: Mapped[List["SampleType"]] = relationship(back_populates="sample")
-    sample_diseases: Mapped[List["SampleDisease"]] = relationship(back_populates="sample")
-    sample_phenotypic_abnormalities: Mapped[List["SamplePhenotypicAbnormality"]] = relationship(back_populates="sample")
 
 from database.schema.ladder import Ladder
-from database.schema.sample_disease import SampleDisease
-from database.schema.sample_phenotypic_abnormality import SamplePhenotypicAbnormality
-from database.schema.sample_treatment import SampleTreatment
 from database.schema.sample_pixel import SamplePixel
-from database.schema.sample_cell_type import SampleCellType
 from database.schema.sample_type import SampleType

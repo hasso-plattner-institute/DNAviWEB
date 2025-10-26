@@ -2,7 +2,6 @@
 One time script to create the database tables.
 """
 # Run script using: python -m database.create_db
-# TODO: Add Alembic for database migrations.
 from database.config import engine
 from database.schema.base import Base
 
@@ -18,11 +17,7 @@ from database.schema import (
     ladder_peak,
     ladder_pixel,
     ontology_term,
-    sample_cell_type,
-    sample_disease,
-    sample_phenotypic_abnormality,
     sample_pixel,
-    sample_treatment,
     sample_type,
     sample,
     subject,
