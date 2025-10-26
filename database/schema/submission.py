@@ -27,7 +27,7 @@ class Submission(Base):
 
     username: Mapped[str] = mapped_column(
         String(50),
-        ForeignKey('contact_details.username', ondelete='CASCADE'),
+        ForeignKey('user_details.username', ondelete='CASCADE'),
         nullable=False
     )
 
@@ -37,11 +37,11 @@ class Submission(Base):
         comment="Path to outputs files of the submission."
     )
     
-    # One contact can be appear in multiple rows in the submission table
+    # One user can be appear in multiple rows in the submission table
     # (One parent to Many children)
-    # Parent: contact
+    # Parent: user
     # Child: submission
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-    contact: Mapped["ContactDetails"] = relationship(back_populates="submissions")
-    
-from database.schema.contact_details import ContactDetails
+    user: Mapped["UserDetails"] = relationship(back_populates="submissions")
+
+from database.schema.user_details import UserDetails
