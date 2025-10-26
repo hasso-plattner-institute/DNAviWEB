@@ -2,8 +2,7 @@
 This module defines the ontology_term table according to its definition in the EGA metadata schema.
 https://github.com/EbiEga/ega-metadata-schema/blob/main/schemas/EGA.common-definitions.json
 """
-from typing import List
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 from database.schema.base import Base
 
@@ -37,29 +36,3 @@ class OntologyTerm(Base):
     term_id: Mapped[str] = mapped_column(String(50), primary_key=True)
     term_label: Mapped[str] = mapped_column(String(255), nullable=False)
     ontology_description: Mapped[str | None] = mapped_column(String(255), nullable=True)
-
-    # Relationships
-    # No direct sample–ontology term relationship
-
-    # One ontology term can be appear in multiple rows in the sample_disease table (One to Many)
-    # Parent: ontology_term
-    # Child: sample_disease
-    # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
-    diseases: Mapped[List["SampleDisease"]] = relationship(
-        back_populates="ontology_term"
-    )
-    phenotypic_abnormalities: Mapped[
-        List["SamplePhenotypicAbnormality"]] = relationship(
-        back_populates="ontology_term"
-    )
-    treatments: Mapped[List["SampleTreatment"]] = relationship(
-        back_populates="ontology_term"
-    )
-    cell_types: Mapped[List["SampleCellType"]] = relationship(
-        back_populates="ontology_term"
-    )
-
-from database.schema.sample_disease import SampleDisease
-from database.schema.sample_phenotypic_abnormality import SamplePhenotypicAbnormality
-from database.schema.sample_treatment import SampleTreatment
-from database.schema.sample_cell_type import SampleCellType
