@@ -93,11 +93,25 @@
           </ul>
 
           <ul class="navbar-nav ms-auto">
+            <!--begin::Navbar Login/logout-->
             <li class="nav-item">
-              <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                <i class="bi bi-search"></i>
-              </a>
+              {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                  <span class="nav-link">Hello, {{ current_user.id }}</span>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+              {% endif %}
             </li>
+            <!--end::Navbar Login/logout-->
             <li class="nav-item">
               <a class="nav-link" href="#" data-lte-toggle="fullscreen">
                 <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
@@ -133,12 +147,14 @@
               data-accordion="false"
               id="navigation"
             >
+              {% if current_user.is_authenticated %}
               <li class="nav-item">
                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
                   <i class="nav-icon bi bi-speedometer"></i>
                   <p>Submissions Dashboard</p>
                 </a>
               </li>
+              {% endif %}
               <li class="nav-item">
                 <a href="{{ url_for('instructions') }}" class="nav-link">
                   <i class="bi bi-graph-up"></i>
@@ -250,7 +266,7 @@
                       <p>
                         Your DNA file will be analysed for peaks, height normalized, and grouped if metadata is provided. 
                         Be patient, this may take a while. 
-                        You can also choose to save your analysis files for future use in the <a href="{{ url_for('submissions_dashboard') }}">submissions dashboard</a>.
+                        If logged in, you can also choose to save your analysis files for future use in the submissions dashboard</a>.
                       </p>
                     </div>
                   </div>

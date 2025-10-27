@@ -13,7 +13,7 @@ class Submission(Base):
     """
     - submission_id (output_id): Each submission to DNAvi
       is identified with a unique output identifier.
-    - username: email of the submitter.
+    - username: username of the submitter.
     - output_files_path: Path to all output files of the submission. 
       TODO: CHANGE TO MULTIPLE FILE PATHS.
     """
