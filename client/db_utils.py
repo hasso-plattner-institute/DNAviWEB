@@ -9,6 +9,8 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from database.config import engine
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
+from database.schema.ladder import Ladder
+from database.schema.ladder_peak import LadderPeak
 from database.schema.ontology_term import OntologyTerm
 from .src.tools import get_result_files
 # Path to vm1 where the database and file system are.
@@ -74,78 +76,114 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
     """
     logging.info("Saving dummy metadata to test")
     with Session(engine) as session:
-        # Detect csv file encodings
-        signal_table_encoding = detect_file_encoding(signal_table_path)
-        bp_translation_encoding = detect_file_encoding(bp_translation_path)
-        ladder_encoding = detect_file_encoding(ladder_path)
-        metadata_encoding = detect_file_encoding(metadata_path)
-        ################################################################################################################################
-        # SAVE DISEASE/CELL TYPE/PHENOTYPIC ABNORMALITY/TREATMENT/ETHNICITY/ORGANISM/CONDITION UNDER STUDY/ MATERIAL ANATOMICAL ENTITY #           
-        ################################################################################################################################
-        logging.info("Start saving ontology terms")
-        ontology_term_fields = {
-            "Disease",
-            "Cell Type",
-            "Phenotypic Abnormality",
-            "Treatment",
-            "Ethnicity",
-            "Organism",
-            "Condition Under Study",
-            "Material Anatomical Entity"
-        }
-        meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
-        # Loop through each ontology terms column in metadata
-        for label_col in ontology_term_fields:
-            if label_col not in meta_df.columns:
-                continue
-            logging.info("Processing ontology column: %s", label_col)
-            for raw_value in meta_df[label_col].dropna():
-                labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
-                for label in labels:
-                    # Skip if this label already exists in DB
-                    existing = session.query(OntologyTerm).filter(
-                        func.lower(OntologyTerm.term_label) == label.lower()
-                    ).first()
-                    if existing:
-                        logging.info("Ontology label %s already exists, skipping insert.", label)
-                        continue
-                    # Get term ID from OLS
-                    term_id = get_ols_term_id(label, label_col)
-                    if not term_id:  # None or empty string
-                        term_id = str(uuid.uuid4())
-                        logging.info("Generated UUID for %s in column %s", label, label_col)
-                    stmt = (
-                        insert(OntologyTerm)
-                        .values(term_id=term_id, term_label=label)
-                        .on_conflict_do_nothing(index_elements=["term_id"])
+        try:
+            # Detect csv file encodings
+            signal_table_encoding = detect_file_encoding(signal_table_path)
+            bp_translation_encoding = detect_file_encoding(bp_translation_path)
+            ##############################################################################
+            #                                 SAVE LADDER                                #
+            ##############################################################################
+            # TODO: SAVE SPACE DONT SAVE SAME LADDER MANY TIMES
+            # Save ladder file into ladder_peak table
+            ladder_encoding = detect_file_encoding(ladder_path)
+            ladder_df = pd.read_csv(ladder_path, encoding=ladder_encoding)
+            # Check for empty Peak or Basepairs
+            if ladder_df["Peak"].isna().any() or ladder_df["Basepairs"].isna().any():
+                raise ValueError("Ladder file contains empty Peak or Basepairs values. Aborting saving to database.")
+            with Session(engine) as session:
+                # Create a new ladder
+                ladder_name = None
+                # Check if name exists
+                if "Name" in ladder_df.columns and len(ladder_df) >= 2:
+                    value = ladder_df.loc[1, "Name"]
+                    if pd.notna(value):
+                        ladder_name = str(value).strip()
+                new_ladder = Ladder(ladder_name=ladder_name)
+                session.add(new_ladder)
+                session.commit()
+                # Insert ladder peaks
+                for _, row in ladder_df.iterrows():
+                    ladder_peak = LadderPeak(
+                        ladder_id=new_ladder.ladder_id,
+                        peak=row['Peak'],
+                        basepairs=float(row['Basepairs'])
                     )
-                    session.execute(stmt)
-        session.commit()
-        logging.info("Ontology terms saved successfully!")
-        ##############################################################################
-        #                          SAVE GEL DEVICE                                   #
-        ##############################################################################
-        logging.info("Start saving device terms")
-        if "Gel Electrophoresis Device" in meta_df.columns:
-            for raw_device in meta_df["Gel Electrophoresis Device"].dropna():
-                devices = [d.strip() for d in str(raw_device).split(";") if d.strip()]
-                for device_label in devices:
-                    # Skip if this device already exists in DB
-                    existing = session.query(GelElectrophoresisDevice).filter(
-                        func.lower(GelElectrophoresisDevice.device_name) == device_label.lower()
-                    ).first()
-                    if existing:
-                        logging.info("Device %s already exists, skipping insert.", device_label)
+                    session.add(ladder_peak)
+                session.commit()
+                logging.info("Saved ladder %s as ladder_id %s", ladder_name, new_ladder.ladder_id)
+            ################################################################################################################################
+            # SAVE DISEASE/CELL TYPE/PHENOTYPIC ABNORMALITY/TREATMENT/ETHNICITY/ORGANISM/CONDITION UNDER STUDY/ MATERIAL ANATOMICAL ENTITY #           
+            ################################################################################################################################
+            metadata_encoding = detect_file_encoding(metadata_path)
+            logging.info("Start saving ontology terms")
+            ontology_term_fields = {
+                "Disease",
+                "Cell Type",
+                "Phenotypic Abnormality",
+                "Treatment",
+                "Ethnicity",
+                "Organism",
+                "Condition Under Study",
+                "Material Anatomical Entity"
+            }
+            meta_df = None
+            if os.path.exists(metadata_path):
+                meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
+                # Loop through each ontology terms column in metadata
+                for label_col in ontology_term_fields:
+                    if label_col not in meta_df.columns:
                         continue
-                    # Id for device autoincremented
-                    stmt = (
-                        insert(GelElectrophoresisDevice)
-                        .values(device_name=device_label)
-                        .on_conflict_do_nothing(index_elements=["device_name"])
-                    )
-                    session.execute(stmt)
-        session.commit()
-        logging.info("Device terms saved successfully!")
+                    for raw_value in meta_df[label_col].dropna():
+                        labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
+                        for label in labels:
+                            # Skip if this label already exists in DB
+                            existing = session.query(OntologyTerm).filter(
+                                func.lower(OntologyTerm.term_label) == label.lower()
+                            ).first()
+                            if existing:
+                                continue
+                            # Get term ID from OLS
+                            term_id = get_ols_term_id(label, label_col)
+                            if not term_id:  # None or empty string
+                                term_id = str(uuid.uuid4())
+                            stmt = (
+                                insert(OntologyTerm)
+                                .values(term_id=term_id, term_label=label)
+                                .on_conflict_do_nothing(index_elements=["term_id"])
+                            )
+                            session.execute(stmt)
+                session.commit()
+                logging.info("Ontology terms saved successfully!")
+            ##############################################################################
+            #                          SAVE GEL DEVICE                                   #
+            ##############################################################################
+            logging.info("Start saving device terms")
+            if "Gel Electrophoresis Device" in meta_df.columns:
+                for raw_device in meta_df["Gel Electrophoresis Device"].dropna():
+                    devices = [d.strip() for d in str(raw_device).split(";") if d.strip()]
+                    for device_label in devices:
+                        # Skip if this device already exists in DB
+                        existing = session.query(GelElectrophoresisDevice).filter(
+                            func.lower(GelElectrophoresisDevice.device_name) == device_label.lower()
+                        ).first()
+                        if existing:
+                            continue
+                        # Id for device autoincremented
+                        stmt = (
+                            insert(GelElectrophoresisDevice)
+                            .values(device_name=device_label)
+                            .on_conflict_do_nothing(index_elements=["device_name"])
+                        )
+                        session.execute(stmt)
+            session.commit()
+            logging.info("Device terms saved successfully!")
+        except Exception as e:
+            logging.exception("Error saving files to database: %s", e)
+        ##############################################################################
+        #                        SAVE SUBJECT (PATIENT)                              #
+        ##############################################################################
+        
+        
         ##############################################################################
         #                   SAVE SIGNAL TABLE AND BP TRANSLATION                     #
         ##############################################################################
