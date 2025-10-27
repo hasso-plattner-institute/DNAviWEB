@@ -19,11 +19,9 @@ class Ladder(Base):
         autoincrement=True,
     )
 
-    ladder_type: Mapped[str] = mapped_column(
+    ladder_name: Mapped[str] = mapped_column(
         String(50),
-        nullable=True,
-        comment=("Kind of molecular weight ladder used in  gel electrophoresis (offer"
-                 "common ladder types by companies eg HSD5000, and custom option).")
+        nullable=True
     )
 
     # Relationship between parent (Ladder) and child (LadderPixel) class

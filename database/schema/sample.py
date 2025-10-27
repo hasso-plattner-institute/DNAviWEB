@@ -3,6 +3,7 @@ This module defines the 'sample' table.
 The Sample table stores all samples and all associated metadata is either stored 
 directly in the table or in additional tables that reference its primary key.
 """
+#TODO SAMPLE ATTRIBUTE FOR CUSTOM COLUMNS
 from typing import List
 from sqlalchemy import (
     Boolean,
