@@ -30,11 +30,11 @@ Base.metadata.create_all(engine)
 print("DNAvi database tables created successfully!")
 
 ###############################################################################
-#                    INSERT DEFAULT ONTOLOGY TERMS                            #
+#                    INSERT DEFAULT METADATA                                  #
 ###############################################################################
-def seed_default_ontology_terms():
+def seed_default_values():
     """
-    Seeds the ontology_term table with default controlled vocabulary entries.
+    Seeds the database tables from the beginning with default values.
     """
     sex_rows = [
         {
@@ -63,8 +63,39 @@ def seed_default_ontology_terms():
             "ontology_description": "The biological sex is unknown, not assessed or not available."
         }
     ]
+    
+    gel_electrophoresis_devices_rows = [
+        {
+            "device_name": "2100 Bioanalyzer Instrument, Agilent"
+        },
+        {
+            "device_name": "4150 TapeStation System, Agilent"
+        },
+        {
+            "device_name": "4200 TapeStation System, Agilent"
+        },
+        {
+            "device_name": "5200 Fragment Analyzer System, Agilent"
+        },
+        {
+            "device_name": "5300 Fragment Analyzer System, Agilent"
+        },
+        {
+            "device_name": "5400 Fragment Analyzer System, Agilent"
+        },
+        {
+            "device_name": "Qsep 1 Bio-Fragment Analyzer, Nippon"
+        },
+        {
+            "device_name": "Qsep 100 Bio-Fragment Analyzer, Nippon"
+        },
+        {
+            "device_name": "Qsep 400 Bio-Fragment Analyzer, Nippon"
+        }
+    ]
 
     with Session(engine) as session:
+        # Seed sex
         for row in sex_rows:
             stmt = (
                 insert(ontology_term.OntologyTerm)
@@ -72,8 +103,16 @@ def seed_default_ontology_terms():
                 .on_conflict_do_nothing(index_elements=["term_id"])
             )
             session.execute(stmt)
+        # Seed devices
+        for row in gel_electrophoresis_devices_rows:
+            stmt = (
+                insert(gel_electrophoresis_devices.GelElectrophoresisDevice)
+                .values(**row)
+                .on_conflict_do_nothing(index_elements=["device_name"])
+            )
+            session.execute(stmt)
         session.commit()
-    print("Default ontology terms (biological sex) seeded successfully!")
+    print("Default ontology terms (biological sex) and gel electrophoresis devices seeded successfully!")
 
-seed_default_ontology_terms()
+seed_default_values()
 print("Database setup completed successfully!")

@@ -20,6 +20,7 @@ class GelElectrophoresisDevice(Base):
     device_id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True
     )
+    # The name is unique to avoid storing same device multiple times.
     device_name: Mapped[str] = mapped_column(
-        String(250), nullable=False, comment="Name of the gel electrophoresis device."
+        String(250), nullable=False, unique=True, comment="Name of the gel electrophoresis device."
     )
