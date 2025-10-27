@@ -129,7 +129,7 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
         ##############################################################################
 
 
-def save_data(app, output_id, email, save_to_db):
+def save_data(app, output_id, username, save_to_db):
     """
     Save user data permanently in database and file system on VM1, if consent is given.
     """
@@ -137,7 +137,7 @@ def save_data(app, output_id, email, save_to_db):
     if save_to_db != 'yes':
         return
     # User consented, save
-    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], email, output_id)
+    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
     if not os.path.exists(user_folder):
         print(f"Folder not found: {user_folder}")
         return 
@@ -161,7 +161,7 @@ def save_data(app, output_id, email, save_to_db):
             filename = os.path.basename(path)
             files_to_send.append(("files", (filename, open(path, "rb"))))
     data = {
-        "email": email,
+        "username": username,
         "sample_id": output_id,
         "description": f"Results for submission {output_id}"
     }

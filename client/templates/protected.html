@@ -96,14 +96,25 @@
 
           <!--begin::End Navbar Links-->
           <ul class="navbar-nav ms-auto">
-            <!--begin::Navbar Search-->
+            <!--begin::Navbar Login/logout-->
             <li class="nav-item">
-              <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                <i class="bi bi-search"></i>
-              </a>
+              {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                  <span class="nav-link">Hello, {{ current_user.id }}</span>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+              {% endif %}
             </li>
-            <!--end::Navbar Search-->
-
+            <!--end::Navbar Login/logout-->
             <!--begin::Fullscreen Toggle-->
             <li class="nav-item">
               <a class="nav-link" href="#" data-lte-toggle="fullscreen">
@@ -151,14 +162,14 @@
               data-accordion="false"
               id="navigation"
             >
+              {% if current_user.is_authenticated %}
               <li class="nav-item">
-                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
+                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
                   <i class="nav-icon bi bi-speedometer"></i>
-                  <p>
-                    Submissions Dashboard
-                  </p>
+                  <p>Submissions Dashboard</p>
                 </a>
               </li>
+              {% endif %}
 
               <li class="nav-item">
                  <a href="{{ url_for('instructions') }}" class="nav-link">

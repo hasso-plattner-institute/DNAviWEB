@@ -10,7 +10,7 @@ from database.schema.base import Base
 class UserDetails(Base):
     """
     This table describes user details of the submitter of the samples.
-    - username: Mandatory field, it is the email of the submitter, if the submitter 
+    - username: Mandatory field, it is the username of the submitter, if the submitter 
     would like their data saved but did not register then a random username is generated.
     - password: optional only for registered users.
     """
