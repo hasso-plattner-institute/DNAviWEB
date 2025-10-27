@@ -20,7 +20,6 @@ from database.schema import (
     ladder_pixel,
     ontology_term,
     sample_pixel,
-    sample_type,
     sample,
     subject,
     submission

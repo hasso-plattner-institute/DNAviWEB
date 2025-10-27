@@ -326,11 +326,11 @@
                                 <tr>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Unique sample identifier">SAMPLE<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Types<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Disease that the subject was diagnosed with at the time the sample was collected.">Disease<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Type<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Type<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormality<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell type.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="This property describes the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism<i class="bi bi-info-circle text-muted"></i></th>
@@ -379,7 +379,8 @@
                                     </div>
                                   </td>
                                   <td>
-                                    <select name="case_control[]" class="form-select form-select-sm" multiple size="3">
+                                    <select name="sample_type[]" class="form-select form-select-sm">
+                                      <option value="">Select</option>
                                       <option>DNA</option>
                                       <option>RNA</option>
                                       <option>metabolite</option>
@@ -608,20 +609,20 @@
                                 <label class="form-check-label" for="group_subject_id">Subject ID</label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Diseases" id="group_disease">
-                                <label class="form-check-label" for="group_disease">Diseases</label>
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Disease" id="group_disease">
+                                <label class="form-check-label" for="group_disease">Disease</label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Cell Types" id="group_cell_type">
-                                <label class="form-check-label" for="group_cell_type">Cell Types</label>
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Cell Type" id="group_cell_type">
+                                <label class="form-check-label" for="group_cell_type">Cell Type</label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Sample Types" id="group_sample_type">
-                                <label class="form-check-label" for="group_sample_type">Sample Types</label>
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Sample Type" id="group_sample_type">
+                                <label class="form-check-label" for="group_sample_type">Sample Type</label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormalities" id="group_phenotype">
-                                <label class="form-check-label" for="group_phenotype">Phenotypic Abnormalities</label>
+                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormality" id="group_phenotype">
+                                <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">

@@ -79,14 +79,14 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
         ladder_encoding = detect_file_encoding(ladder_path)
         metadata_encoding = detect_file_encoding(metadata_path)
         #########################################################################################################
-        # SAVE DISEASES/CELL TYPES/PHENOTYPIC ABNORMALITIES/TREATMENTS/ETHNICITY/ORGANISM/CONDITION UNDER STUDY #           
+        # SAVE DISEASE/CELL TYPE/PHENOTYPIC ABNORMALITY/TREATMENT/ETHNICITY/ORGANISM/CONDITION UNDER STUDY #           
         #########################################################################################################
         logging.info("Start saving ontology terms")
         ontology_term_fields = {
-            "Diseases",
-            "Cell Types",
-            "Phenotypic Abnormalities",
-            "Treatments",
+            "Disease",
+            "Cell Type",
+            "Phenotypic Abnormality",
+            "Treatment",
             "Ethnicity",
             "Organism",
             "Condition Under Study"
