@@ -39,7 +39,7 @@ function initializeAutocomplete(input) {
                 if (/cell type/i.test(placeholder)) return "cl";
                 if (/phenotypic/i.test(placeholder)) return "hp";
                 if (/organism/i.test(placeholder)) return "ncbitaxon";
-                if (/condition/i.test(placeholder)) return "ncit";
+                if (/condition/i.test(placeholder)) return "xco";
                 if (/treatment/i.test(placeholder)) return "dron";  
                 return "efo";
             };
