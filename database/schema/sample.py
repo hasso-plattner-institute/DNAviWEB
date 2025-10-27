@@ -29,6 +29,30 @@ sample_status_enum = PG_ENUM(
     create_type=True
 )
 
+sample_type_enum = PG_ENUM(
+    "DNA",
+    "RNA",
+    "metabolite",
+    "protein",
+    "cDNA",
+    "genomic DNA",
+    "mitochondrial DNA",
+    "messenger RNA",
+    "ncRNA",
+    "non polyA RNA",
+    "long non polyA RNA",
+    "nuclear RNA",
+    "polyA RNA",
+    "long polyA RNA",
+    "snRNA",
+    "total RNA",
+    "cell culture",
+    "biofilm",
+    "tissue culture",
+    name="sample_type_enum",
+    create_type=True
+)
+
 class Sample(Base):
     """    
     EGA definition: Sample metadata object is intended to contain metadata about 
@@ -49,13 +73,10 @@ class Sample(Base):
     
     - sample_name (in EGA objectDescription): Sample description extracted from the metadata the user typed. 
         
-    ---------submission table-------------
     - submission_id: Each submission to DNAvi is identified with a unique output identifier.
 
-    ---------subject table-------------
     - subject_id: Unique identifier of the subject that the sample was extracted from.
 
-    ---------ladder table-------------
     - ladder_id: Unique identifier of the ladder used in the submission of this sample.
     
     ---------organismDescriptor-------------
@@ -68,13 +89,37 @@ class Sample(Base):
     human (e.g. microbiota taken from a donor). Unless stated otherwise, given the
     nature of the EGA, it is expected to be of human provenance.
 
-    - organism_taxon_term_id: Taxonomic classification of the organism (e.g. 'NCBITaxon:9606' and 
+    - organism_term_id: Taxonomic classification of the organism (e.g. 'NCBITaxon:9606' and 
      'homo sapiens' for humans) curated by the NCBI Taxonomy (search for organisms here:
       https://www.ncbi.nlm.nih.gov/taxonomy; or use the OLS: 
       https://www.ebi.ac.uk/ols/ontologies/ncbitaxon).
       You can find further details at 'https://www.uniprot.org/help/taxonomic_identifier'.
       This is appropriate for individual organisms and some environmental samples.
-    
+    - disease_term_id: https://github.com/EbiEga/ega-metadata-schema/blob/main/schemas/EGA.common-definitions.json
+        EGA Definition:
+        Property to describe a 'disease' (i.e. a disposition to undergo pathological processes because
+        of one or more disorders). Ontology constraints for this specific termId:
+        - Must satisfy any one of the following:
+        * Ontology validation of 'disease' - EFO (Example: EFO:0003101)
+        * Ontology validation of 'disease' - ORDO
+        * Ontology validation of 'human disease or disorder' - MONDO (Example: MONDO:0100096)
+        - In case the phenotypic abnormality is unknown or there is none:
+        * Unknown - NCIT:C17998
+        * Unaffected - NCIT:C9423
+    - phenotypic_abnormality_term_id: https://github.com/EbiEga/ega-metadata-schema/blob/main/schemas/EGA.common-definitions.json
+        EGA Definition:
+        Property to describe any abnormal (i.e. deviation from normal or average) phenotype
+        (i.e. detectable outward manifestations of a specific genotype).
+        In case the phenotypic abnormality is:
+        "NCIT:C17998": "Unknown",
+        "NCIT:C94232": "Unaffected"
+    - cell_type_term_id
+    - sample_type: the material entity (e.g. DNA) that is this sample.
+      Use this property as tags that befit your sample, picking as many as needed.
+      Choose the specific terms if possible (e.g. if the assayed molecule is cDNA,
+      add 'cDNA' instead of just 'DNA'). This property should not be confused with
+      the sample collection protocols: regardless of the procedure to collect the sample,
+      this property specifies what this sample is representing.
     ---------sampleCollection-------------
     Node containing the provenance details (when and where) of the sample. This information does not
     include the whole sample collection protocol (expected at experiment's protocols), only the 
@@ -92,7 +137,6 @@ class Sample(Base):
     representative of the whole) is extracted from the whole. Search for your sample collection
     site at http://purl.obolibrary.org/obo/UBERON_0000465. For example: in the case of a nasal swab,
     it would be 'nasal cavity'; in a liver biopsy it would be 'liver'.
-
 
     ---------sampleStatus-------------
     - case_vs_control
@@ -143,6 +187,8 @@ class Sample(Base):
      otherwise if it came from a lab setup it is in vitro.
    
    - ethnicity_term_id: Ethnicity of the subject.
+
+   - treatment_term_id: Medications the patient used.
     """
 
     __tablename__ = 'sample'
@@ -212,6 +258,12 @@ class Sample(Base):
     cell_type_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+    
+    # ---------Sample Type-------------
+    sample_type: Mapped[str] = mapped_column(
+        sample_type_enum,
         nullable=True
     )
 
@@ -345,8 +397,6 @@ class Sample(Base):
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     ladder: Mapped["Ladder"] = relationship(back_populates="samples")
     sample_pixels: Mapped[List["SamplePixel"]] = relationship(back_populates="sample")
-    sample_types: Mapped[List["SampleType"]] = relationship(back_populates="sample")
 
 from database.schema.ladder import Ladder
 from database.schema.sample_pixel import SamplePixel
-from database.schema.sample_type import SampleType

@@ -19,10 +19,10 @@ class Subject(Base):
     -------minimalPublicAttributes---------------
     Among all attributes describing an subject, some may contain identifiable metadata
     and thus must be private. Nevertheless, there are three/four required attributes (even if
-    they are unknown): subject id, biological sex, phenotypicAbnormalities and/or diseases.
+    they are unknown): subject id, biological sex, phenotypicAbnormaly and/or disease.
     These shall be displayed and queryable on our portal. In the case of a healthy subject
-    (with no phenotypic abnormalities nor diseases), the 'phenotypicAbnormalities' and 
-    'diseases' arrays will contain a reference to 'Unaffected' [NCIT:C94232]. Do take into
+    (with no phenotypic abnormality nor disease), the 'phenotypicAbnormality' and 
+    'disease' arrays will contain a reference to 'Unaffected' [NCIT:C94232]. Do take into
     account the 'excluded' property of each 'disease' or 'phenotypicAbnormality' in order
     to evaluate it correctly, since logic negation can be provided using that property.
     - biological_sex
