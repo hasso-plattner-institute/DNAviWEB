@@ -1,3 +1,6 @@
+"""
+This module handles data saving into database and file system of vm_1.
+"""
 import os
 import uuid
 import logging
@@ -139,7 +142,7 @@ def save_ontology_terms(session, metadata_path):
     logging.info("Ontology terms saved successfully.")
 
 ##############################################################################
-#                           SAVE GEL DEVICE                                  #
+#                           SAVE GEL DEVICES                                 #
 ##############################################################################
 def save_devices(session, metadata_path):
     """
