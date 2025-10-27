@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
 from database.config import engine
 from database.schema.base import Base
-
 # Pylint should not report about unused imports here as they are necessary for table
 # creation in SQLAlchemy syntax.
 # pylint: disable=unused-import
@@ -36,7 +35,7 @@ def seed_default_values():
     """
     Seeds the database tables from the beginning with default values.
     """
-    sex_rows = [
+    ontology_term_rows = [
         {
             "term_label": "male",
             "term_id": "PATO:0000384",
@@ -62,6 +61,15 @@ def seed_default_values():
             "term_id": "NCIT:C17998",
             "ontology_description": "The biological sex is unknown, not assessed or not available."
         }
+    ]
+    
+    # BiologicalSexInfo initalize (Constant table)
+    sex_info_rows = [
+        {"biological_sex": "male", "biological_sex_term_id": "PATO:0000384"},
+        {"biological_sex": "female", "biological_sex_term_id": "PATO:0000383"},
+        {"biological_sex": "hermaphrodite", "biological_sex_term_id": "PATO:0001340"},
+        {"biological_sex": "pseudohermaphrodite", "biological_sex_term_id": "PATO:0001827"},
+        {"biological_sex": "unknown", "biological_sex_term_id": "NCIT:C17998"},
     ]
     
     gel_electrophoresis_devices_rows = [
@@ -95,12 +103,20 @@ def seed_default_values():
     ]
 
     with Session(engine) as session:
-        # Seed sex
-        for row in sex_rows:
+        # Seed sex in ontology terms table
+        for row in ontology_term_rows:
             stmt = (
                 insert(ontology_term.OntologyTerm)
                 .values(**row)
                 .on_conflict_do_nothing(index_elements=["term_id"])
+            )
+            session.execute(stmt)
+        # Seed sex in sex info table
+        for row in sex_info_rows:
+            stmt = (
+                insert(biological_sex_info.BiologicalSexInfo)
+                .values(**row)
+                .on_conflict_do_nothing(index_elements=["biological_sex"])
             )
             session.execute(stmt)
         # Seed devices
