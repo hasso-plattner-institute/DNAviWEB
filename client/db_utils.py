@@ -39,7 +39,7 @@ def detect_ontology(label_col):
     if "organism" in label_lower:
         return "ncbitaxon"
     if "condition" in label_lower:
-        return "ncit"
+        return "xco"
     if "treatment" in label_lower:
         return "dron"
     return "efo"
@@ -79,9 +79,9 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
         bp_translation_encoding = detect_file_encoding(bp_translation_path)
         ladder_encoding = detect_file_encoding(ladder_path)
         metadata_encoding = detect_file_encoding(metadata_path)
-        #########################################################################################################
-        # SAVE DISEASE/CELL TYPE/PHENOTYPIC ABNORMALITY/TREATMENT/ETHNICITY/ORGANISM/CONDITION UNDER STUDY #           
-        #########################################################################################################
+        ################################################################################################################################
+        # SAVE DISEASE/CELL TYPE/PHENOTYPIC ABNORMALITY/TREATMENT/ETHNICITY/ORGANISM/CONDITION UNDER STUDY/ MATERIAL ANATOMICAL ENTITY #           
+        ################################################################################################################################
         logging.info("Start saving ontology terms")
         ontology_term_fields = {
             "Disease",
@@ -90,7 +90,8 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
             "Treatment",
             "Ethnicity",
             "Organism",
-            "Condition Under Study"
+            "Condition Under Study",
+            "Material Anatomical Entity"
         }
         meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
         # Loop through each ontology terms column in metadata
