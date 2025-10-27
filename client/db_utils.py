@@ -8,6 +8,7 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from database.config import engine
+from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
 from database.schema.ontology_term import OntologyTerm
 from .src.tools import get_result_files
 # Path to vm1 where the database and file system are.
@@ -96,7 +97,7 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
         for label_col in ontology_term_fields:
             if label_col not in meta_df.columns:
                 continue
-            logging.info(f"Processing ontology column: {label_col}")
+            logging.info("Processing ontology column: %s", label_col)
             for raw_value in meta_df[label_col].dropna():
                 labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
                 for label in labels:
@@ -105,13 +106,13 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
                         func.lower(OntologyTerm.term_label) == label.lower()
                     ).first()
                     if existing:
-                        logging.info(f"Ontology label '{label}' already exists, skipping insert.")
+                        logging.info("Ontology label %s already exists, skipping insert.", label)
                         continue
                     # Get term ID from OLS
                     term_id = get_ols_term_id(label, label_col)
                     if not term_id:  # None or empty string
                         term_id = str(uuid.uuid4())
-                        logging.info(f"Generated UUID for '{label}' in column '{label_col}'")
+                        logging.info("Generated UUID for %s in column %s", label, label_col)
                     stmt = (
                         insert(OntologyTerm)
                         .values(term_id=term_id, term_label=label)
@@ -120,6 +121,30 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
                     session.execute(stmt)
         session.commit()
         logging.info("Ontology terms saved successfully!")
+        ##############################################################################
+        #                          SAVE GEL DEVICE                                   #
+        ##############################################################################
+        logging.info("Start saving device terms")
+        if "Gel Electrophoresis Device" in meta_df.columns:
+            for raw_device in meta_df["Gel Electrophoresis Device"].dropna():
+                devices = [d.strip() for d in str(raw_device).split(";") if d.strip()]
+                for device_label in devices:
+                    # Skip if this device already exists in DB
+                    existing = session.query(GelElectrophoresisDevice).filter(
+                        func.lower(GelElectrophoresisDevice.device_name) == device_label.lower()
+                    ).first()
+                    if existing:
+                        logging.info("Device %s already exists, skipping insert.", device_label)
+                        continue
+                    # Id for device autoincremented
+                    stmt = (
+                        insert(GelElectrophoresisDevice)
+                        .values(device_name=device_label)
+                        .on_conflict_do_nothing(index_elements=["device_name"])
+                    )
+                    session.execute(stmt)
+        session.commit()
+        logging.info("Device terms saved successfully!")
         ##############################################################################
         #                   SAVE SIGNAL TABLE AND BP TRANSLATION                     #
         ##############################################################################
