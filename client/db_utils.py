@@ -155,19 +155,17 @@ def save_file_system(user_folder, username, submission_id):
         logging.info("Sending files to VM1...")
         # Send files via HTTP request to VM1, 10 sec connect timeout, 300 sec time to upload and process file transfer
         response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=(10, 300))
-        if response.status_code != 200 or response.get("status") == "error":
-            raise RuntimeError(f"VM1 responded with status {response.status_code}: {response.text}")
-        logging.info("[save_data] VM1 response: %s %s", response.status_code, response.text)
+        response.raise_for_status()
+        vm1_data = response.json()
+        saved_files_paths = vm1_data.get("saved_files", [])
+        logging.info("Success saving files to file system VM1.")
+        return saved_files_paths
     except requests.exceptions.RequestException:
-        raise RuntimeError(f"VM1 responded with status {response.status_code}: {response.text}")
+        raise RuntimeError(f"Error VM1 responded with status {response.status_code}: {response.text}")
     finally:
         # Close all opened file
         for _, file_tuple in files_to_send:
             file_tuple[1].close()
-    logging.info("Success saving files to file system VM1.")
-    vm1_data = response.json()
-    saved_files_paths = vm1_data.get("saved_files", [])
-    return saved_files_paths
 
 ##############################################################################
 #                          DELETE FROM FILE SYSTEM                           #                 
