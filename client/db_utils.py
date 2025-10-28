@@ -160,8 +160,12 @@ def save_file_system(user_folder, username, submission_id):
         saved_files_paths = vm1_data.get("saved_files", [])
         logging.info("Success saving files to file system VM1.")
         return saved_files_paths
-    except requests.exceptions.RequestException:
-        raise RuntimeError(f"Failed to send files to VM1")
+    except requests.exceptions.RequestException as e:
+        if response is not None:
+            logging.error("Failed to save to VM1. Status code: %s, Response: %s", 
+                          response.status_code, response.text)
+        logging.error("Exception while sending files to VM1: %s", e)
+        raise RuntimeError("Failed to save files to VM1") from e
     finally:
         # Close all opened file
         for _, file_tuple in files_to_send:
