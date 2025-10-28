@@ -11,6 +11,7 @@ from database.schema.base import Base
 # pylint: disable=unused-import
 from database.schema import (
     biological_sex_info,
+    file,
     user_details,
     gel_electrophoresis_devices,
     hospitalization_status_enum,

@@ -2,7 +2,7 @@
 This module describes user details of the submitter of the samples.
 """
 from typing import List, Optional
-from sqlalchemy import String
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from database.schema.base import Base
@@ -18,6 +18,7 @@ class UserDetails(Base):
 
     username: Mapped[Optional[str]] = mapped_column(String(50), primary_key=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    is_guest: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     # Relationship — One user can submit many times (one to many)
     submissions: Mapped[List["Submission"]] = relationship(back_populates="user")
