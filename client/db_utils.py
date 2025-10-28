@@ -170,6 +170,22 @@ def save_file_system(user_folder, username, submission_id):
     return saved_files_paths
 
 ##############################################################################
+#                          DELETE FROM FILE SYSTEM                           #                 
+##############################################################################
+def delete_file_system(username, submission_id):
+    """
+    Delete from file system on vm1, for user: username and submission_id
+    """
+    # VM1 cleanup
+    try:
+        delete_url = f"{VM1_API_URL}/delete"
+        data = {"username": username, "submission_id": str(submission_id)}
+        requests.delete(delete_url, json=data, timeout=(10, 50))
+        logging.info("Files deleted successfully on VM1 after DB failure.")
+    except Exception as e:
+        logging.error("Failed to delete files from VM1: %s", e)
+
+##############################################################################
 #                           SAVE TO SUBMISSION TABLE                         #
 ##############################################################################    
 def save_file_paths_to_db(session, submission_id, saved_files_paths):
@@ -361,7 +377,8 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
         # Revert all changes on exception
         with Session(engine) as session:
             session.rollback()
-        # TODO: Delete from file system all saved files on exception
+        # Delete from file system all saved files on exception
+        delete_file_system(username, submission_id)
 
 def save_data(app, submission_id, username, save_to_db):
     """
@@ -380,11 +397,14 @@ def save_data(app, submission_id, username, save_to_db):
     ##############################################################################
     # Save files to file system and return the paths on vm_1 to store in DB
     # If saving to file system failed, skip saving.
+    saved_files_paths = ["file_path1", "file_path_2"]
+    """
     try:
         saved_files_paths = save_file_system(user_folder, username, submission_id)
     except Exception as e:
         logging.info("Failed to save to file system: %s", e)
         return
+    """
     ##############################################################################
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
