@@ -397,14 +397,12 @@ def save_data(app, submission_id, username, save_to_db):
     ##############################################################################
     # Save files to file system and return the paths on vm_1 to store in DB
     # If saving to file system failed, skip saving.
-    saved_files_paths = ["file_path1", "file_path_2"]
-    """
+    #saved_files_paths = ["file_path1", "file_path_2"]
     try:
         saved_files_paths = save_file_system(user_folder, username, submission_id)
     except Exception as e:
         logging.info("Failed to save to file system: %s", e)
         return
-    """
     ##############################################################################
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
