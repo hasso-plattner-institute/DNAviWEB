@@ -7,7 +7,7 @@ import logging
 import chardet
 import pandas as pd
 import requests
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from database.config import engine
@@ -17,6 +17,7 @@ from database.schema.ladder_peak import LadderPeak
 from database.schema.ontology_term import OntologyTerm
 from database.schema.subject import Subject
 from database.schema.submission import Submission
+from database.schema.user_details import UserDetails
 from .src.tools import get_result_files
 # Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000/upload"
@@ -82,6 +83,43 @@ def get_ols_term_id(label, label_col):
             return ""
     except Exception:
         return ""
+
+##############################################################################
+#                           SAVE TO SUBMISSION TABLE                         #
+##############################################################################    
+def save_submission(session, username, submission_id):
+    """
+    Save the following submission info into database:
+        - username: Username of the submitter.
+        - submission_id: Submission ID (UUID string).
+    The submission row will be inserted, skipping duplicates if the same submission_id
+    already exists.
+    """
+    # Check if user exists in the database
+    existing_user = session.execute(
+        select(UserDetails).where(UserDetails.username == username)
+    ).scalar_one_or_none()
+    # If the user does not exist in the database, this indicates a guest submission.
+    # In that case, we create a guest user entry in the database (is_guest=True, no password).
+    # NOTE: Guest users are only saved if they choose to save their data.
+    # If they do not choose to save, their username is not stored.
+    # This differs from registered users, whose username and password are already saved in the database during registration.
+    # Therefore, if a username is not found in the database at this point, it is for sure a guest.
+    if not existing_user:
+        guest_user = UserDetails(
+            username=username,
+            password_hash=None,
+            is_guest=True
+        )
+        session.add(guest_user)
+        session.flush() # Flush to ensure username exists as FK in submission (even if we did not commit yet)
+    # Insert submission row
+    stmt = insert(Submission).values(
+        submission_id=submission_id,
+        username=username
+    ).on_conflict_do_nothing(index_elements=["submission_id"])
+    session.execute(stmt)
+    logging.info("Saved submission %s successfully.", submission_id)
 
 ##############################################################################
 #                                 SAVE LADDER                                #
@@ -221,25 +259,6 @@ def save_subjects(session, metadata_path):
     logging.info("Subjects saved successfully.")
 
 ##############################################################################
-#                           SAVE TO SUBMISSION TABLE                         #
-##############################################################################    
-def save_submission(session, username, submission_id):
-    """
-    Save the following submission info into database:
-        username: Username of the submitter.
-        submission_id: Submission ID (UUID string).
-        paths to files in file system on vm1 of analysis results.
-    """
-    # Insert submission row
-    stmt = insert(Submission).values(
-        submission_id=submission_id,
-        username=username,
-        output_files_path=""  # temporary, will update after saving files
-    ).on_conflict_do_nothing(index_elements=["submission_id"])
-    session.execute(stmt)
-    logging.info("Saved submission %s successfully.", submission_id)
-
-##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
 ##############################################################################
 def save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path):
@@ -249,6 +268,8 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
     logging.info("Starting saving to database.")
     try:
         with Session(engine) as session:
+            # Save submisson
+            save_submission(session, username, submission_id)
             # Save ladder
             save_ladder(session, ladder_path)
             # Save metadata
