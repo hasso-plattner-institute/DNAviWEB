@@ -15,10 +15,24 @@ from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
 from database.schema.ladder import Ladder
 from database.schema.ladder_peak import LadderPeak
 from database.schema.ontology_term import OntologyTerm
+from database.schema.subject import Subject
+from database.schema.submission import Submission
 from .src.tools import get_result_files
 # Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000/upload"
 
+def get_clean_value(row, column_name):
+    """
+    Extract from column_name the value in row. 
+    Return None if value in column is None, else return the value striped
+    from whitesapces.
+    """
+    value = None
+    if column_name in row:
+        value = row[column_name]
+    if value is not None:
+        return str(value).strip()
+    return value
 
 def detect_file_encoding(file_path):
     """
@@ -163,11 +177,72 @@ def save_devices(session, metadata_path):
             )
             session.execute(stmt)
     logging.info("Device terms saved successfully.")
-    
+
+##############################################################################
+#                           SAVE SUBJECTS (SAMPLES DONORS)                   #
+##############################################################################
+def save_subjects(session, metadata_path):
+    """
+    Save all subjects appearing in the metadata file in the path provided.
+    If a subject_name appears multiple times in the same metadata file,
+    only insert it once.
+    NOTE: Different files can use the same subject_name, but they will be treated
+    as different subjects and inserted multiple times.
+    Assume metadata file exists at metadata_path.
+    """
+    metadata_encoding = detect_file_encoding(metadata_path)
+    meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
+    seen_subjects = set()
+    for _, row in meta_df.iterrows():
+        # Fill fields if found
+        subject_name = get_clean_value(row, "Subject ID")
+        # Skip empty subject and None
+        if not subject_name:
+            continue
+        # subject name already seen in this csv file -> do not insert to db
+        if subject_name.lower() in seen_subjects:
+            continue
+        biological_sex = get_clean_value(row, "Biological Sex")
+        ethnicity_label = get_clean_value(row, "Ethnicity")
+        ethnicity_term_id = None
+        # Ethnicty not None and not ""
+        if ethnicity_label:
+            term = session.query(OntologyTerm).filter(func.lower(OntologyTerm.term_label) == ethnicity_label.lower()).first()
+            if term:
+                ethnicity_term_id = term.term_id
+        stmt = insert(Subject).values(
+            subject_name=subject_name,
+            biological_sex=biological_sex,
+            ethnicity_term_id=ethnicity_term_id
+        )
+        session.execute(stmt)
+        # Mark this subject as already added to db.
+        seen_subjects.add(subject_name.lower())
+    logging.info("Subjects saved successfully.")
+
+##############################################################################
+#                           SAVE TO SUBMISSION TABLE                         #
+##############################################################################    
+def save_submission(session, username, output_id):
+    """
+    Save the following submission info into database:
+        username: Username of the submitter.
+        output_id: Submission ID (UUID string).
+        paths to files in file system on vm1 of analysis results.
+    """
+    # Insert submission row
+    stmt = insert(Submission).values(
+        submission_id=output_id,
+        username=username,
+        output_files_path=""  # temporary, will update after saving files
+    ).on_conflict_do_nothing(index_elements=["submission_id"])
+    session.execute(stmt)
+    logging.info("Saved submission %s successfully.", output_id)
+
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
 ##############################################################################
-def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadata_path):
+def save_data_to_db(output_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path):
     """
     Save signal table, bp translation, ladder and metadata to database VM1.
     """
@@ -180,6 +255,7 @@ def save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadat
             if os.path.exists(metadata_path):
                 save_ontology_terms(session, metadata_path)
                 save_devices(session, metadata_path)
+                save_subjects(session, metadata_path)
             # Commit all together to ensure all or nothing writes (Atomicity)
             session.commit()
             logging.info("Saved all data to database successfully!")
@@ -243,4 +319,4 @@ def save_data(app, output_id, username, save_to_db):
     bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
     metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
     ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
-    save_data_to_db(signal_table_path, bp_translation_path, ladder_path, metadata_path)
+    save_data_to_db(output_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path)
