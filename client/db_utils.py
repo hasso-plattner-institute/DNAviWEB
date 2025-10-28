@@ -223,26 +223,26 @@ def save_subjects(session, metadata_path):
 ##############################################################################
 #                           SAVE TO SUBMISSION TABLE                         #
 ##############################################################################    
-def save_submission(session, username, output_id):
+def save_submission(session, username, submission_id):
     """
     Save the following submission info into database:
         username: Username of the submitter.
-        output_id: Submission ID (UUID string).
+        submission_id: Submission ID (UUID string).
         paths to files in file system on vm1 of analysis results.
     """
     # Insert submission row
     stmt = insert(Submission).values(
-        submission_id=output_id,
+        submission_id=submission_id,
         username=username,
         output_files_path=""  # temporary, will update after saving files
     ).on_conflict_do_nothing(index_elements=["submission_id"])
     session.execute(stmt)
-    logging.info("Saved submission %s successfully.", output_id)
+    logging.info("Saved submission %s successfully.", submission_id)
 
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
 ##############################################################################
-def save_data_to_db(output_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path):
+def save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path):
     """
     Save signal table, bp translation, ladder and metadata to database VM1.
     """
@@ -265,7 +265,7 @@ def save_data_to_db(output_id, username, signal_table_path, bp_translation_path,
         with Session(engine) as session:
             session.rollback()
 
-def save_data(app, output_id, username, save_to_db):
+def save_data(app, submission_id, username, save_to_db):
     """
     Save user data permanently in database and file system on VM1, if consent is given.
     """
@@ -273,7 +273,7 @@ def save_data(app, output_id, username, save_to_db):
     if save_to_db != 'yes':
         return
     # User consented, save
-    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
+    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
     if not os.path.exists(user_folder):
         print(f"Folder not found: {user_folder}")
         return 
@@ -298,8 +298,8 @@ def save_data(app, output_id, username, save_to_db):
             files_to_send.append(("files", (filename, open(path, "rb"))))
     data = {
         "username": username,
-        "sample_id": output_id,
-        "description": f"Results for submission {output_id}"
+        "submission_id": submission_id,
+        "description": f"Results for submission {submission_id}"
     }
     try:
         logging.info("Sending files to VM1...")
@@ -319,4 +319,4 @@ def save_data(app, output_id, username, save_to_db):
     bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
     metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
     ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
-    save_data_to_db(output_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path)
+    save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path)
