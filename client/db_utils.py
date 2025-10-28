@@ -11,6 +11,7 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from database.config import engine
+from database.schema.file import File
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
 from database.schema.ladder import Ladder
 from database.schema.ladder_peak import LadderPeak
@@ -120,6 +121,79 @@ def save_submission(session, username, submission_id):
     ).on_conflict_do_nothing(index_elements=["submission_id"])
     session.execute(stmt)
     logging.info("Saved submission %s successfully.", submission_id)
+
+##############################################################################
+#                          SAVE TO FILE SYSTEM VM_1                          #                 
+##############################################################################
+def save_file_system(user_folder, username, submission_id):
+    """
+    Save result files via http request from submission number: submission_id 
+    of the user: username, to the file system on vm1. 
+    """
+    # Save only result files to file system in vm1
+    statistics_files, peaks_files, other_result_files = get_result_files(user_folder)
+    # Combine all paths
+    all_files = []
+    for f in statistics_files:
+        all_files.append(os.path.join(user_folder, f['name']))
+    for f in peaks_files:
+        all_files.append(os.path.join(user_folder, f))
+    for f in other_result_files:
+        all_files.append(os.path.join(user_folder, f))
+    # Prepare files to send
+    files_to_send = []
+    for path in all_files:
+        if os.path.isfile(path):
+            filename = os.path.basename(path)
+            files_to_send.append(("files", (filename, open(path, "rb"))))
+    data = {
+        "username": username,
+        "submission_id": submission_id,
+        "description": f"Results for submission {submission_id}"
+    }
+    try:
+        logging.info("Sending files to VM1...")
+        # Send files via HTTP request to VM1, 10 sec connect timeout, 300 sec time to upload and process file transfer
+        response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=(10, 300))
+        if response.status_code != 200 or response.get("status") == "error":
+            raise RuntimeError(f"VM1 responded with status {response.status_code}: {response.text}")
+        logging.info("[save_data] VM1 response: %s %s", response.status_code, response.text)
+    except requests.exceptions.RequestException:
+        raise RuntimeError(f"VM1 responded with status {response.status_code}: {response.text}")
+    finally:
+        # Close all opened file
+        for _, file_tuple in files_to_send:
+            file_tuple[1].close()
+    logging.info("Success saving files to file system VM1.")
+    vm1_data = response.json()
+    saved_files_paths = vm1_data.get("saved_files", [])
+    return saved_files_paths
+
+##############################################################################
+#                           SAVE TO SUBMISSION TABLE                         #
+##############################################################################    
+def save_file_paths_to_db(session, submission_id, saved_files_paths):
+    """
+    Save the following files info into database:
+        - submission_id: What submission the files belong to.
+        - saved_files_paths: Relative paths to files saved on file system on vm1.
+    """
+    if not saved_files_paths:
+        raise ValueError("No file paths provided to save to database.")
+    try:
+        # Save each file path
+        for path in saved_files_paths:
+            file_record = File(
+                file_id=uuid.uuid4(),
+                submission_id=submission_id,
+                file_name=os.path.basename(path),
+                relative_path=path
+            )
+            session.add(file_record)
+        logging.info("Saved file paths to db successfully.")
+    except Exception as e:
+        logging.error("Error saving file paths to database: %s", e)
+        raise
 
 ##############################################################################
 #                                 SAVE LADDER                                #
@@ -261,7 +335,7 @@ def save_subjects(session, metadata_path):
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
 ##############################################################################
-def save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path):
+def save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths):
     """
     Save signal table, bp translation, ladder and metadata to database VM1.
     """
@@ -270,6 +344,8 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
         with Session(engine) as session:
             # Save submisson
             save_submission(session, username, submission_id)
+            # Save file paths to File table
+            save_file_paths_to_db(session, submission_id, saved_files_paths)
             # Save ladder
             save_ladder(session, ladder_path)
             # Save metadata
@@ -285,6 +361,7 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
         # Revert all changes on exception
         with Session(engine) as session:
             session.rollback()
+        # TODO: Delete from file system all saved files on exception
 
 def save_data(app, submission_id, username, save_to_db):
     """
@@ -296,42 +373,18 @@ def save_data(app, submission_id, username, save_to_db):
     # User consented, save
     user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
     if not os.path.exists(user_folder):
-        print(f"Folder not found: {user_folder}")
+        logging.info(f"Folder not found: {user_folder}")
         return 
     ##############################################################################
     #                          SAVE TO FILE SYSTEM VM_1                          #                 
     ##############################################################################
-    # Save only result files to file system in vm1
-    statistics_files, peaks_files, other_result_files = get_result_files(user_folder)
-    # Combine all paths
-    all_files = []
-    for f in statistics_files:
-        all_files.append(os.path.join(user_folder, f['name']))
-    for f in peaks_files:
-        all_files.append(os.path.join(user_folder, f))
-    for f in other_result_files:
-        all_files.append(os.path.join(user_folder, f))
-    # Prepare files to send
-    files_to_send = []
-    for path in all_files:
-        if os.path.isfile(path):
-            filename = os.path.basename(path)
-            files_to_send.append(("files", (filename, open(path, "rb"))))
-    data = {
-        "username": username,
-        "submission_id": submission_id,
-        "description": f"Results for submission {submission_id}"
-    }
+    # Save files to file system and return the paths on vm_1 to store in DB
+    # If saving to file system failed, skip saving.
     try:
-        logging.info("Sending files to VM1...")
-        response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=10)
-        logging.info("[save_data] VM1 response: %s %s", response.status_code, response.text)
-    except requests.exceptions.RequestException as e:
-        logging.info("[save_data] Error sending files to VM1: %s", e)
-    finally:
-        # Close all opened file
-        for _, file_tuple in files_to_send:
-            file_tuple[1].close()
+        saved_files_paths = save_file_system(user_folder, username, submission_id)
+    except Exception as e:
+        logging.info("Failed to save to file system: %s", e)
+        return
     ##############################################################################
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
@@ -340,4 +393,4 @@ def save_data(app, submission_id, username, save_to_db):
     bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
     metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
     ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
-    save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path)
+    save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths)
