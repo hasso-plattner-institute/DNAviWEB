@@ -30,7 +30,7 @@ class LadderPixel(Base):
     # The output of DNAvi: Size in base pairs
     base_pair_position: Mapped[float] = mapped_column(
         Float,
-        nullable=False,
+        nullable=True,
         comment="Translation of pixel intensity into fragment size measured in base pairs."
     )
 
