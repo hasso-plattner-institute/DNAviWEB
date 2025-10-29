@@ -257,11 +257,10 @@ def save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id
     signal_table = pd.read_csv(signal_table_path, encoding=signal_table_encoding)
     bp_translation = pd.read_csv(bp_translation_path, encoding=bp_translation_encoding)
     # Parse signal_table: first column 'Ladder' pixel intensity
-    pixel_intensities = signal_table['Ladder'].dropna().values
+    pixel_intensities = signal_table['Ladder'].values
     # Parse bp_translation: column 'Ladder' base_pair_position
-    bp_positions = bp_translation['Ladder'].dropna().values
-    # Make sure lengths match, or take the min length
-    n = min(len(bp_positions), len(pixel_intensities))
+    bp_positions = bp_translation['Ladder'].values
+    n = max(len(bp_positions), len(pixel_intensities))
     ladder_pixels = [
         LadderPixel(
             ladder_id=ladder_id,
