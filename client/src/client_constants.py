@@ -25,13 +25,13 @@ UPLOAD_DIR = f"{DNAVI_ROOT}exchange/"
 UPLOAD_FOLDER =  f"{UPLOAD_DIR}uploads/"
 DOWNLOAD_FOLDER =  f"{UPLOAD_DIR}downloads/"
 USERS_FILE = f"{DNAVI_ROOT}users.json"
-
-EXAMPLE_DIR = f"{MAINDIR}static/tests/"
+STATIC_DIR = f"{MAINDIR}static/"
+EXAMPLE_DIR = f"{STATIC_DIR}tests/"
 EXAMPLE_TABLE = f"{EXAMPLE_DIR}electropherogram.csv"
 EXAMPLE_LADDER = f"{EXAMPLE_DIR}ladder.csv"
 EXAMPLE_META = f"{EXAMPLE_DIR}metadata.csv"
 
-LADDER_DIR = f"{MAINDIR}static/ladders/"
+LADDER_DIR = f"{STATIC_DIR}/ladders/"
 LADDER_DICT = {"D1000": f"{LADDER_DIR}D1000.csv",
                "HSD5000": f"{LADDER_DIR}HSD5000.csv",
                "gDNA": f"{LADDER_DIR}gDNA.csv",
