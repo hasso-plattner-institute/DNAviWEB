@@ -13,7 +13,62 @@ import shutil
 import os
 import pandas as pd
 import sys
+from weasyprint import HTML
+from jinja2 import Environment, FileSystemLoader
+import datetime
 from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, SUCCESS_TOKEN
+
+def file2pdf(file_dir, title="DNAvi Liquid Biopsy Report",
+             static_dir = "./static/", template_html="ELBS_template.html",
+             template_csv="ELBS_template.csv",
+             style_sheet="style.css"):
+    """
+
+    Function to render a report in pdf format from an input csv file.
+    Tutorial: https://pbpython.com/pdf-reports.html
+
+    :return:
+
+    """
+
+    ##############################################################################
+    # Load the Report metadata
+    ##############################################################################
+    meta_df = pd.read_table(file_dir, index_col=0)
+    df = pd.read_table(f"{static_dir}pdf_report/{template_csv}")
+    print(meta_df)
+    print(df)
+    out_pdf = file_dir.replace(".csv", ".pdf")
+    style_dir = f"{static_dir}pdf_report/{style_sheet}"
+
+    ##############################################################################
+    # Split report by section
+    ##############################################################################
+    dfs_to_pass = []
+    for section in df["category"].unique():
+        section_df = df[df["category"] == section]
+        section_df.drop(columns=["category"], inplace=True)
+        dfs_to_pass.append([section, section_df.to_html(classes='table table-bordered')])
+
+    ##############################################################################
+    # Load template
+    ##############################################################################
+    env = Environment(loader=FileSystemLoader(f"{static_dir}pdf_report/"))
+    template = env.get_template(template_html)
+    template_vars = {"title": title,
+                     "logo_filename": f"file://{static_dir}img/logo.svg",
+                                      "CPU": "test",
+                     "creation_date_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                     "summary_table": "summ",
+                     "Report_Detail": dfs_to_pass}
+
+    # Render our file and create the PDF using our css style file
+    html_out = template.render(template_vars)
+
+    HTML(string=html_out).write_pdf(out_pdf, stylesheets=[style_dir])
+    # END OF PDF REPORT FUNCTION
+
+
 
 def allowed_file(filename):
     """
@@ -58,7 +113,7 @@ def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
 
 
     ##############################################################################
-    # !!! CRITICAL Set the python executable for DNAvi (it will not know othwer.)
+    # !!! CRITICAL Set the python executable for DNAvi (it will not know other.)
     ##############################################################################
     OUR_PYTHON=sys.executable
     cmd = f"{OUR_PYTHON} {DNAVI_EXE}"
