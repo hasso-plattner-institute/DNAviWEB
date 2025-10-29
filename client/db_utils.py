@@ -15,6 +15,7 @@ from database.schema.file import File
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
 from database.schema.ladder import Ladder
 from database.schema.ladder_peak import LadderPeak
+from database.schema.ladder_pixel import LadderPixel
 from database.schema.ontology_term import OntologyTerm
 from database.schema.subject import Subject
 from database.schema.submission import Submission
@@ -244,7 +245,34 @@ def save_ladder(session, ladder_path):
     ]
     session.add_all(peaks)
     logging.info("Saved ladder %s as ladder_id %s", ladder_name, new_ladder.ladder_id)
-    return new_ladder
+    return new_ladder.ladder_id
+
+##############################################################################
+#                                 SAVE LADDER PIXEL                          #
+##############################################################################   
+def save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id):
+    # Load files
+    signal_table_encoding = detect_file_encoding(signal_table_path)
+    bp_translation_encoding = detect_file_encoding(bp_translation_path)
+    signal_table = pd.read_csv(signal_table_path, encoding=signal_table_encoding)
+    bp_translation = pd.read_csv(bp_translation_path, encoding=bp_translation_encoding)
+    # Parse signal_table: first column 'Ladder' pixel intensity
+    pixel_intensities = signal_table['Ladder'].dropna().values
+    # Parse bp_translation: column 'Ladder' base_pair_position
+    bp_positions = bp_translation['Ladder'].dropna().values
+    # Make sure lengths match, or take the min length
+    n = min(len(bp_positions), len(pixel_intensities))
+    ladder_pixels = [
+        LadderPixel(
+            ladder_id=ladder_id,
+            pixel_order=i,
+            pixel_intensity=float(pixel_intensities[i]),
+            base_pair_position=float(bp_positions[i])
+        )
+        for i in range(n)
+    ]
+    session.add_all(ladder_pixels)
+    logging.info("Saved ladder pixels successfully.")
 
 ##############################################################################
 #                           SAVE ONTOLOGY TERMS                              #
@@ -365,7 +393,8 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
             # Save file paths to File table
             save_file_paths_to_db(session, submission_id, saved_files_paths)
             # Save ladder
-            save_ladder(session, ladder_path)
+            ladder_id = save_ladder(session, ladder_path)
+            save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id)
             # Save metadata
             if os.path.exists(metadata_path):
                 save_ontology_terms(session, metadata_path)
