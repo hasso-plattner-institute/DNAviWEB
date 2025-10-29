@@ -110,6 +110,7 @@ input[type=button], input[type=submit], input[type=reset] {
             </li>
         <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
           </ul>
@@ -206,11 +207,7 @@ input[type=button], input[type=submit], input[type=reset] {
             <div class="row">
               <div class="row align-items-center">
                 <div class="col-sm-6">
-                  <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
-                </div>
-                <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
                   </ol>
                 </div>
               </div>
@@ -286,7 +283,8 @@ input[type=button], input[type=submit], input[type=reset] {
                     <!-- ---------------------------------------------------------------------------------------- -->
                       <br>
                       <form id="example-form" method="POST">
-                      <input type="submit" value="Quick test: Run DNAvi with our example data" name="Example"> <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">Table.csv</a> <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Ladder.csv</a>  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">Metadata.csv</a>
+                      <input type="submit" value="Quick test: Run DNAvi with our example data" name="Example"> <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">Download examples: Signal Table ↓</a> <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">Size Standard ↓</a>  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">Metadata ↓</a>
+
                       <p></p><p></p><br>
                       </div>
 
@@ -310,17 +308,17 @@ input[type=button], input[type=submit], input[type=reset] {
                       </div>
                       <br></br>
                       <!-- ------------------------------------------------------------------------------ -->
-                      <!-- LADDER ANNOTATION CSV-->
+                      <!-- DNA SIZE STANDARD ANNOTATION CSV-->
                       <!-- ------------------------------------------------------------------------------ -->
                       <div class="card mb-4 shadow-sm">
                         <div class="card-header d-flex align-items-center" style="background-color:#eff6f8;">
-                          <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker </h5><img src="./static/img/annotate.svg" alt="Annotate Ladder" style="width:15%; height:auto;">
+                          <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker </h5><img src="./static/img/annotate.svg" alt="Annotate Standard" style="width:15%; height:auto;">
                         </div>
                         <div class="card-body">
                             <!-- The radio buttons -->
                       <p>Select from defaults:</p>
                       <div class="radio-group"> <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
-                      <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                          <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
                       <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
                       <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
                       <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
@@ -415,7 +413,7 @@ input[type=button], input[type=submit], input[type=reset] {
                                       <th class="optional-col" data-bs-toggle="tooltip" title="Diseases that the subject was diagnosed with at the time the sample was collected.">Diseases <i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Types <i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Types <i class="bi bi-info-circle text-muted"></i></th>
-                                      <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormalities <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any special (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic features<i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell types.">Material Anatomical Entity <i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex <i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age <i class="bi bi-info-circle text-muted"></i></th>
@@ -435,7 +433,7 @@ input[type=button], input[type=submit], input[type=reset] {
                                       <th class="optional-col">Carrying Liquid Volume Unit</th>
                                       <th class="optional-col">In vitro / In vivo</th>
                                       <th class="optional-col">Gel Electrophoresis Device </th>
-                                      <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight ladder used in gel electrophoresis">Ladder Type <i class="bi bi-info-circle text-muted"></i></th>
+                                      <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight size standard (marker) used in gel electrophoresis">Size standard (marker)<i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatments <i class="bi bi-info-circle text-muted"></i></th>
                                       <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity <i class="bi bi-info-circle text-muted"></i></th>
                                       <th>Actions</th>
@@ -699,7 +697,7 @@ input[type=button], input[type=submit], input[type=reset] {
                                   </div>
                                   <div class="form-check">
                                     <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormalities" id="group_phenotype">
-                                    <label class="form-check-label" for="group_phenotype">Phenotypic Abnormalities</label>
+                                    <label class="form-check-label" for="group_phenotype">Phenotypic Features</label>
                                   </div>
                                   <div class="form-check">
                                     <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">
@@ -783,7 +781,7 @@ input[type=button], input[type=submit], input[type=reset] {
                                   </div>
                                   <div class="form-check">
                                     <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ladder Type" id="group_ladder">
-                                    <label class="form-check-label" for="group_ladder">Ladder Type</label>
+                                    <label class="form-check-label" for="group_ladder">DNA marker Type</label>
                                   </div>
                                   <div class="form-check">
                                     <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Treatment" id="group_treatment">

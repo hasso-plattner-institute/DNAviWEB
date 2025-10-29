@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>DNAvi | Home</title>
+  <title>DNAvi | Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
@@ -133,13 +133,16 @@
   <!-- Header -->
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
-      <a href="#" class="navbar-brand d-flex align-items-center">
+      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center">
         <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
     </div>
   </nav>
@@ -169,7 +172,19 @@
             </div>
         </div>
 
-                    <div class="row g-4">
+        <div class="col-md-4">
+        <!-- Online Documentation  -->
+            <div class="card h-100 shadow-sm hover-shadow">
+            <img src="{{ url_for('static', filename='img/docu.svg') }}" class="card-img-top" alt="Documentation">
+            <div class="card-body">
+                <h7 class="card-title fw-bold text-primary">Quickstart guide</h5>
+                <p class="card-text text-muted">View a guide on how to interpret DNAvi results.</p>
+                <a href="{{ url_for('instructions') }}" class="btn btn-outline-primary btn-sm"> View More <i class="bi bi-box-arrow-up-right ms-1"></i></a>
+            </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
         <!-- Online Documentation  -->
         <div class="col-md-4">
             <div class="card h-100 shadow-sm hover-shadow">
