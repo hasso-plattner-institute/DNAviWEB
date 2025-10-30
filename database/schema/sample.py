@@ -3,9 +3,9 @@ This module defines the 'sample' table.
 The Sample table stores all samples and all associated metadata is either stored 
 directly in the table or in additional tables that reference its primary key.
 """
-#TODO SAMPLE ATTRIBUTE FOR CUSTOM COLUMNS
 from typing import List
 from sqlalchemy import (
+    JSON,
     Boolean,
     Date,
     Float,
@@ -130,7 +130,8 @@ class Sample(Base):
     - sample_collection_date: Date when the sample was collected (e.g. '2021-05-15').
     If the protocols are too long, the date shall be the day the collection concluded.
 
-    - age_at_collection: Precise age in ISO8601 format of the individual. For example, 'P3Y6M4D'
+    - age_at_collection: Precise age in float format in years (20.5 years)
+    EGA requires in ISO8601 format. For example, 'P3Y6M4D'
     represents a duration of three years, six months and four days.
 
     - sampling_site_term_id(materialAnatomicalEntity): A site or entity from which a sample
@@ -155,13 +156,12 @@ class Sample(Base):
     from different probands each, one person being affected and the other unaffected
     by the condition under study, this node **is not** required. \nSame could be applied,
     for instance, for treated or untreated samples, but not for treated or untreated individuals.
-
-    ---------None EGA Metadata-------------
     --------- sampleAttributes-------------
+    - custom_sample_attributes:
     EGA Defintion: Custom attributes of a sample: reusable attributes to encode tag-value pairs
     (e.g. Tag being 'age' and its Value '30') with optional units (e.g. 'years'). Its properties are
     inherited from the common-definitions.json schema.
-    
+    ---------None EGA Metadata-------------
     - is_deceased: 'True' if sample was collected from a deceased individual, else 'False'.
     
     - is_infection_suspected: 'True' if a sepsis or a bacterial infection is suspected, otherwise
@@ -186,8 +186,6 @@ class Sample(Base):
    
    - in_vitro_in_vivo: in vivo if the sample was directly extracted from a living organism, 
      otherwise if it came from a lab setup it is in vitro.
-   
-   - ethnicity_term_id: Ethnicity of the subject.
 
    - treatment_term_id: Medications the patient used.
     """
@@ -210,6 +208,13 @@ class Sample(Base):
       ForeignKey('submission.submission_id', ondelete='CASCADE'),
       nullable=False
     )
+    
+    # ---------ladder table-------------
+    ladder_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey('ladder.ladder_id', ondelete='CASCADE'),
+        nullable=False
+    )
 
     # ---------subject table-------------
     # Unique identifier 128 bits rare to collide
@@ -218,24 +223,16 @@ class Sample(Base):
         ForeignKey('subject.subject_id', ondelete='CASCADE'),
         nullable=True
     )
-
-    # ---------ladder table-------------
-    ladder_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey('ladder.ladder_id', ondelete='CASCADE'),
-        nullable=False
-    )
-
-    # ---------organismDescriptor fields-------------
-    # organismDescriptor.organismTaxon
-    organism_term_id: Mapped[str] = mapped_column(
+    
+    # ---------Disease-------------
+    disease_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
     )
-
-    # ---------Disease-------------
-    disease_term_id: Mapped[str] = mapped_column(
+    
+    # ---------Phenotypic Abnormality-------------
+    phenotypic_abnormality_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
@@ -243,13 +240,6 @@ class Sample(Base):
 
     # ---------Treatment-------------
     treatment_term_id: Mapped[str] = mapped_column(
-        String(50),
-        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
-        nullable=True
-    )
-
-    # ---------Phenotypic Abnormality-------------
-    phenotypic_abnormality_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
@@ -276,12 +266,8 @@ class Sample(Base):
     )
 
     age_at_collection: Mapped[str | None] = mapped_column(
-        String(50),
-        nullable=True,
-        comment=(
-            "Precise age in ISO8601 format of the individual. For example, 'P3Y6M4D'"
-            "represents a duration of three years, six months and four days."
-        )
+        Float,
+        nullable=True
     )
 
     # Sampling site (materialAnatomicalEntity) using UBERON
@@ -308,11 +294,25 @@ class Sample(Base):
         nullable=True,
         comment="Ontology term ID for the condition under study."
     )
+    
+    # --------- Custom Sample Attributes (sampleAttributes) -------------
+    custom_sample_attributes: Mapped[dict | None] = mapped_column(
+        JSON,
+        nullable=True,
+        comment=(
+            "Custom attributes of a sample: reusable attributes to encode tag-value pairs (e.g. Tag being 'age' and its Value '30') with optional units (e.g. 'years')"
+        )
+    )
 
     # ---------None EGA Metadata-------------
     # --------- sampleAttributes-------------
     #dead: PATO:0001422, alive:  PATO:0001421
     is_deceased: Mapped[bool | None] = mapped_column(
+        Boolean,
+        nullable=True
+    )
+
+    is_pregnant: Mapped[bool | None] = mapped_column(
         Boolean,
         nullable=True
     )
@@ -327,11 +327,6 @@ class Sample(Base):
         String(50),
         nullable=True,
         comment="Specify the strain involved if infection is suspected."
-    )
-
-    is_pregnant: Mapped[bool | None] = mapped_column(
-        Boolean,
-        nullable=True
     )
 
     hospitalization_status: Mapped[str | None] = mapped_column(
@@ -375,11 +370,6 @@ class Sample(Base):
 
     in_vitro_in_vivo: Mapped[str | None] = mapped_column(
         in_vitro_in_vivo_enum,
-        nullable=True,
-        comment="Indicates whether the sample originated from an in vitro or in vivo source."
-    )
-
-    ethnicity: Mapped[str | None] = mapped_column(
         nullable=True,
         comment="Indicates whether the sample originated from an in vitro or in vivo source."
     )

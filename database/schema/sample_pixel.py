@@ -1,7 +1,7 @@
 """
 This module stores the sample pixels table.
 """
-from sqlalchemy import Float, Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -25,13 +25,13 @@ class SamplePixel(Base):
     )
 
     pixel_intensity: Mapped[float] = mapped_column(
-        Float,
+        Numeric(30, 20),
         nullable=False,
         comment="Measured intensity of the pixel."
     )
 
     base_pair_position: Mapped[float] = mapped_column(
-        Float,
+        Numeric(30, 20),
         nullable=False,
         comment="Translation of pixel intensity into fragment size (base pairs)."
     )
