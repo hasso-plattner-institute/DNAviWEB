@@ -25,8 +25,8 @@ from flask_login import current_user, LoginManager, UserMixin, logout_user, logi
 from werkzeug.utils import secure_filename
 from .src import users_saving as users_module
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
-    EXAMPLE_META, LADDER_DICT
-from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
+    EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS
+from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files, file2pdf
 from .src.users_saving import get_email, save_users, load_users
 from .src.errors import secure_error
 ###############################################################################
@@ -215,22 +215,26 @@ def instructions():
     return render_template("instructions.html")
 
 
-
-
-
-
-
-# Define the path to your text file
-COLUMN_FILE_PATH = './static/pdf_report/ELBS_columns.csv'
+##############################################################################
+#   PARSE OPTIONAL ELBS REPORT COLUMNS TO METADATA TABLE (USER INTERFACE)    #
+##############################################################################
 @app.route('/get-column-names', methods=['GET'])
 def get_column_names():
-    df = pd.read_table(COLUMN_FILE_PATH)
+    """
+    This function will read the columns to display in the user interface
+    from a table located in static
+    :return:
+    """
+    df = pd.read_table(REPORT_COLUMNS)
     df = df[df["show"] == True]
     # Prepare the information by constructing a list of dictionaries
     columns_info = df[['Item', 'action', 'category']].rename(
-        columns={'Item': 'ColumnName', 'action': 'ColumnType', 'category': 'Category'}
+        columns={'Item': 'ColumnName', 'action': 'ColumnType',
+                 'category': 'Category'}
     ).to_dict(orient='records')
     return jsonify({'columnsInfo': columns_info})
+    # END OF FUNCTION
+
 
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
@@ -330,6 +334,7 @@ def protect():
         example_case = False
         default_ladder = False
         m = None
+        m_all = None
         print(request_dict)
         print("............................")
 
@@ -395,17 +400,29 @@ def protect():
             request.files['data_file'].save(f)
             request.files['ladder_file'].save(l)
 
+        ######################################################################
+        #  Handle meta data and report
+        ######################################################################
         if meta_inpt and not example_case:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
+
+            m_all = f"{f.rsplit('.', 1)[0]}_meta-all.csv"
             request.files['meta_file'].save(m)
+
             # List of metadata columns (values) chosen by user to group by
+            meta_df = pd.read_csv(m)
+            # Add a full meta table copy for ELBS report
+            meta_df.to_csv(m_all, index=False)
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
+
+            ### ! Important validate of these cols even exist
             if group_columns:
-                selected_columns += group_columns
-            meta_df = pd.read_csv(m)
-            meta_df = meta_df[selected_columns]
+                valid_group_columns = [e for e in group_columns if e in meta_df.columns]
+                print("--- Valid group columns", valid_group_columns)
+                selected_columns += valid_group_columns
             # Remove all not selected columns
+            meta_df = meta_df[selected_columns]
             meta_df.to_csv(m, index=False)
             print("Metadata columns selected for grouping:", selected_columns)
 
@@ -414,6 +431,13 @@ def protect():
         ######################################################################
         assigned_vars = [e for e in [("i",f),("l",l),("m",m)] if e[1]]
         op, error = input2dnavi(in_vars=assigned_vars)
+
+        ######################################################################
+        #                       CREATE PDF REPORT                           #
+        ######################################################################
+        if m_all:
+            file2pdf(file_dir=m_all, static_dir=STATIC_DIR)
+
         ######################################################################
         #               ZIP + MOVE OUTPUT TO DOWNLOAD (VM2)                  #
         ######################################################################
@@ -427,10 +451,13 @@ def protect():
         #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                    #
         ######################################################################
         if error:
-            return render_template(f'protected.html',
-                               error=secure_error(error), user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                error=secure_error(error),
+                user_logged_in = current_user.is_authenticated)
 
-        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{email}/{output_id}")
+        statistics_files, peaks_files, other_files = get_result_files(
+            f"{app.config['DOWNLOAD_FOLDER']}{email}/{output_id}")
         
         ######################################################################
         #                        SAVE DATA TO DATABASE                       #
