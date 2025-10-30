@@ -1,7 +1,7 @@
 """
 This module describes ladder pixels.
 """
-from sqlalchemy import Integer, Float, ForeignKey
+from sqlalchemy import Integer, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -22,14 +22,15 @@ class LadderPixel(Base):
         primary_key=True
     )
     pixel_intensity: Mapped[float] = mapped_column(
-        Float,
-        nullable=False,
+        # Precision 20 digits after decimal point
+        Numeric(30, 20),
+        nullable=True,
         comment="Pixel intensity value from the gel electrophoresis image."
     )
 
     # The output of DNAvi: Size in base pairs
     base_pair_position: Mapped[float] = mapped_column(
-        Float,
+        Numeric(30, 20),
         nullable=True,
         comment="Translation of pixel intensity into fragment size measured in base pairs."
     )

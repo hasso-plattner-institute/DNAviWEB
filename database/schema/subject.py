@@ -27,6 +27,21 @@ class Subject(Base):
     to evaluate it correctly, since logic negation can be provided using that property.
     - biological_sex
     - ethnicity_term_id
+    ---------organismDescriptor-------------
+    EGA: This property describes the material entity 
+    the sample consists in. That is, an individual living system, such as animal, plant, bacteria 
+    or virus, that is capable of replicating or reproducing, growth and maintenance in
+    the right environment. An organism may be unicellular or, like humans, made
+    up of many billions of cells divided into specialized tissues and organs.
+    This node is of special interest in case the provenance of the sample is not
+    human (e.g. microbiota taken from a donor). Unless stated otherwise, given the
+    nature of the EGA, it is expected to be of human provenance.
+    - organism_term_id: Taxonomic classification of the organism (e.g. 'NCBITaxon:9606' and 
+     'homo sapiens' for humans) curated by the NCBI Taxonomy (search for organisms here:
+      https://www.ncbi.nlm.nih.gov/taxonomy; or use the OLS: 
+      https://www.ebi.ac.uk/ols/ontologies/ncbitaxon).
+      You can find further details at 'https://www.uniprot.org/help/taxonomic_identifier'.
+      This is appropriate for individual organisms and some environmental samples.
     """
 
     __tablename__ = 'subject'
@@ -48,6 +63,14 @@ class Subject(Base):
     )
 
     ethnicity_term_id: Mapped[str] = mapped_column(
+        String(50),
+        ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
+        nullable=True
+    )
+    
+    # ---------organismDescriptor fields-------------
+    # organismDescriptor.organismTaxon
+    organism_term_id: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True

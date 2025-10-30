@@ -349,8 +349,7 @@
                                   <th class="optional-col">Carrying Liquid Volume Unit</th>
                                   <th class="optional-col">In vitro / In vivo</th>
                                   <th class="optional-col">Gel Electrophoresis Device</th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Kind of molecular weight ladder used in gel electrophoresis">Ladder Type<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatments<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatment<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th>Actions</th>
                                 </tr>
@@ -363,19 +362,15 @@
                                   <td>
                                     <div class="disease-wrapper">
                                       <div class="disease-field mb-2">
-                                        <input type="text" name="disease[0][]" class="form-control form-control-sm ols-search" placeholder="Breast cancer">
-                                        <!--<input type="hidden" name="disease[0][]_ontology_id" value="">-->
+                                        <input type="text" name="disease[]" class="form-control form-control-sm ols-search" placeholder="Breast cancer">
                                       </div>
-                                      <!--<button type="button" class="btn btn-sm btn-outline-primary add-disease-btn">+ Add</button>-->
                                     </div>
                                   </td>
                                   <td>
                                     <div class="celltype-wrapper">
                                       <div class="celltype-field mb-2">
-                                        <input type="text" name="celltype[0][]" class="form-control form-control-sm ols-search" placeholder="Red blood cell">
-                                        <!--<input type="hidden" name="celltype[0][]_ontology_id" value="">-->
+                                        <input type="text" name="celltype[]" class="form-control form-control-sm ols-search" placeholder="Red blood cell">
                                       </div>
-                                      <!--<button type="button" class="btn btn-sm btn-outline-primary add-celltype-btn">+ Add</button>-->
                                     </div>
                                   </td>
                                   <td>
@@ -405,9 +400,8 @@
                                   <td>
                                     <div class="phenotype-wrapper">
                                       <div class="phenotype-field mb-2">
-                                        <input type="text" name="phenotype[0][]" class="form-control form-control-sm ols-search" placeholder="Hearing impairment">
+                                        <input type="text" name="phenotype[]" class="form-control form-control-sm ols-search" placeholder="Hearing impairment">
                                       </div>
-                                      <!--<button type="button" class="btn btn-sm btn-outline-primary add-phenotype-btn">+ Add</button>-->
                                     </div>
                                   </td>
 
@@ -424,7 +418,7 @@
                                       <option>unknown</option>
                                     </select>
                                   </td>
-                                  <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Enter years"></td>
+                                  <td><input type="number" name="age[]" class="form-control form-control-sm" placeholder="Enter years" step="0.01" min="0"></td>
                                   <td>
                                     <input type="text" name="organism[]" class="form-control form-control-sm ols-search" placeholder="Homo sapiens">
                                   </td>
@@ -432,12 +426,12 @@
                                   <td>
                                     <select name="case_control[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
-                                      <option>Case</option>
-                                      <option>Control</option>
-                                      <option>Not applicable</option>
+                                      <option>case</option>
+                                      <option>control</option>
+                                      <option>not applicable</option>
                                     </select>
                                   </td>
-                                  <td><input type="text" name="condition[]" class="form-control form-control-sm" placeholder="Insulin"></td>
+                                  <td><input type="text" name="condition[]" class="form-control form-control-sm ols-search" placeholder="Insulin"></td>
                                   <td>
                                     <select name="is_deceased[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
@@ -495,7 +489,7 @@
                                       <option value="custom">Custom</option>
                                     </select>
                                   </td>
-                                  <td ><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Enter mass"></td>
+                                  <td ><input type="number" name="dna_mass[]" class="form-control form-control-sm" placeholder="Enter mass", step="0.01", min="0"></td>
                                   <td>
                                     <select name="dna_mass_units[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
@@ -504,7 +498,7 @@
                                       <option>µg</option>
                                     </select>
                                   </td>
-                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume"></td>
+                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume" , step="0.01", min="0"></td>
                                   <td>
                                     <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
@@ -536,17 +530,10 @@
                                       </select>
                                   </td>
                                   <td>
-                                    <select name="ladder_type[]" class="form-select form-select-sm ladder-select">
-                                      <option value="">Select</option>
-                                      <option value="custom">Custom</option>
-                                    </select>
-                                  </td>
-                                  <td>
                                     <div class="treatment-wrapper">
                                       <div class="treatment mb-2">
-                                        <input type="text" name="treatment[0][]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
+                                        <input type="text" name="treatment[]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
                                       </div>
-                                      <!--<button type="button" class="btn btn-sm btn-outline-primary add-treatment-btn">+ Add</button>-->
                                     </div>
                                   </td>
                                   <td>
@@ -705,12 +692,8 @@
                                 <label class="form-check-label" for="group_device">Gel Electrophoresis Device</label>
                               </div>
                               <div class="form-check">
-                                <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ladder Type" id="group_ladder">
-                                <label class="form-check-label" for="group_ladder">Ladder Type</label>
-                              </div>
-                              <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Treatment" id="group_treatment">
-                                <label class="form-check-label" for="group_treatment">Treatments</label>
+                                <label class="form-check-label" for="group_treatment">Treatment</label>
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Ethnicity" id="group_ethnicity">
@@ -842,12 +825,6 @@
                               dst.value = src.value;
                             } 
                           });
-                          newRow.querySelectorAll('.ladder-type-custom').forEach(el => el.style.display = 'none');
-                          const ladderSel = newRow.querySelector('.ladder-type-select');
-                          if (ladderSel && ladderSel.value === 'custom') {
-                            const custom = newRow.querySelector('.ladder-type-custom');
-                            if (custom) custom.style.display = 'block';
-                          }
 
                           const actionsCell = newRow.querySelector('.actions-cell');
                           if (actionsCell) {
@@ -881,14 +858,7 @@
                           return;
                         }
                       });
-
-                      table.addEventListener('change', function (e) {
-                        const sel = e.target.closest('.ladder-type-select');
-                        if (!sel) return;
-                        const custom = sel.closest('td').querySelector('.ladder-type-custom');
-                        if (custom) custom.style.display = (sel.value === 'custom') ? 'block' : 'none';
-                      });
-
+          
                        /**
                        * Convert metadata online table to csv
                        */

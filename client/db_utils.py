@@ -1,10 +1,14 @@
 """
 This module handles data saving into database and file system of vm_1.
 """
+from datetime import datetime
+from decimal import Decimal, InvalidOperation
 import os
+import re
 import uuid
 import logging
 import chardet
+import numpy as np
 import pandas as pd
 import requests
 from sqlalchemy import func, select
@@ -17,6 +21,8 @@ from database.schema.ladder import Ladder
 from database.schema.ladder_peak import LadderPeak
 from database.schema.ladder_pixel import LadderPixel
 from database.schema.ontology_term import OntologyTerm
+from database.schema.sample import Sample
+from database.schema.sample_pixel import SamplePixel
 from database.schema.subject import Subject
 from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
@@ -254,8 +260,8 @@ def save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id
     # Load files
     signal_table_encoding = detect_file_encoding(signal_table_path)
     bp_translation_encoding = detect_file_encoding(bp_translation_path)
-    signal_table = pd.read_csv(signal_table_path, encoding=signal_table_encoding)
-    bp_translation = pd.read_csv(bp_translation_path, encoding=bp_translation_encoding)
+    signal_table = pd.read_csv(signal_table_path, encoding=signal_table_encoding, dtype=str)
+    bp_translation = pd.read_csv(bp_translation_path, encoding=bp_translation_encoding, dtype=str)
     # Parse signal_table: first column 'Ladder' pixel intensity
     pixel_intensities = signal_table['Ladder'].values
     # Parse bp_translation: column 'Ladder' base_pair_position
@@ -265,8 +271,8 @@ def save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id
         LadderPixel(
             ladder_id=ladder_id,
             pixel_order=i,
-            pixel_intensity=float(pixel_intensities[i]),
-            base_pair_position=float(bp_positions[i])
+            pixel_intensity=to_decimal_safe(pixel_intensities[i]) if pd.notnull(pixel_intensities[i]) else None, 
+            base_pair_position=to_decimal_safe(bp_positions[i]) if pd.notnull(bp_positions[i]) else None
         )
         for i in range(n)
     ]
@@ -280,6 +286,7 @@ def save_ontology_terms(session, metadata_path):
     """
     Save all ontology terms inside the metadata file to the database.
     Assume metadata file exists at metadata_path.
+    Returns mappings: {ontology_column_name: {term_label: term_id}}
     """
     metadata_encoding = detect_file_encoding(metadata_path)
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
@@ -287,6 +294,7 @@ def save_ontology_terms(session, metadata_path):
         "Disease", "Cell Type", "Phenotypic Abnormality", "Treatment",
         "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity"
     ]
+    ontology_label_to_id = {col: {} for col in ontology_term_fields}
     # Loop through each ontology terms column in metadata
     for label_col in ontology_term_fields:
         if label_col not in meta_df.columns:
@@ -294,23 +302,27 @@ def save_ontology_terms(session, metadata_path):
         for raw_value in meta_df[label_col].dropna():
             labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
             for label in labels:
-                # Skip if this label already exists in DB
+                # If this label already exists in DB do not save
                 exists = session.query(OntologyTerm).filter(
                     func.lower(OntologyTerm.term_label) == label.lower()
                 ).first()
                 if exists:
-                    continue
-                # Get term ID from OLS
-                term_id = get_ols_term_id(label, label_col)
-                if not term_id:  # None or empty string
-                    term_id = str(uuid.uuid4())
-                stmt = (
-                    insert(OntologyTerm)
-                    .values(term_id=term_id, term_label=label)
-                    .on_conflict_do_nothing(index_elements=["term_id"])
-                )
-                session.execute(stmt)
+                    term_id = exists.term_id
+                # New label -> Store to DB
+                else:
+                    # Get term ID from OLS
+                    term_id = get_ols_term_id(label, label_col)
+                    if not term_id:  # None or empty string
+                        term_id = str(uuid.uuid4())
+                    stmt = (
+                        insert(OntologyTerm)
+                        .values(term_id=term_id, term_label=label)
+                        .on_conflict_do_nothing(index_elements=["term_id"])
+                    )
+                    session.execute(stmt)
+                ontology_label_to_id[label_col][label] = term_id
     logging.info("Ontology terms saved successfully.")
+    return ontology_label_to_id
 
 ##############################################################################
 #                           SAVE GEL DEVICES                                 #
@@ -322,23 +334,35 @@ def save_devices(session, metadata_path):
     """
     metadata_encoding = detect_file_encoding(metadata_path)
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
+    col_name = "Gel Electrophoresis Device"
     if "Gel Electrophoresis Device" not in meta_df.columns:
         return
-    for raw_device in meta_df["Gel Electrophoresis Device"].dropna():
-        devices = [d.strip() for d in str(raw_device).split(";") if d.strip()]
-        for device_label in devices:
-            stmt = (
-                insert(GelElectrophoresisDevice)
-                .values(device_name=device_label)
-                .on_conflict_do_nothing(index_elements=["device_name"])
-            )
-            session.execute(stmt)
+    device_name_to_id = {col_name: {}}
+    for raw_device in meta_df[col_name].dropna():
+        devices_names = [d.strip() for d in str(raw_device).split(";") if d.strip()]
+        for device_name in devices_names:
+            # Check if device already exists
+            exists = session.query(GelElectrophoresisDevice).filter(
+                func.lower(GelElectrophoresisDevice.device_name) == device_name.lower()
+            ).first()
+            if exists:
+                device_id = exists.device_id
+            else:
+                stmt = (
+                    insert(GelElectrophoresisDevice)
+                    .values(device_name=device_name)
+                    .returning(GelElectrophoresisDevice.device_id)
+                )
+                result = session.execute(stmt)
+                device_id = result.scalar()
+            device_name_to_id[col_name][device_name] = device_id
     logging.info("Device terms saved successfully.")
+    return device_name_to_id
 
 ##############################################################################
 #                           SAVE SUBJECTS (SAMPLES DONORS)                   #
 ##############################################################################
-def save_subjects(session, metadata_path):
+def save_subjects(session, metadata_path, ontology_label_to_id):
     """
     Save all subjects appearing in the metadata file in the path provided.
     If a subject_name appears multiple times in the same metadata file,
@@ -349,33 +373,242 @@ def save_subjects(session, metadata_path):
     """
     metadata_encoding = detect_file_encoding(metadata_path)
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
-    seen_subjects = set()
+    seen_subjects = {}
+    sample_to_subject_id = {}
     for _, row in meta_df.iterrows():
-        # Fill fields if found
         subject_name = get_clean_value(row, "Subject ID")
-        # Skip empty subject and None
-        if not subject_name:
-            continue
-        # subject name already seen in this csv file -> do not insert to db
-        if subject_name.lower() in seen_subjects:
-            continue
+        sample_value = get_clean_value(row, "SAMPLE")
         biological_sex = get_clean_value(row, "Biological Sex")
         ethnicity_label = get_clean_value(row, "Ethnicity")
         ethnicity_term_id = None
-        # Ethnicty not None and not ""
+        # Map ethnicity label to term_id
         if ethnicity_label:
-            term = session.query(OntologyTerm).filter(func.lower(OntologyTerm.term_label) == ethnicity_label.lower()).first()
+            term = session.query(OntologyTerm)\
+                .filter(func.lower(OntologyTerm.term_label) == ethnicity_label.lower())\
+                .first()
             if term:
                 ethnicity_term_id = term.term_id
-        stmt = insert(Subject).values(
-            subject_name=subject_name,
-            biological_sex=biological_sex,
-            ethnicity_term_id=ethnicity_term_id
-        )
-        session.execute(stmt)
-        # Mark this subject as already added to db.
-        seen_subjects.add(subject_name.lower())
+        # Determine if we need to insert
+        if subject_name:
+            key = subject_name.lower()
+            if key in seen_subjects:
+                subject_id = seen_subjects[key]
+            else:
+                stmt = insert(Subject).values(
+                    subject_name=subject_name,
+                    biological_sex=biological_sex,
+                    ethnicity_term_id=ethnicity_term_id,
+                    organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
+                ).returning(Subject.subject_id)
+                result = session.execute(stmt)
+                subject_id = result.scalar()
+                seen_subjects[key] = subject_id
+        # No subject name found -> create new unique subject id and None name
+        else:
+            stmt = insert(Subject).values(
+                subject_name=None,
+                biological_sex=biological_sex,
+                ethnicity_term_id=ethnicity_term_id
+            ).returning(Subject.subject_id)
+            result = session.execute(stmt)
+            subject_id = result.scalar()
+        sample_to_subject_id[sample_value] = subject_id
     logging.info("Subjects saved successfully.")
+    return sample_to_subject_id
+
+def is_valid_metadata(metadata_path, expected_sample_count):
+    """
+    Checks if metadata file is valid for saving Sample table.
+    Conditions:
+    - File exists.
+    - Contains 'SAMPLE' column.
+    - Number of rows matches expected_sample_count.
+    - All SAMPLE names are non-empty and unique.
+    return: True if metadata file valid, else False.
+    """
+    if not metadata_path or not os.path.exists(metadata_path):
+        return False
+    try:
+        metadata_encoding = detect_file_encoding(metadata_path)
+        metadata = pd.read_csv(metadata_path, encoding=metadata_encoding)
+    except Exception:
+        return False
+    if 'SAMPLE' not in metadata.columns:
+        return False
+    sample_names = metadata['SAMPLE'].astype(str).str.strip().tolist()
+    if len(sample_names) != expected_sample_count:
+        return False
+    if any(name is None or str(name).strip() == "" for name in sample_names):
+        return False
+    if len(set(sample_names)) != expected_sample_count:
+        return False
+    return True
+
+def map_term(col_name, label, label_to_id):
+    """
+    Return the term_id according to OLS of the label (i.e. Cancer) 
+    and col_name (i.e. Disease) in the dictionary label_to_id.
+    Map labels to term_ids using the dictionary
+    """
+    if label is None or pd.isna(label):
+        return None
+    if isinstance(label, str):
+        key = label.strip()
+    else:
+        key = label
+    return label_to_id.get(col_name, {}).get(key, None)
+
+def yes_no_to_bool(val):
+    """
+    This method is for the boolean answers we receive from frontend.
+    If the received answer val == 'Yes', return True; if val == 'No', return False.
+    """
+    if pd.isna(val):
+        return None
+    val_str = str(val).strip().lower()
+    if val_str == "yes":
+        return True
+    elif val_str == "no":
+        return False
+    return None
+
+##############################################################################
+#                                 SAVE SAMPLE                                #
+##############################################################################
+def save_samples(session, signal_table_path, metadata_path, submission_id,
+                 ladder_id, ontology_label_to_id=None, device_name_to_id=None,
+                 sample_to_subject_id=None):
+    """
+    Save Sample entries to the database.
+    - Always determine number of samples from signal_table.
+    - If metadata exists and contains 'SAMPLE', use its unique values as sample names.
+    - If metadata missing or invalid, fall back to signal table column names (numbers 1,2,3).
+    """
+    # Read signal table to find number of samples
+    signal_encoding = detect_file_encoding(signal_table_path)
+    signal_table = pd.read_csv(signal_table_path, encoding=signal_encoding)
+    signal_sample_names = [col for col in signal_table.columns if col != "Ladder"]
+    sample_names = signal_sample_names
+    metadata = None
+    if is_valid_metadata(metadata_path, expected_sample_count=len(signal_sample_names)):
+        metadata_encoding = detect_file_encoding(metadata_path)
+        metadata = pd.read_csv(metadata_path, encoding=metadata_encoding)
+        sample_names = metadata['SAMPLE'].tolist()
+    if ontology_label_to_id is None:
+        ontology_label_to_id = {}
+    if device_name_to_id is None:
+        device_name_to_id = {}
+    if sample_to_subject_id is None:
+        sample_to_subject_id = {}
+    predefined_columns = [
+        "SAMPLE", "Subject ID", "Disease", "Phenotypic Abnormality", "Cell Type",
+        "Sample Type", "Sample Collection Date", "Age", "Material Anatomical Entity",
+        "Case vs Control", "Condition Under Study", "Is Deceased?", "Is Pregnant?",
+        "Is Infection Suspected?", "Infection Strain", "Hospitalization Status",
+        "Extraction Kit (DNA Isolation Method)", "DNA Mass", "DNA Mass Units", "Ladder Type",
+        "Carrying Liquid Volume", "Carrying Liquid Volume Unit", "Gel Electrophoresis Device",
+        "In vitro / In vivo", "Treatment", "Ethnicity", "Biological Sex", "Organism", "Actions"
+    ]
+    sample_ids_in_order = []
+    for i, col_name in enumerate(signal_sample_names):
+        # Pick sample name from metadata if available
+        sample_name = sample_names[i] if i < len(sample_names) else col_name
+        sample_data = {
+            "sample_name": str(sample_name),
+            "submission_id": submission_id,
+            "ladder_id": ladder_id
+        }
+        if metadata is not None and i < len(metadata):
+            row = metadata.iloc[i]
+            # Find subject id if exists
+            sample_name = row.get("SAMPLE")
+            subject_id = sample_to_subject_id.get(str(sample_name).strip()) if sample_name else None
+            sample_data.update({
+                "subject_id": subject_id,
+                "disease_term_id": map_term("Disease", row.get("Disease"), ontology_label_to_id),
+                "phenotypic_abnormality_term_id": map_term("Phenotypic Abnormality", row.get("Phenotypic Abnormality"), ontology_label_to_id),
+                "treatment_term_id": map_term("Treatment", row.get("Treatment"), ontology_label_to_id),
+                "cell_type_term_id": map_term("Cell Type", row.get("Cell Type"), ontology_label_to_id),
+                "sample_type": row.get("Sample Type"),
+                "sample_collection_date": (datetime.strptime(row.get("Sample Collection Date"), "%Y-%m-%d").date() 
+                           if pd.notnull(row.get("Sample Collection Date")) and re.match(r"\d{4}-\d{2}-\d{2}$", str(row.get("Sample Collection Date"))) 
+                           else None),
+                "age_at_collection": float(row.get("Age")) if pd.notnull(row.get("Age")) else None,
+                "sampling_site_term_id": map_term("Material Anatomical Entity", row.get("Material Anatomical Entity"), ontology_label_to_id),
+                "case_vs_control": row.get("Case vs Control"),
+                "condition_under_study_term_id": map_term("Condition Under Study", row.get("Condition Under Study"), ontology_label_to_id),
+                "is_deceased": yes_no_to_bool(row.get("Is Deceased?")),
+                "is_pregnant": yes_no_to_bool(row.get("Is Pregnant?")),
+                "is_infection_suspected": yes_no_to_bool(row.get("Is Infection Suspected?")),
+                "infection_strain": row.get("Infection Strain"),
+                "hospitalization_status": row.get("Hospitalization Status"),
+                "extraction_kit": row.get("Extraction Kit (DNA Isolation Method)"),
+                "dna_mass": float(row.get("DNA Mass")) if pd.notnull(row.get("DNA Mass")) else None,
+                "dna_mass_units": row.get("DNA Mass Units"),
+                "carrying_liquid_volume": float(row.get("Carrying Liquid Volume")) if pd.notnull(row.get("Carrying Liquid Volume")) else None,
+                "carrying_liquid_volume_unit": row.get("Carrying Liquid Volume Unit"),
+                "in_vitro_in_vivo": row.get("In vitro / In vivo"),
+                # TODO: DO NOT ALLOW IN A SUBMISSION MULTIPLE DEVICE ID
+                "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", row.get("Gel Electrophoresis Device"), device_name_to_id)
+            })
+            # Add custom attributes for all extra columns
+            custom_attributes = {}
+            for col in row.index:
+                if col not in predefined_columns:
+                    val = row[col]
+                    if pd.notnull(val):
+                        custom_attributes[col] = val
+            if custom_attributes:
+                sample_data["custom_sample_attributes"] = custom_attributes
+            sample = Sample(**sample_data)
+            # Save sample
+            session.add(sample)
+            session.flush()  # ensure sample_id is populated
+            sample_ids_in_order.append(sample.sample_id)
+    logging.info("Saved %d samples successfully.", len(sample_ids_in_order))
+    return sample_ids_in_order
+
+def to_decimal_safe(value):
+    try:
+        return Decimal(value)
+    except (InvalidOperation, TypeError, ValueError):
+        return None
+    
+##############################################################################
+#                                 SAVE SAMPLE PIXEL                          #
+##############################################################################   
+def save_sample_pixel(session, signal_table_path, bp_translation_path, sample_ids_in_order):
+    """
+    Save sample pixels from signal table and bp translation table into the database.
+    - signal_table: CSV with columns ['Ladder', 1, 2, ...] representing pixel intensities.
+    - bp_translation: CSV with columns ['','Ladder', 1, 2, ...] representing base pair positions.
+    - sample_ids_in_order: List of sample IDs in the order corresponding to columns in signal_table (excluding 'Ladder').
+    Assumes signal_table and bp_translation have the same number of sample columns and rows.
+    """
+    logging.info("Start saving sample pixels")
+    # Load files
+    signal_table_encoding = detect_file_encoding(signal_table_path)
+    bp_translation_encoding = detect_file_encoding(bp_translation_path)
+    signal_table = pd.read_csv(signal_table_path, encoding=signal_table_encoding, dtype=str).iloc[:, 1:] # remove first col
+    bp_translation = pd.read_csv(bp_translation_path, encoding=bp_translation_encoding, dtype=str).iloc[:, 2:] # remove first two col 
+    if signal_table.shape[1] != len(sample_ids_in_order):
+        raise ValueError(f"Number of samples in signal table {signal_table.shape[1]} does not match provided sample IDs {len(sample_ids_in_order)}.")
+    # Loop over samples
+    for i, sample_id in enumerate(sample_ids_in_order):
+        pixel_intensities = signal_table.iloc[:, i].values
+        bp_positions = bp_translation.iloc[:, i].values
+        n = max(len(bp_positions), len(pixel_intensities))
+        sample_pixels = [
+            SamplePixel(
+                sample_id=sample_id,
+                pixel_order=j,
+                pixel_intensity=to_decimal_safe(pixel_intensities[j]) if pd.notnull(pixel_intensities[j]) else None, 
+                base_pair_position = to_decimal_safe(bp_positions[j]) if pd.notnull(bp_positions[j]) else None
+            )
+            for j in range(n)
+        ]
+        session.add_all(sample_pixels)
+    logging.info("Saved %d sample pixels successfully.", len(sample_ids_in_order))
 
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
@@ -394,11 +627,19 @@ def save_data_to_db(submission_id, username, signal_table_path, bp_translation_p
             # Save ladder
             ladder_id = save_ladder(session, ladder_path)
             save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id)
+            ontology_label_to_id = None
+            device_name_to_id = None
+            sample_to_subject_id = None
             # Save metadata
             if os.path.exists(metadata_path):
-                save_ontology_terms(session, metadata_path)
-                save_devices(session, metadata_path)
-                save_subjects(session, metadata_path)
+                ontology_label_to_id = save_ontology_terms(session, metadata_path)
+                device_name_to_id = save_devices(session, metadata_path)
+                sample_to_subject_id = save_subjects(session, metadata_path, ontology_label_to_id)
+            # Save sample table
+            sample_ids_in_order = save_samples(session, signal_table_path, metadata_path,
+                                               submission_id,ladder_id, ontology_label_to_id,
+                                               device_name_to_id, sample_to_subject_id)
+            save_sample_pixel(session, signal_table_path, bp_translation_path, sample_ids_in_order)
             # Commit all together to ensure all or nothing writes (Atomicity)
             session.commit()
             logging.info("Saved all data to database successfully!")
