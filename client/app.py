@@ -215,6 +215,23 @@ def instructions():
     return render_template("instructions.html")
 
 
+
+
+
+
+
+# Define the path to your text file
+COLUMN_FILE_PATH = './static/pdf_report/ELBS_columns.csv'
+@app.route('/get-column-names', methods=['GET'])
+def get_column_names():
+    df = pd.read_table(COLUMN_FILE_PATH)
+    df = df[df["show"] == True]
+    # Prepare the information by constructing a list of dictionaries
+    columns_info = df[['Item', 'action', 'category']].rename(
+        columns={'Item': 'ColumnName', 'action': 'ColumnType', 'category': 'Category'}
+    ).to_dict(orient='records')
+    return jsonify({'columnsInfo': columns_info})
+
 ##############################################################################
 #                          SAVE ANALYSIS TO DB                               #                 
 ##############################################################################
