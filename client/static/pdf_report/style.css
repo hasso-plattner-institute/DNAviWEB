@@ -39,7 +39,7 @@ body {
 }
 
 .container {
-    margin: 0 1.2cm;
+    margin: 0.8cm;
     page-break-after: always;
 }
 
@@ -48,6 +48,9 @@ body {
     padding-bottom: 0.2cm;
     border-bottom: 1px solid #ddd;
     margin-top: 1cm;
+    width: auto;
+    margin-left: 1cm;
+    margin-right: 1cm;
 }
 
 .section-content {
@@ -55,34 +58,37 @@ body {
     text-align: justify;
 }
 
-table {
+/* Second .section-content (item.1) will be indented */
+.section .section-content:nth-of-type(2) {
+    margin-left: 2em; /* Adjust this value as necessary */
+}
+
+/* Table styles for item.0 only */
+.section .section-content:nth-of-type(1) table {
     width: 97%;
     margin: 0 auto;
     border-collapse: collapse;
     margin-top: 1cm;
-    background-color: white; /* Table background color */
+    background-color: white;
     word-wrap: break-word;
+    border: none; /* Remove all borders initially */
 }
 
-th, td {
+.section .section-content:nth-of-type(1) table th,
+.section .section-content:nth-of-type(1) table td {
     padding: 0.2cm;
     text-align: left;
-    border: 1px solid white; /* Set other borders to white */
+    border-top: 1px solid black; /* Top border only */
+    border-bottom: 1px solid black; /* Bottom border only */
+    border-left: none;
+    border-right: none;
 }
 
-th {
-    border-top: 1px solid black; /* Top border black */
-    border-bottom: 2px solid black; /* Bottom border also black and slightly thicker */
-    background-color: white; /* Ensure the header's background is white */
-    font-weight: bold;
-}
-
-tr + tr th {
-    border-top: 0; /* Remove extra top border for additional header rows if present */
-}
-
-tr {
-    border-top: 1px solid black; /* Top border black for each row */
+/* No borders for tables in item.1 */
+.section .section-content:nth-of-type(2) table,
+.section .section-content:nth-of-type(2) table th,
+.section .section-content:nth-of-type(2) table td {
+    border: none; /* Remove all borders */
 }
 
 .footer {
@@ -94,7 +100,7 @@ tr {
 }
 
 .page-number {
-    content: "Page " counter(page) " of "counter(page);
+    content: "Page " counter(page) " of " counter(page);
 }
 
 @page {

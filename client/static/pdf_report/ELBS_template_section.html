@@ -1,0 +1,17 @@
+<div class="container">
+    {% for item in Report_Detail %}
+        <div class="section">
+            <div class="section-content">
+                {{ item.0 | safe }}
+            </div>
+
+            <div class="section-content">
+                <p> Disclaimer: </p> {{ item.1 | safe }}
+            </div>
+            <div class="section-content indented">
+                {{ item.2 | safe }}
+            </div>
+
+        </div>
+    {% endfor %}
+</div>
