@@ -1,29 +1,29 @@
-ID	Item	category	action	retrieve_from
-1	My patient(s) were informed about the potential consequences of unexpected or incidental ﬁndings	Intention of the test and patient Information	bool	FALSE
-2	Opt-out: My patient(s) do NOT wish to be informed about unexpected and/or incidental findings	Intention of the test and patient Information	opt	FALSE
-3	Test purpose (Why is this test performed): 	Intention of the test and patient Information	purpose	FALSE
-4	Patient specifics	Intention of the test and patient Information	info	Biological Sex,Age,Organism,Is Deceased?,Is Pregnant?
-5	Disease specifics	Intention of the test and patient Information	info	Case vs Control,Condition Under Study,Is Infection Suspected?,Infection Strain
-5.1	Malignancy specifics	Intention of the test and patient Information	patho	Pathological diagnosis,Disease stage,Burden of disease,Disease status
-5.2	Previous malignancies	Intention of the test and patient Information		Previous and current oncological treatment,Previously diagnosed malignancies,Conﬁrmed tumor predisposition,Mutations from previous tissue or liquid proﬁling available,Previously identiﬁed CH (clonal hematopoiesis)-related variants
-5.3	Other relevant available clinical information	Intention of the test and patient Information	info	Phenotypic features,Ethnicity
-6	Sample Specifics	Technical aspects – cfDNA sample	info	Sample Types,Material Anatomical Entity,Cell Types,In vitro / In vivo
+ID	Item	category	action	retrieve_from	disclaimer
+1	My patient(s) were informed about the potential consequences of unexpected or incidental ﬁndings	Intention of the test and patient Information	bool	FALSE	FALSE
+2	Opt-out: My patient(s) do NOT wish to be informed about unexpected and/or incidental findings	Intention of the test and patient Information	opt	FALSE	FALSE
+3	Test purpose (Why is this test performed): 	Intention of the test and patient Information	purpose	FALSE	FALSE
+4	Patient specifics	Intention of the test and patient Information	info	Biological Sex,Age,Organism,Is Deceased?,Is Pregnant?	FALSE
+5	Disease specifics	Intention of the test and patient Information	info	Case vs Control,Condition Under Study,Is Infection Suspected?,Infection Strain	FALSE
+5.1	Malignancy specifics	Intention of the test and patient Information	patho	Pathological diagnosis,Disease stage,Burden of disease,Disease status	FALSE
+5.2	Previous malignancies	Intention of the test and patient Information		Previous and current oncological treatment,Previously diagnosed malignancies,Conﬁrmed tumor predisposition,Mutations from previous tissue or liquid proﬁling available,Previously identiﬁed CH (clonal hematopoiesis)-related variants	FALSE
+5.3	Other relevant available clinical information	Intention of the test and patient Information	info	Phenotypic features,Ethnicity	FALSE
+6	Sample Specifics	Technical aspects – cfDNA sample	info	Sample Types,Material Anatomical Entity,Cell Types,In vitro / In vivo	FALSE
 6.1	Sample Collection	Technical aspects – cfDNA sample	info	"Sample Collection Date,Carrying Liquid Volume,Carrying Liquid Volume Unit,Macroscopic abnormalities (e.g. hemolysis)
-"
-6.2	Cell-free DNA isolation	Technical aspects – cfDNA sample	info	Extraction Kit (DNA Isolation Method),DNA Mass,DNA Mass Units
+"	FALSE
+6.2	Cell-free DNA isolation	Technical aspects – cfDNA sample	info	Extraction Kit (DNA Isolation Method),DNA Mass,DNA Mass Units	FALSE
 6.3	Cell-free DNA QC	Technical aspects – cfDNA sample	info	"DNA profile:plots/all_samples.pdf,DNA clustering:plots/cluster_by_sample.pdf,Detection of high molecular weight DNA (Potential source ecDNA, gDNA or orther):stats/peak_statistics.csv
-"
-6.4	Any sample QC not meeting criteria?	Technical aspects – cfDNA sample	bool	FALSE
+"	FALSE
+6.4	Any sample QC not meeting criteria?	Technical aspects – cfDNA sample	bool	FALSE	FALSE
 7	Downstream Test QC	Technical aspects – downstream test	info	"Type of planned downstream assay,LOD (limit of detection),LOB (limit of blank),LOQ (limit of quantiﬁcation)
-"
+"	FALSE
 7.1	Downstream Test Specifics	Technical aspects – downstream test	info	"analytical sensitivity,analytical speciﬁcity,Sequencing: percentage of target region covered with the minimum required depth,Sequencing: average sequencing depth
-"
-7.2	Any downstream QC not meeting criteria?	Technical aspects – downstream test	bool	FALSE
-8	Variant QC	Technical aspects – downstream test	info	Confirm: this report excludes variants with variant allele fraction (VAF) below or equal to the LOB,Confirm: variants with VAF between LOB and LOD will be labeled ‘equivocal’ – their presence is uncertain,Recommendation for equivocal variants
+"	FALSE
+7.2	Any downstream QC not meeting criteria?	Technical aspects – downstream test	bool	FALSE	FALSE
+8	Variant QC	Technical aspects – downstream test	info	Recommendation for equivocal variants	1. This report excludes variants with variant allele fraction (VAF) below or equal to the LOB. 2. Variants with VAF between LOB and LOD will be labeled ‘equivocal’ – their presence is uncertain
 8.1	Variant Report	Downstream test results	info	"Pathogenic and likely pathogenic variants (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level),Variants in cancer susceptibility genes with VAF indicating germline origin (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level),Potential CH-related variants  (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level)
-"
-8.2	Recommendation for putative germline variants: (option  genetic counselling and/or germline testing)	Downstream test results	info	FALSE
-8.3	SCNA & fusions	Downstream test results	info	SCNA & fusions (LOD for SCNA and fusions may be lower compared to SNVs/indels; detection requires a higher tumor fraction),SCNA (estimated copy number or log2 ratio, conﬁdence level, potentially co-ampliﬁed genes and estimated size of the ampliﬁed/deleted segment)
-8.4	Negative results ( Tumor fraction – Not detected or Requested mutation is not detected)	Downstream test results	neg	Negative results ( Tumor fraction – Not detected or Requested mutation is not detected),Disclaimer – the presence of mutations below the LOD cannot be excluded.
-9	Unexpected findings	Unexpected findings	bool	Explanation why the ﬁndings were unexpected,Recommendation for referral to a Molecular Tumor Board for discussion.
-10	Clinically actionable results and evidence-based associations with response to speciﬁc drugs	Actionability	info	Clinically actionable results and evidence-based associations with response to speciﬁc drugs, Disclaimer:The actual clinical annotation for matching a treatment to a speciﬁc variant for each individual patients should only be done by the treating physician or a Molecular Tumor Board (MTB).
+"	FALSE
+8.2	Recommendation for putative germline variants	Downstream test results	info	FALSE	FALSE
+8.3	SCNA & fusions	Downstream test results	info	SCNA (estimated copy number or log2 ratio, conﬁdence level, potentially co-ampliﬁed genes and estimated size of the ampliﬁed/deleted segment)	LOD for SCNA and fusions may be lower compared to SNVs/indels, detection requires a higher tumor fraction.
+8.4	Negative results ( Tumor fraction – Not detected or Requested mutation is not detected)	Downstream test results	neg	Negative results ( Tumor fraction – Not detected or Requested mutation not detected)	The presence of mutations below the LOD cannot be excluded.
+9	Unexpected findings	Unexpected findings	bool	Explanation why the ﬁndings were unexpected	Referral to a Molecular Tumor Board for discussion may be desirable upon unexpected findings.
+10	Clinically actionable results and evidence-based associations with response to speciﬁc drugs	Actionability	info	Clinically actionable results and evidence-based associations with response to speciﬁc drugs	The actual clinical annotation for matching a treatment to a speciﬁc variant for each individual patients should only be done by the treating physician or a Molecular Tumor Board (MTB).
