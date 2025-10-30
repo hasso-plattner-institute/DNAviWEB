@@ -58,37 +58,39 @@ body {
     text-align: justify;
 }
 
-/* Second .section-content (item.1) will be indented */
+/* Indentation for the second section-content in each section */
 .section .section-content:nth-of-type(2) {
-    margin-left: 2em; /* Adjust this value as necessary */
+    margin-left: 4em; /* Adjust this value as necessary for desired indentation */
 }
 
-/* Table styles for item.0 only */
-.section .section-content:nth-of-type(1) table {
+table {
     width: 97%;
     margin: 0 auto;
     border-collapse: collapse;
     margin-top: 1cm;
     background-color: white;
     word-wrap: break-word;
-    border: none; /* Remove all borders initially */
 }
 
-.section .section-content:nth-of-type(1) table th,
-.section .section-content:nth-of-type(1) table td {
+th, td {
     padding: 0.2cm;
     text-align: left;
-    border-top: 1px solid black; /* Top border only */
-    border-bottom: 1px solid black; /* Bottom border only */
-    border-left: none;
-    border-right: none;
+    border: 1px solid white;
 }
 
-/* No borders for tables in item.1 */
-.section .section-content:nth-of-type(2) table,
-.section .section-content:nth-of-type(2) table th,
-.section .section-content:nth-of-type(2) table td {
-    border: none; /* Remove all borders */
+th {
+    border-top: 1px solid black;
+    border-bottom: 0;
+    background-color: white;
+    font-weight: bold;
+}
+
+tr + tr th {
+    border-top: 0;
+}
+
+tr {
+    border-top: 0;
 }
 
 .footer {
