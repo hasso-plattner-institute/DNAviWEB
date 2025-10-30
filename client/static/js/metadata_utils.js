@@ -305,6 +305,10 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                     // Decide on input
                     if (columnType === "bool") {
                         input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
                         ['Yes', 'No'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -312,14 +316,78 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                             input.appendChild(option);
                         });
 
-                    } else if (columnType === "confirm") {
+                    } else if (columnType === "purpose") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
 
-                        ['Confirmed', 'Needs verification'].forEach(optionText => {
+                        ['Screening', 'Therapy decision aid', 'MRD', 'Relapse',
+                            'Clinical study', 'Basic Research'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType === "assay") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['DNA-Sequencing - Short reads (e.g. Illumina)', 'DNA-Sequencing - Long reads (e.g. Nanopore)',
+                            'PCR', 'Epigenetics - targeted','Epigenetics - genome-wide', 'RNA-Sequencing',
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType === "patho") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['GX', 'G1', 'G2', 'G3', 'G4'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+
+                    else if (columnType === "stage") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['I', 'II', 'III', 'IV', 'Other'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType === "status") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['Diagnosed', 'Healthy', 'R0', 'R1', 'Relapsed'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
                             option.textContent = optionText;
@@ -329,6 +397,10 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                     }
                     else if (columnType === "opt") {
                         input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
                         ['Yes, OPT OUT', 'No, information is desired.'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -336,10 +408,47 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                             input.appendChild(option);
                         });
                     }
+                    else if (columnType === "equivoc") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['corresponding tissue testing','liquid re-biopsy', 'both tissue testing and liquid re-biopsy'
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+
+                    else if (columnType === "germline") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+
+                        ['genetic counselling','germline testing', 'both counselling and germline testing'
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+
                     else {
                         input = document.createElement('input');
                         input.type = 'text';
                     }
+
+
+
 
                     input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
                     input.className = 'form-control form-control-sm';
