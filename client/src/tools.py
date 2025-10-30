@@ -11,7 +11,6 @@ import re
 import subprocess
 import shutil
 import os
-import numpy as np
 import pandas as pd
 import sys
 from weasyprint import HTML
