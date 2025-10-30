@@ -26,6 +26,9 @@ UPLOAD_FOLDER =  f"{UPLOAD_DIR}uploads/"
 DOWNLOAD_FOLDER =  f"{UPLOAD_DIR}downloads/"
 USERS_FILE = f"{DNAVI_ROOT}users.json"
 STATIC_DIR = f"{MAINDIR}static/"
+
+REPORT_COLUMNS =  f"{STATIC_DIR}pdf_report/ELBS_columns.csv"
+
 EXAMPLE_DIR = f"{STATIC_DIR}tests/"
 EXAMPLE_TABLE = f"{EXAMPLE_DIR}electropherogram.csv"
 EXAMPLE_LADDER = f"{EXAMPLE_DIR}ladder.csv"
