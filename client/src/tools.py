@@ -11,6 +11,7 @@ import re
 import subprocess
 import shutil
 import os
+import numpy as np
 import pandas as pd
 import sys
 from weasyprint import HTML
@@ -18,9 +19,77 @@ from jinja2 import Environment, FileSystemLoader
 import datetime
 from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, SUCCESS_TOKEN
 
+
+def df2html(df, meta_df):
+    """
+
+    For each Section, collect the data and convert them to html. Will be integrated into the PDF.
+
+    :param df:
+    :param meta_df:
+    :return: dfs_to_pass
+
+    """
+    section_dict = df.to_dict()
+    retrieve_status = section_dict['retrieve_from']
+    columns_avail = meta_df.columns.tolist()
+    item2string = section_dict["Item"]
+    disclaimer_dict = section_dict['disclaimer']
+    disclaimer = "/"
+    # Initiate the collection of section name and corresponding data frame
+    dfs_to_pass = []
+
+    for item in item2string:
+        item_string = item2string[item]
+        retrieve_from = retrieve_status[item]
+        disclaimer_present = disclaimer_dict[item]
+        item_name = f"{item} - {item_string}"
+        item_df = pd.DataFrame(["Not available"],columns=[item_string],
+                               )
+
+        # Get data from meta table if present
+        if item_string in columns_avail:
+            item_df = pd.DataFrame(meta_df[item_string])
+
+        # Or get the data from other columns
+        if retrieve_from != "FALSE":
+            collect_from = [col for col in retrieve_status[item].split(",")
+                            if col in columns_avail]
+            item_df = meta_df[collect_from]
+
+        # Check if there is a disclaimer to display
+        if disclaimer_present != "FALSE":
+            disclaimer = disclaimer_dict[item]
+
+        # Rename axes
+        item_df = item_df.rename_axis(None, axis=0)
+
+        # Add Item ID & Patient ID & move to front
+        #item_df[f"Item {item}"] = ""
+
+        # Add a header and (if applicable) a disclaimer
+        header_df = pd.DataFrame(columns=[f"Item {item}", item_string])
+        if disclaimer_present != "FALSE":
+            header_df.loc[len(header_df)] =  ["!", f"Disclaimer: {disclaimer}"]
+        item_df["Patient ID"] = item_df.index
+        item_df.reset_index(drop=True, inplace=True)
+        starting_cols = ["Patient ID"]
+        col_order =  starting_cols + [e for e in item_df.columns if e not in starting_cols]
+        item_df = item_df[col_order]
+
+        # Append to the html-converted dataframe to the collection
+        dfs_to_pass.append([header_df.to_html(classes='table table-bordered', index=False,),
+                            item_df.to_html(classes='table table-bordered', index=False,)])
+
+    # Return the dataframe collection
+    return dfs_to_pass
+    # END OF FUNCTION
+
+
+
 def file2pdf(file_dir, title="DNAvi Liquid Biopsy Report",
              static_dir = "./static/", template_html="ELBS_template.html",
-             template_csv="ELBS_template.csv",
+             template_csv="ELBS_template.csv", template_section_html="ELBS_template_section.html",
              style_sheet="style.css"):
     """
 
@@ -32,43 +101,49 @@ def file2pdf(file_dir, title="DNAvi Liquid Biopsy Report",
     """
 
     ##############################################################################
-    # Load the Report metadata
+    # 1. Load the Report metadata and templates
     ##############################################################################
-    meta_df = pd.read_table(file_dir, index_col=0)
-    df = pd.read_table(f"{static_dir}pdf_report/{template_csv}")
-    print(meta_df)
-    print(df)
-    out_pdf = file_dir.replace(".csv", ".pdf")
+    meta_df = pd.read_csv(file_dir, index_col=0)
+    template_dir = f"{static_dir}pdf_report/{template_csv}"
+    df = pd.read_table(template_dir, index_col=0)
+    out_pdf = file_dir.rsplit("/",1)[0]+"/DNAviReport.pdf"
     style_dir = f"{static_dir}pdf_report/{style_sheet}"
 
-    ##############################################################################
-    # Split report by section
-    ##############################################################################
-    dfs_to_pass = []
-    for section in df["category"].unique():
-        section_df = df[df["category"] == section]
-        section_df.drop(columns=["category"], inplace=True)
-        dfs_to_pass.append([section, section_df.to_html(classes='table table-bordered')])
+    env = Environment(loader=FileSystemLoader(f"{static_dir}pdf_report/"))
 
     ##############################################################################
-    # Load template
+    # 2. Split report by section and get HTMLs for each section
     ##############################################################################
-    env = Environment(loader=FileSystemLoader(f"{static_dir}pdf_report/"))
+    dfs_final = []
+    for section in df["category"].unique():
+        print(f"----- SECTION {section}")
+        section_df = df[df["category"] == section]
+        # Convert to a pretty html output:
+        dfs_to_pass = df2html(section_df, meta_df)
+
+        # Render into subsection html:
+        template = env.get_template(template_section_html)
+        template_vars = {"Report_Detail": dfs_to_pass}
+        html_out = template.render(template_vars)
+        dfs_final.append([section, html_out])
+
+    ##############################################################################
+    # 3. Render everything into the final report template
+    ##############################################################################
     template = env.get_template(template_html)
     template_vars = {"title": title,
                      "logo_filename": f"file://{static_dir}img/logo.svg",
-                                      "CPU": "test",
-                     "creation_date_time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                     "summary_table": "summ",
-                     "Report_Detail": dfs_to_pass}
+                     "style_filename":  f"file://{static_dir}img/logo.svg",
+                     "creation_date_time": datetime.datetime.now(
+                     ).strftime("%Y-%m-%d %H:%M:%S"),
+                     "Report_Detail": dfs_final}
 
     # Render our file and create the PDF using our css style file
     html_out = template.render(template_vars)
 
     HTML(string=html_out).write_pdf(out_pdf, stylesheets=[style_dir])
+    print(f"--- Saved pdf report to: {out_pdf}")
     # END OF PDF REPORT FUNCTION
-
-
 
 def allowed_file(filename):
     """
@@ -222,12 +297,15 @@ def get_result_files(folder, prefix=''):
                         preview = df.head(5).to_dict(orient='records')
                 except Exception:
                     preview = []
-                statistics_files.append({'name': relative_path, 'preview': preview, 'columns': list(df.columns) if preview else []})
+                statistics_files.append({'name': relative_path,
+                                         'preview': preview,
+                                         'columns': list(df.columns) if preview else []})
             # Peaks PNG
             elif re.match(r"peaks_\d+_sample\.png$", fname):
                 peaks_files.append(relative_path)
             # Other PNGs in plots/qc/stats
-            elif fname.endswith(".png") and any(folder_name in rel_lower for folder_name in ["plots", "qc", "stats"]):
+            elif fname.endswith(".png") and any(folder_name in rel_lower
+                                                for folder_name in ["plots", "qc", "stats"]):
                 other_files.append(relative_path)
 
     return statistics_files, peaks_files, other_files
