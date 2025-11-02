@@ -27,9 +27,11 @@
         <li class="nav-item">
           <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
         </li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
-        <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">License</a></li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <!--begin::Navbar Login/logout-->
@@ -72,14 +74,12 @@
     <div class="sidebar-wrapper">
       <nav class="mt-2">
         <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
-          {% if current_user.is_authenticated %}
-              <li class="nav-item">
-                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="nav-icon bi bi-speedometer"></i>
-                  <p>Submissions Dashboard</p>
-                </a>
-              </li>
-          {% endif %}
+          <li class="nav-item">
+            <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
+              <i class="bi bi-grid"></i>
+              <p>Submissions Dashboard</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="{{ url_for('instructions') }}" class="nav-link">
               <i class="bi bi-graph-up"></i>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Results</li>
                   </ol>
                 </div>

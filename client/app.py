@@ -24,8 +24,10 @@ from werkzeug.utils import secure_filename
 from client.db_utils import save_data
 from database.config import SessionLocal
 from database.schema.user_details import UserDetails
-from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
-from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
+    EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS
+from .src.errors import secure_error
+from .src.tools import allowed_file, file2pdf, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_username, save_user
 
 ###############################################################################
@@ -35,7 +37,7 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
-#############################Logging####################################
+#############################Logging###########################################
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = BASE_DIR.rstrip("/")
 LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
@@ -181,8 +183,17 @@ def warning():
 def contact():
     return render_template(f'contact.html')
 
+@app.route("/legal_notice")
+def legal_notice():
+    return render_template(f'legal_notice.html')
+
+@app.route("/citation")
+def citation():
+    return render_template(f'citation.html')
+
+
 @app.route('/submissions_dashboard', methods=['GET','POST'])
-@login_required
+#@login_required
 def submissions_dashboard():
     username = get_username()
     user_downloads = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
@@ -207,6 +218,27 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
+
+##############################################################################
+#   PARSE OPTIONAL ELBS REPORT COLUMNS TO METADATA TABLE (USER INTERFACE)    #
+##############################################################################
+@app.route('/get-column-names', methods=['GET'])
+def get_column_names():
+    """
+    This function will read the columns to display in the user interface
+    from a table located in static
+    :return:
+    """
+    df = pd.read_table(REPORT_COLUMNS)
+    df = df[df["show"] == True]
+    # Prepare the information by constructing a list of dictionaries
+    columns_info = df[['Item', 'action', 'category']].rename(
+        columns={'Item': 'ColumnName', 'action': 'ColumnType',
+                 'category': 'Category'}
+    ).to_dict(orient='records')
+    return jsonify({'columnsInfo': columns_info})
+    # END OF FUNCTION
+    
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
@@ -222,45 +254,104 @@ def protect():
     username = get_username()
     if request.method == 'POST' and 'incomp_results' not in request.form:
         ######################################################################
-        # PERFORM BASIC CHECKS
+        # SET INPUT VARIABLES
         ######################################################################
-        data_inpt = request.files['data_file'].filename
-        ladder_inpt = request.files['ladder_file'].filename
-        meta_inpt = request.files['meta_file']
+        request_dict = request.form.to_dict(flat=False)
+        example_case = False
+        default_ladder = False
         m = None
+        m_all = None
+        print(request_dict)
+        print("............................")
+
+        ######################################################################
+        # CHECK IF SOME OF THE DATA ARE REPOSITORY DEFAULTS
+        ######################################################################
+        if 'Example' in request_dict:
+            data_inpt = EXAMPLE_TABLE
+            ladder_inpt = EXAMPLE_LADDER
+            meta_inpt = EXAMPLE_META
+            example_case = True
+        else:
+            data_inpt = request.files['data_file'].filename
+            meta_inpt = request.files['meta_file']
+            if request_dict['ladder_file'] == ["upload"]:
+                ladder_inpt = request.files['ladder_file']
+            else:
+                default_ladder = True
+                ladder_inpt = LADDER_DICT[request_dict['ladder_file'][0]]
+                print(f"LADDER SELECTED FROM DEFAULTS {ladder_inpt}")
+
+        ######################################################################
+        # BASIC QC
+        ######################################################################
         if data_inpt == '' or not allowed_file(data_inpt):
             error = "Missing DNA file (table/image) or format not allowed"
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
         if ladder_inpt == '':
             error = "Missing Ladder file."
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
+
         ######################################################################
-        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY(VM2)  #
+        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY (VM2) #
         ######################################################################
         request_id = str(uuid4())
         processing_folder = f"{app.config['UPLOAD_FOLDER']}{username}/{request_id}/"
         os.makedirs(processing_folder, exist_ok=True)
         f = f"{processing_folder}{secure_filename(data_inpt)}"
-        request.files['data_file'].save(f)
-        l = f"{f.rsplit('.',1)[0]}_ladder.csv"
-        request.files['ladder_file'].save(l)
-        if meta_inpt:
+        l = f"{f.rsplit('.', 1)[0]}_ladder.csv"
+
+        ######################################################################
+        #  If it's the example or default, simply compy #
+        ######################################################################
+        if example_case or default_ladder:
+            if example_case:
+                m = f"{f.rsplit('.', 1)[0]}_meta.csv"
+                shutil.copyfile(data_inpt, f)
+                shutil.copyfile(ladder_inpt, l)
+                shutil.copyfile(meta_inpt, m)
+            if default_ladder:
+                shutil.copyfile(ladder_inpt, l)
+                request.files['data_file'].save(f)
+        ######################################################################
+        #  Otherwise save user input
+        ######################################################################
+        else: # otherwise save user input
+            request.files['data_file'].save(f)
+            request.files['ladder_file'].save(l)
+
+        ######################################################################
+        #  Handle meta data and report
+        ######################################################################
+        if meta_inpt and not example_case:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
+
+            m_all = f"{f.rsplit('.', 1)[0]}_meta-all.csv"
             request.files['meta_file'].save(m)
             # Make a backup copy first to save all metadata in db even if some empty
             backup_meta_path = m.replace(".csv", "_backup.csv")
             shutil.copy(m, backup_meta_path)
             print(f"Backup of metadata saved as: {backup_meta_path}")
             # List of metadata columns (values) chosen by user to group by
+            meta_df = pd.read_csv(m)
+            # Add a full meta table copy for ELBS report
+            meta_df.to_csv(m_all, index=False)
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
+
+            ### ! Important validate of these cols even exist
             if group_columns:
-                selected_columns += group_columns
-            meta_df = pd.read_csv(m)
-            meta_df = meta_df[selected_columns]
+                valid_group_columns = [e for e in group_columns if e in meta_df.columns]
+                print("--- Valid group columns", valid_group_columns)
+                selected_columns += valid_group_columns
             # Remove all not selected columns
+            meta_df = meta_df[selected_columns]
             meta_df.to_csv(m, index=False)
             print("Metadata columns selected for grouping:", selected_columns)
         ######################################################################
@@ -268,6 +359,13 @@ def protect():
         ######################################################################
         assigned_vars = [e for e in [("i",f),("l",l),("m",m)] if e[1]]
         op, error = input2dnavi(in_vars=assigned_vars)
+
+        ######################################################################
+        #                       CREATE PDF REPORT                           #
+        ######################################################################
+        if m_all:
+            file2pdf(file_dir=m_all, static_dir=STATIC_DIR)
+
         ######################################################################
         #               ZIP + MOVE OUTPUT TO DOWNLOAD (VM2)                  #
         ######################################################################
@@ -280,9 +378,12 @@ def protect():
         #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                    #
         ######################################################################
         if error:
-            return render_template(f'protected.html',
-                               error=error, user_logged_in = current_user.is_authenticated)
-        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
+            return render_template(
+                f'protected.html',
+                error=secure_error(error),
+                user_logged_in = current_user.is_authenticated)
+        statistics_files, peaks_files, other_files = get_result_files(
+            f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
         ######################################################################
         #                        SAVE DATA TO DATABASE                       #
         ######################################################################
