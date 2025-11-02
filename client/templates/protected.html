@@ -1,5 +1,29 @@
 <!doctype html>
 <html lang="en">
+  <style>
+    input[type=button], input[type=submit], input[type=reset] {
+      background-color:forestgreen;
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-decoration: none;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"]:after {
+      display: inline-block;
+      margin-right: 20px;
+      appearance: none;
+        border: none;
+        appearance: none;
+        background-color: rgba(255,252,229,1);
+
+    }
+    .radio-group label{
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -85,12 +109,11 @@
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
-            </li>
+            <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
           </ul>
           <!--end::Start Navbar Links-->
 
@@ -162,14 +185,12 @@
               data-accordion="false"
               id="navigation"
             >
-              {% if current_user.is_authenticated %}
               <li class="nav-item">
                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="nav-icon bi bi-speedometer"></i>
+                  <i class="bi bi-grid"></i>
                   <p>Submissions Dashboard</p>
                 </a>
               </li>
-              {% endif %}
 
               <li class="nav-item">
                  <a href="{{ url_for('instructions') }}" class="nav-link">
@@ -190,31 +211,11 @@
       <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Container-->
-          <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="row align-items-center">
-                <div class="col-sm-6">
-                  <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
-                </div>
-                <div class="col-sm-6">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="{{ url_for('home')}}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
-
           <!--begin::Progression Tab -->
           <div class="container my-4">
             <div class="progress" style="height: 40px;">
               <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                1. Instructions
+                <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary" style="color:white ">1. Quickstart Guide</a>
               </div>
               <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
                 2. Upload Files
@@ -225,46 +226,132 @@
             </div>
           </div>
           <!--end::Progression Tab -->
-
-          <!--begin::Navigation buttons -->
-          <div class="d-flex justify-content-between mt-4 me-3">
-              <!--begin::prev button -->
-              <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary">
-                  <i class="bi bi-arrow-left"></i> Previous
-              </a>
-              <!--end::Prev button -->
-          </div>
-          <!--end::Navigation buttons -->
         </div>
         <!--end::App Content Header-->
         <div class="app-content">
           <main id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
+              <div class="container"
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- DISPLAY ERRORS HERE ON TOP -->
+                <!-- ------------------------------------------------------------------------------ -->
+                <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                <div class="flash-container">
+                  {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                      <ul class="flashes">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  {% endwith %}
+                </div>
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- FILE MISSING-->
+                <!-- ------------------------------------------------------------------------------ -->
+                {% if missing_error %}
+                  <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                {% endif %}
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- OTHER ERROR-->
+                <!-- ------------------------------------------------------------------------------ -->
+                {% if error %}
+                  <pre class="error"><strong>Error message from DNAvi: </strong>{{ error }}</pre>
+                  <p>
+                    <strong>Note: This is the end of your error message. Please read it carefully, check out our
+                        <a href="{{ url_for('instructions') }}">quickstart guide</a> or
+                        <a href="{{ url_for('documentation') }}">documentation</a>,
+                        and try again.
+                        If this doesn't solve your issues, contact us with this error message copied,
+                        the date of your submission, and the submission ID (see dashboard) under dnavi-info@hpi.de.
+                        <br>
+                    </strong>
+                  </p>
+                {% endif %}
+                <!-- ---------------------------------------------------------------------------------------- -->
+                <!-- EXAMPLE FORM -->
+                <!-- ---------------------------------------------------------------------------------------- -->
+                <br>
+                <form id="example-form" method="POST">
+                  <input type="submit" value="Quick test: Run DNAvi with our example data" name="Example">
+                  <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">
+                    Download examples: Signal Table ↓
+                  </a> 
+                  <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">
+                    Size Standard ↓
+                  </a>
+                  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">
+                    Metadata ↓
+                  </a>
+                  <p></p><p></p><br>
+                </form>
+              </div>
+            <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
+                  <h3> Upload your own data:</h3>
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DNA GEL OR CSV -->
+                  <!--                                DNA GEL OR CSV                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
                       <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
+                      <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
-                      <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
-                      <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
+                      <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
+                      <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
+                      <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                     </div>
                   </div>
                   <br></br>
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- LADDER ANNOTATION CSV-->
+                  <!--                        DNA SIZE STANDARD ANNOTATION CSV                        -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker</h5>
+                      <img src="./static/img/annotate.svg" alt="Annotate Standard" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
-                      <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
-                      <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded" required>
+                      <!-- The radio buttons -->
+                      <p>Select from defaults:</p>
+                      <div class="radio-group"> 
+                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" id="uploadOption" name="ladder_file" value="upload" accept=".csv"><label for="uploadOption"> Custom </label>
+                      </div>
+                      <!-- The file browse input, initially shown -->
+                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="ladder_file">
+                        <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">↓ Download template</a>
+                      </div>
+                      <!-- The script to hide the file browse -->
+                      <script>
+                        // Get references to the radio buttons and the file upload container
+                        const uploadRadio = document.getElementById('uploadOption');
+                        const defaultRadios = document.getElementsByClassName('predef');
+                        const fileContainer = document.getElementById('fileUploadContainer');
+                        // Listen for clicks on the radio buttons
+                        uploadRadio.addEventListener('change', () => {
+                          if (uploadRadio.checked) {
+                            fileContainer.style.display = 'block'; // Show the file input
+                          }
+                        });
+                        // Hide file input when any "predef" option is selected
+                        Array.from(defaultRadios).forEach(radio => {
+                          radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                              fileContainer.style.display = 'none';
+                            }
+                          });
+                        });
+                      </script>
                     </div>
                   </div>
                   <br></br>
@@ -273,8 +360,9 @@
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--begin::metadata-->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Patient Metadata</h5>
+                      <img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
                       <!--begin::metadata two options header-->
@@ -549,6 +637,9 @@
                             <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
                               + Add Custom Column
                             </button>
+                            <button id="addELBSBtn" type="button" class="btn btn-outline-primary mt-3">
+                                  + Add ELBS Report Criteria
+                            </button>
                           </div>
                           <!--end::metadata AG Grid table-->
                         </div>
@@ -708,60 +799,60 @@
                   </div>
                   <!--end::metadata -->
                   <style>
-                  .metadata-table-container {
-                    background: #fafafa;
-                    border-radius: 12px;
-                    padding: 1rem;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                  }
-                  .table-wrapper {
-                    overflow-x: auto;
-                    border-radius: 10px;
-                  }
-                  #metadata-table {
-                    border-collapse: separate;
-                    border-spacing: 0;
-                    width: 100%;
-                    font-size: 0.9rem;
-                  }
-                  #metadata-table thead th {
-                    position: sticky;
-                    top: 0;
-                    background: #f8f9fa;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                    z-index: 2;
-                  }
-                  #metadata-table th, #metadata-table td {
-                    min-width: 120px;
-                    white-space: nowrap;
-                    vertical-align: middle;
-                  }
-                  #metadata-table tbody tr:hover {
-                    background-color: #f6faff;
-                  }
-                  .optional-col {
-                    transition: all 0.3s ease;
-                  }
-                  .hidden-col {
-                    display: none;
-                  }
-                  #metadata-table th {
-                    position: relative;
-                    user-select: none;
-                  }
-                  #metadata-table th .resizer {
-                    position: absolute;
-                    right: 0;
-                    top: 0;
-                    width: 6px;
-                    cursor: col-resize;
-                    user-select: none;
-                    height: 100%;
-                    z-index: 3;
-                  }
-                  #metadata-table th .resizer:hover {
-                    background-color: rgba(0, 123, 255, 0.2);
-                  }
+                    .metadata-table-container {
+                      background: #fafafa;
+                      border-radius: 12px;
+                      padding: 1rem;
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    }
+                    .table-wrapper {
+                      overflow-x: auto;
+                      border-radius: 10px;
+                    }
+                    #metadata-table {
+                      border-collapse: separate;
+                      border-spacing: 0;
+                      width: 100%;
+                      font-size: 0.9rem;
+                    }
+                    #metadata-table thead th {
+                      position: sticky;
+                      top: 0;
+                      background: #f8f9fa;
+                      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                      z-index: 2;
+                    }
+                    #metadata-table th, #metadata-table td {
+                      min-width: 120px;
+                      white-space: nowrap;
+                      vertical-align: middle;
+                    }
+                    #metadata-table tbody tr:hover {
+                      background-color: #f6faff;
+                    }
+                    .optional-col {
+                      transition: all 0.3s ease;
+                    }
+                    .hidden-col {
+                      display: none;
+                    }
+                    #metadata-table th {
+                      position: relative;
+                      user-select: none;
+                    }
+                    #metadata-table th .resizer {
+                      position: absolute;
+                      right: 0;
+                      top: 0;
+                      width: 6px;
+                      cursor: col-resize;
+                      user-select: none;
+                      height: 100%;
+                      z-index: 3;
+                    }
+                    #metadata-table th .resizer:hover {
+                      background-color: rgba(0, 123, 255, 0.2);
+                    }
                   </style>
 
                   <script>
@@ -779,7 +870,6 @@
                       document.addEventListener('mousemove', resize);
                       document.addEventListener('mouseup', stopResize);
                     });
-
                     function resize(e) {
                       th.style.width = (startWidth + (e.pageX - startX)) + 'px';
                     }
@@ -788,25 +878,20 @@
                     }
                   });
 
-                  xs
                   document.addEventListener("DOMContentLoaded", () => {
                     const table = document.getElementById("metadata-table");
                     if (table) makeTableResizable(table);
                   });
                   </script>
-
-
                   <script>
                     document.addEventListener('DOMContentLoaded', function () {
                       const table = document.getElementById('metadata-table');
                       const tbody = table.querySelector('tbody');
-
                       function tryInitOls(root) {
                         if (typeof window.initOlsAutocomplete === 'function') {
                           try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
                         }
                       }
-
                       // Click handler (add/remove)
                       table.addEventListener('click', function (e) {
                         const addBtn = e.target.closest('.add-row');
@@ -951,44 +1036,21 @@
                   <!-- SUBMISSION -->
                   <!-- ---------------------------------------------------------------------------------------- -->
                   <h3>Submit for Analysis</h3>
-                  <p>Your DNA file will be analysed for peaks, height normalized,
-                      and grouped in case you provided metadata. Be patient, this may take a while.</p>
+                  <p>
+                    Your DNA file will be analysed for peaks, height normalized,
+                    and grouped in case you provided metadata. Be patient, this may take a while.
+                  </p>
+                  <!-- Terms checkbox -->
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" value="" id="agree-terms">
+                    <label class="form-check-label" for="agree-terms">
+                      I have read and agree to the 
+                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>
+                    </label>
+                  </div>
                   <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
-
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DISPLAY ERROR MESSAGES HERE-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                  {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                      <ul class=flashes>
-                      {% for message in messages %}
-                      <li>{{ message }}</li>
-                      {% endfor %}
-                      </ul>
-                      {% endif %}
-                  {% endwith %}
-                  {% block body %}{% endblock %}
-
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- FILE MISSING-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      <br></br>
-                      {% if missing_error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ missing_error }} </p>
-                      {% endif %}
-
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      {% if error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ error }} </p>
-                      <br></br>
-                      {% endif %}
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
+                  <!--                            SAVE TO DB CONSENT                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--begin::Popup do you consent to save to db?-->
                   <div class="modal fade" id="saveConsent" tabindex="-1" aria-labelledby="saveConsentLabel" aria-hidden="true">
@@ -999,28 +1061,43 @@
                           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <p>
-                            Do you agree to save your uploaded files and analysis results to the DNAvi database?
+                          <p class="mb-3">
+                            Your analysis is ready to be submitted. Please choose how you would like DNAvi to handle your uploaded files and results:
                           </p>
-                          <ul>
-                            {% if user_logged_in %}
-                              <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
-                              <li>Your stored data will also help drive future discoveries in cell-free DNA research.</li>
-                              <li>If you choose not to save, your files will be deleted after this session ends.</li>
-                            {% else %}
-                              <li>By saving your analysis, you help drive future discoveries in cell-free DNA research.</li>
-                            {% endif %}
-                          </ul>
+                            <div class="list-group mb-3">
+                              {% if user_logged_in %}
+                                <div class="list-group-item">
+                                  <span class="badge bg-success me-2">Analyze & Save</span>
+                                  Your data will be securely stored in the DNAvi database. You can revisit and download your results anytime from your <em>Submissions Dashboard</em>.
+                                </div>
+                                <div class="list-group-item">
+                                  <span class="badge bg-secondary me-2">Analyze Only</span>
+                                  Your data will be processed now, but deleted after this session ends.
+                                </div>
+                                <div class="list-group-item text-muted">
+                                  All saved data helps advance ongoing cell-free DNA research.
+                                </div>
+                              {% else %}
+                                <div class="list-group-item">
+                                  <span class="badge bg-success me-2">Analyze & Save</span>
+                                  Your data will be securely stored in the DNAvi database to support future research.
+                                </div>
+                                <div class="list-group-item">
+                                  <span class="badge bg-secondary me-2">Analyze Only</span>
+                                  Your data will be processed once, then deleted after the session ends.
+                                </div>
+                              {% endif %}
+                            </div>
                           <p class="text-muted small mb-0">
-                            By clicking ‘Yes, Save’, you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                            By choosing “Analyze & Save” you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
                           </p>
                         </div>
                         <div class="modal-footer d-flex justify-content-between">
-                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            No, just analyze once
+                          <button type="button" class="btn btn-outline-secondary btn-sm me-2 bg-secondary text-white" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">
+                            Analyze Only
                           </button>
                           <button type="button" class="btn btn-success" id="confirm-save-btn">
-                            Yes, save my data
+                            Analyze & Save
                           </button>
                         </div>
                       </div>

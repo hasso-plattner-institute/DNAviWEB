@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>DNAvi | Submissions Dashboard</title>
+  <title>DNAvi | Submission Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
@@ -27,8 +27,11 @@
         <li class="nav-item">
           <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
         </li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <!--begin::Navbar Login/logout-->
@@ -73,8 +76,8 @@
         <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
           <li class="nav-item">
             <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-              <i class="nav-icon bi bi-speedometer"></i>
-              <p>Submissions Dashboard</p>
+              <i class="bi bi-grid"></i>
+              <p>Submission Dashboard</p>
             </a>
           </li>
           <li class="nav-item">
@@ -99,12 +102,12 @@
             <div class="row">
               <div class="row align-items-center">
                 <div class="col-sm-6">
-                  <h3 class="mb-0">Submissions Dashboard</h3>
+                  <h3 class="mb-0">Submission Dashboard</h3>
                 </div>
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-end">
                     <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Submissions Dashboard</li>
+                    <li class="breadcrumb-item active" aria-current="page">Submission Dashboard</li>
                   </ol>
                 </div>
               </div>
@@ -182,7 +185,7 @@
               </div>
             </div>
             <div class="card-footer clearfix">
-              <a href="{{ url_for('instructions') }}" class="btn btn-sm btn-primary float-start">Create New Submission</a>
+              <a href="{{ url_for('protect') }}" class="btn btn-sm btn-primary float-start">Create New Submission</a>
             </div>
           </div>
 

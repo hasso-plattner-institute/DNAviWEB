@@ -11,12 +11,25 @@
 document.addEventListener("DOMContentLoaded", () => {
   const submitBtn = document.getElementById("submit-analysis-btn");
   const confirmSaveBtn = document.getElementById("confirm-save-btn");
-  const form = document.querySelector("form");
+  const form = document.getElementById("upload-form");
   const loadingOverlay = document.getElementById("loading-overlay");
+  const agreeCheckbox = document.getElementById("agree-terms");
+  // Disable submit button initially until terms are accepted
+  if (agreeCheckbox) {
+    submitBtn.disabled = !agreeCheckbox.checked;
+    agreeCheckbox.addEventListener("change", () => {
+      submitBtn.disabled = !agreeCheckbox.checked;
+    });
+  }
 
   // When user clicks Submit
   submitBtn.addEventListener("click", (e) => {
     e.preventDefault();
+    // Check if terms and conditions are accepted
+    if (agreeCheckbox && !agreeCheckbox.checked) {
+      alert("Please agree to the DNAvi Terms and Conditions before submitting.");
+      return;
+    }
     // Check if form is valid (all required files are uploaded)
     // Do not allow submission if not valid
     if (!form.checkValidity()) {
