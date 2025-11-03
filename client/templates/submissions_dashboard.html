@@ -236,6 +236,42 @@
           });
         }
       });
+      
+      // When confirm delete button is clicked trigger email via /request-delete with the
+      // specific submission id to delete. If mail sent successfully close the tab
+      // And give message deletion request sent, else pop up message on failure. 
+      document.getElementById('confirmDeleteBtn').addEventListener('click', function(){
+        const submissionId = document.querySelector('.delete-submission[data-bs-target="#confirmDeleteModal"]').dataset.id;
+        fetch('/request-delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({submission_id: submissionId})})
+        .then(response => {
+            const modalEl = document.getElementById('confirmDeleteModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            if(response.ok){
+                alert('Deletion request sent!');
+                location.reload();
+            } else {
+                alert('Failed to send deletion request.');
+            }
+        })
+        .catch(error => {
+            const modalEl = document.getElementById('confirmDeleteModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            console.error('Error:', error);
+            alert('An error occurred.');
+        });
+      });
+
+      // Close the pop up when cancel is clicked
+      document.querySelector('#confirmDeleteModal .btn-outline-secondary').addEventListener('click', function(){
+        const modalEl = document.getElementById('confirmDeleteModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+      });
     </script>
 
 </body>

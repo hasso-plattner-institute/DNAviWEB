@@ -8,9 +8,11 @@ Date: 2025-AUG-29 \n
 
 """
 import datetime
+from email.mime.text import MIMEText
 import logging
 import os
 import shutil
+import smtplib
 import threading
 from uuid import uuid4
 
@@ -37,7 +39,7 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
-#############################Logging###########################################
+# Logging
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = BASE_DIR.rstrip("/")
 LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
@@ -51,7 +53,13 @@ logging.basicConfig(
     ]
 )
 logging.info("Test log message at startup")
-#############################Logging####################################
+# Mail
+SMTP_SERVER = "smtp.office365.com"
+SMTP_PORT = 587
+HPI_USER = os.environ.get("HPI_EMAIL")
+HPI_PASS = os.environ.get("HPI_PASSWORD")
+SHARED_MAILBOX = os.environ.get("SHARED_MAILBOX")
+
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = "74352743t#+#´01230435¹^xvc1u"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -466,6 +474,43 @@ def download(filename):
 @app.template_filter('datetimeformat')
 def datetimeformat(value):
     return datetime.datetime.fromtimestamp(value).strftime('%b %d, %Y')
+
+
+@app.route("/request-delete", methods=["POST"])
+def request_delete():
+    """
+    This method sends a mail to shared mailbox when user requests deletion of a submission.
+    """
+    data = request.get_json()
+    submission_id = data.get("submission_id")
+    subject = f"Deletion request for submission {submission_id}"
+    body = f"""
+            Dear DNAvi Support Team,
+
+            A deletion request has been submitted via the DNAvi web application.
+
+            • Requested by: {current_user.id}
+            • Submission ID: {submission_id}
+
+            Please review this request and proceed with the deletion process as appropriate.
+
+            Best regards,
+            DNAvi Automated Notification
+            """
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = SHARED_MAILBOX
+    msg["To"] = SHARED_MAILBOX
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(HPI_USER, HPI_PASS)
+        server.sendmail(HPI_USER, [SHARED_MAILBOX], msg.as_string())
+        server.quit()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        print("Email sending failed:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)
