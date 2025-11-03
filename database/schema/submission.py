@@ -2,8 +2,9 @@
 This module defines the 'submission' table.
 The submission table stores all submissions of a specific user.
 """
+from datetime import datetime
 import uuid
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -14,6 +15,7 @@ class Submission(Base):
     - submission_id (output_id): Each submission to DNAvi
       is identified with a unique output identifier.
     - username: username of the submitter.
+    - created_at : DateTime, Timestamp when the record was inserted.
     """
     __tablename__ = 'submission'
 
@@ -26,6 +28,12 @@ class Submission(Base):
     username: Mapped[str] = mapped_column(
         String(50),
         ForeignKey('user_details.username', ondelete='CASCADE'),
+        nullable=False
+    )
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
         nullable=False
     )
     

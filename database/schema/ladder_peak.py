@@ -1,7 +1,8 @@
 """
 This module describes the gell ladder peaks table.
 """
-from sqlalchemy import Integer, Float, ForeignKey, String
+from datetime import datetime
+from sqlalchemy import DateTime, Integer, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -33,6 +34,13 @@ class LadderPeak(Base):
     # Create a python attribute ladder, each LadderPeak (child) belongs to one Ladder (parent)
     ladder: Mapped["Ladder"] = relationship(
         back_populates="ladder_peaks"
+    )
+
+    # Timestamp when the record was inserted.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
 from database.schema.ladder import Ladder

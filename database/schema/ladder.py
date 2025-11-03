@@ -1,7 +1,8 @@
 """
 This module describes all ladders.
 """
-from sqlalchemy import Integer, String
+from datetime import datetime
+from sqlalchemy import DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -22,6 +23,13 @@ class Ladder(Base):
     ladder_name: Mapped[str] = mapped_column(
         String(50),
         nullable=True
+    )
+
+    # Timestamp when the record was inserted.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
     # Relationship between parent (Ladder) and child (LadderPixel) class

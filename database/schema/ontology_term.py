@@ -2,8 +2,9 @@
 This module defines the ontology_term table according to its definition in the EGA metadata schema.
 https://github.com/EbiEga/ega-metadata-schema/blob/main/schemas/EGA.common-definitions.json
 """
+from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String
+from sqlalchemy import DateTime, String
 from database.schema.base import Base
 
 class OntologyTerm(Base):
@@ -30,9 +31,18 @@ class OntologyTerm(Base):
     - ontology_description: Optional description of the term,
     e.g., from the Ontology Lookup Service (OLS).
     Note: This field is not required by the EGA schema but added for extra clarity.
+
+    - created_at : DateTime
+    Timestamp when the record was inserted.
     """
     __tablename__ = "ontology_term"
 
     term_id: Mapped[str] = mapped_column(String(50), primary_key=True)
     term_label: Mapped[str] = mapped_column(String(255), nullable=False)
     ontology_description: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
+    )

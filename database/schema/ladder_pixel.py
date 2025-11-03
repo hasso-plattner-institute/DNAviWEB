@@ -1,7 +1,8 @@
 """
 This module describes ladder pixels.
 """
-from sqlalchemy import Integer, ForeignKey, Numeric
+from datetime import datetime
+from sqlalchemy import DateTime, Integer, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -17,10 +18,12 @@ class LadderPixel(Base):
         ForeignKey("ladder.ladder_id", ondelete="CASCADE"),
         primary_key=True
     )
+
     pixel_order: Mapped[int] = mapped_column(
         Integer,
         primary_key=True
     )
+
     pixel_intensity: Mapped[float] = mapped_column(
         # Precision 20 digits after decimal point
         Numeric(30, 20),
@@ -33,6 +36,13 @@ class LadderPixel(Base):
         Numeric(30, 20),
         nullable=True,
         comment="Translation of pixel intensity into fragment size measured in base pairs."
+    )
+
+    # Timestamp when the record was inserted.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
     # Create a python attribute ladder, each LadderPixel (child) belongs to one Ladder (parent)
