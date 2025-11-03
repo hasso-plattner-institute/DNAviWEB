@@ -483,19 +483,19 @@ def request_delete():
     """
     data = request.get_json()
     submission_id = data.get("submission_id")
-    subject = f"Deletion request for submission {submission_id}"
+    subject = f"Automated Notification: Deletion Request for  Submission"
     body = f"""
             Dear DNAvi Support Team,
 
-            A deletion request has been submitted via the DNAvi web application.
+            A deletion request has been submitted via the DNAvi WEB.
 
             • Requested by: {current_user.id}
             • Submission ID: {submission_id}
 
-            Please review this request and proceed with the deletion process as appropriate.
+            Please review this request and proceed with the deletion process.
 
             Best regards,
-            DNAvi Automated Notification
+            DNAvi WEB Automated Notification
             """
     msg = MIMEText(body)
     msg["Subject"] = subject
