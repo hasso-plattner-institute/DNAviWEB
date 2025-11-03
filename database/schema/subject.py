@@ -3,8 +3,9 @@ This module defines the 'subject' table.
 The subject table stores all subjects that have a sample and all associated metadata 
 is either stored directly in the table or in additional tables that reference its primary key.
 """
+from datetime import datetime
 import uuid
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import DateTime, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -42,6 +43,8 @@ class Subject(Base):
       https://www.ebi.ac.uk/ols/ontologies/ncbitaxon).
       You can find further details at 'https://www.uniprot.org/help/taxonomic_identifier'.
       This is appropriate for individual organisms and some environmental samples.
+    - created_at : DateTime
+      Timestamp when the record was inserted.
     """
 
     __tablename__ = 'subject'
@@ -74,6 +77,12 @@ class Subject(Base):
         String(50),
         ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
         nullable=True
+    )
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
     # TODO in DNAvi backend: Add subject_id logic: logged in user with email anja@domain.com uploads
