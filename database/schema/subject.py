@@ -52,8 +52,8 @@ class Subject(Base):
     )
 
     subject_name: Mapped[str] = mapped_column(
-    String(50),
-    nullable=True
+        String(50),
+        nullable=True
     )
 
     biological_sex: Mapped[str] = mapped_column(

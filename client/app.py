@@ -331,27 +331,22 @@ def protect():
         ######################################################################
         if meta_inpt and not example_case:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
-
-            m_all = f"{f.rsplit('.', 1)[0]}_meta-all.csv"
             request.files['meta_file'].save(m)
-            # Make a backup copy first to save all metadata in db even if some empty
-            backup_meta_path = m.replace(".csv", "_backup.csv")
-            shutil.copy(m, backup_meta_path)
-            print(f"Backup of metadata saved as: {backup_meta_path}")
+            # Make a all copy first to save all metadata in db even if some empty
+            m_all = m.replace(".csv", "_all.csv")
+            shutil.copy(m, m_all)
+            print(f"all of metadata saved as: {m_all}")
             # List of metadata columns (values) chosen by user to group by
-            meta_df = pd.read_csv(m)
-            # Add a full meta table copy for ELBS report
-            meta_df.to_csv(m_all, index=False)
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
-
-            ### ! Important validate of these cols even exist
+            meta_df = pd.read_csv(m)
+            #! Important validate of these cols even exist
             if group_columns:
                 valid_group_columns = [e for e in group_columns if e in meta_df.columns]
                 print("--- Valid group columns", valid_group_columns)
                 selected_columns += valid_group_columns
-            # Remove all not selected columns
             meta_df = meta_df[selected_columns]
+            # Remove all not selected columns
             meta_df.to_csv(m, index=False)
             print("Metadata columns selected for grouping:", selected_columns)
         ######################################################################

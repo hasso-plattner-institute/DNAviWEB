@@ -33,14 +33,19 @@ VM1_API_URL = "http://10.131.22.143:8000/upload"
 def get_clean_value(row, column_name):
     """
     Extract from column_name the value in row. 
-    Return None if value in column is None, else return the value striped
+    Return None if value in column is None or nan or empty, else return the value striped
     from whitesapces.
     """
     value = None
     if column_name in row:
         value = row[column_name]
-    if value is not None:
-        return str(value).strip()
+    else: 
+        return None
+    if value is None:
+        return None 
+    value = str(value).strip()
+    if value == "" or value.lower() == "nan":
+        return None
     return value
 
 def detect_file_encoding(file_path):
@@ -366,7 +371,8 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
     """
     Save all subjects appearing in the metadata file in the path provided.
     If a subject_name appears multiple times in the same metadata file,
-    only insert it once.
+    only insert it once. Each empty subject_name we assume the sample belongs to
+    a new subject and give it a completely new ID.
     NOTE: Different files can use the same subject_name, but they will be treated
     as different subjects and inserted multiple times.
     Assume metadata file exists at metadata_path.
@@ -394,24 +400,29 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
             if key in seen_subjects:
                 subject_id = seen_subjects[key]
             else:
-                stmt = insert(Subject).values(
+                new_subject = Subject(
+                    subject_id=uuid.uuid4(),
                     subject_name=subject_name,
                     biological_sex=biological_sex,
                     ethnicity_term_id=ethnicity_term_id,
                     organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
-                ).returning(Subject.subject_id)
-                result = session.execute(stmt)
-                subject_id = result.scalar()
+                )
+                session.add(new_subject)
+                session.flush()
+                subject_id = new_subject.subject_id
                 seen_subjects[key] = subject_id
         # No subject name found -> create new unique subject id and None name
         else:
-            stmt = insert(Subject).values(
+            new_subject = Subject(
+                subject_id=uuid.uuid4(),
                 subject_name=None,
                 biological_sex=biological_sex,
-                ethnicity_term_id=ethnicity_term_id
-            ).returning(Subject.subject_id)
-            result = session.execute(stmt)
-            subject_id = result.scalar()
+                ethnicity_term_id=ethnicity_term_id,
+                organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
+            )
+            session.add(new_subject)
+            session.flush()
+            subject_id = new_subject.subject_id
         sample_to_subject_id[sample_value] = subject_id
     logging.info("Subjects saved successfully.")
     return sample_to_subject_id
@@ -678,8 +689,8 @@ def save_data(app, submission_id, username, save_to_db):
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
     # Save signal table, bp translation, ladder and metadata to database
-    signal_table_path = os.path.join(user_folder, f"gel/signal_table.csv")
-    bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
-    metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
-    ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
+    signal_table_path = os.path.join(user_folder, f"electropherogram.csv")
+    bp_translation_path = os.path.join(user_folder, f"electropherogram/qc/bp_translation.csv")
+    metadata_path = os.path.join(user_folder, f"electropherogram_meta_all.csv")
+    ladder_path = os.path.join(user_folder, f"electropherogram_ladder.csv")
     save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths)
