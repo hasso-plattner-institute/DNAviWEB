@@ -26,7 +26,7 @@ from database.schema.subject import Subject
 from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
 from .src.client_constants import VM1_API_URL
-from .src.tools import get_result_files
+from .src.tools import get_all_files_except_saved_in_db
 
 def get_clean_value(row, column_name):
     """
@@ -139,23 +139,17 @@ def save_file_system(user_folder, username, submission_id):
     """
     Save result files via http request from submission number: submission_id 
     of the user: username, to the file system on vm1. 
+    Save all except already saved in DB.
     """
-    # Save only result files to file system in vm1
-    statistics_files, peaks_files, other_result_files = get_result_files(user_folder)
-    # Combine all paths
-    all_files = []
-    for f in statistics_files:
-        all_files.append(os.path.join(user_folder, f['name']))
-    for f in peaks_files:
-        all_files.append(os.path.join(user_folder, f))
-    for f in other_result_files:
-        all_files.append(os.path.join(user_folder, f))
+    # Save all files (except files that will be saved to db)to file system in vm1
+    all_files = get_all_files_except_saved_in_db(user_folder)
     # Prepare files to send
     files_to_send = []
     for path in all_files:
-        if os.path.isfile(path):
-            filename = os.path.basename(path)
-            files_to_send.append(("files", (filename, open(path, "rb"))))
+        full_path = os.path.join(user_folder, path)
+        if os.path.isfile(full_path):
+            filename = os.path.basename(full_path)
+            files_to_send.append(("files", (filename, open(full_path, "rb"))))
     data = {
         "username": username,
         "submission_id": submission_id,
