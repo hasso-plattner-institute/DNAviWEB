@@ -206,17 +206,21 @@ def citation():
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 #@login_required
 def submissions_dashboard():
+    """
+    This route returns the submissions dashboard for the username.
+    It retrieves only submissions that the user chose to store in the DB.
+    """
     username = get_username()
-    user_downloads = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
     submissions = []
-    if os.path.exists(user_downloads):
-        for sub_id in os.listdir(user_downloads):
-            sub_path = os.path.join(user_downloads, sub_id)
-            if os.path.isdir(sub_path):
-                submissions.append({
-                    "submission_id": sub_id,
-                    "submission_date": os.path.getctime(sub_path)  # creation time
-                })
+    # Only show in the dashboard submissions submissions saved in DB
+    db = SessionLocal()
+    saved_submissions = db.query(Submission).filter_by(username=username).all()
+    db.close()
+    for sub in saved_submissions:
+        submissions.append({
+            "submission_id": sub.submission_id,
+            "submission_date": sub.created_at.timestamp()
+        })
     # Sort submissions newest first
     submissions.sort(key=lambda x: x["submission_date"], reverse=True)
     return render_template(
