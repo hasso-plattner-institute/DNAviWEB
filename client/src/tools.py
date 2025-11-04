@@ -314,3 +314,38 @@ def get_result_files(folder, prefix=''):
 
     return statistics_files, peaks_files, other_files
     # END OF FUNCTION
+
+def get_all_files_except_saved_in_db(folder, prefix=''):
+    """
+    Recursively collect ALL files from the folder and subfolders,
+    except those that are already stored in the database.
+    Excluded:
+      - electropherogram.csv
+      - electropherogram_ladder.csv
+      - electropherogram_meta.csv
+      - electropherogram_meta_all.csv
+      - qc/bp_translation.csv
+    :param folder: str, base folder to search
+    :param prefix: str, relative prefix (used internally for recursion)
+    :return: list of relative file paths found in folder
+    """
+    EXCLUDED_FILES = {
+        "electropherogram.csv",
+        "electropherogram_ladder.csv",
+        "electropherogram_meta.csv",
+        "electropherogram_meta_all.csv",
+        os.path.join("qc", "bp_translation.csv"),
+    }
+    collected_files = []
+    for f in os.listdir(folder):
+        full_path = os.path.join(folder, f)
+        relative_path = os.path.join(prefix, f) if prefix else f
+        if os.path.isdir(full_path):
+            # Gather files inside subfolders
+            collected_files.extend(get_all_files_except_saved_in_db(full_path, relative_path))
+        else:
+            # Skip files already saved in db
+            if relative_path in EXCLUDED_FILES:
+                continue
+            collected_files.append(relative_path)
+    return collected_files
