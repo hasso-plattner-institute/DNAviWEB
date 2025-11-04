@@ -11,6 +11,7 @@ import datetime
 import logging
 import os
 import shutil
+import tarfile
 import threading
 from uuid import uuid4
 
@@ -23,8 +24,10 @@ from werkzeug.utils import secure_filename
 
 from client.db_utils import save_data
 from database.config import SessionLocal
+from database.schema.file import File
+from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
-from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, VM1_API_URL
 from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_username, save_user
 
@@ -277,12 +280,11 @@ def protect():
             download_folder=f"{app.config['DOWNLOAD_FOLDER']}{username}/")
         g.output_id = output_id # Output id global for later cleaning
         ######################################################################
-        #         DISPLAY ERROR + MAKE DOWNLOAD AVAILABLE                    #
+        #                          DISPLAY ERROR                             #
         ######################################################################
         if error:
             return render_template(f'protected.html',
                                error=error, user_logged_in = current_user.is_authenticated)
-        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
         ######################################################################
         #                        SAVE DATA TO DATABASE                       #
         ######################################################################
@@ -290,11 +292,11 @@ def protect():
         # to allow returing the results page to the user immidiatly without
         # waiting for saving to the DB.
         save_to_db_flag = request.form.get('save_to_db')
-        
         threading.Thread(target=save_data, args=(app, output_id, username, save_to_db_flag)).start()
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################
+        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
         #download(f"{output_id}.zip")    
         return render_template(
             "results.html",
@@ -346,10 +348,53 @@ def serve_result_file(output_id, filename):
 
 @app.route('/results/<output_id>', methods=['GET'])
 def results(output_id):
+    """
+    This method describes the route that the dashboard (in submissions_dashboard.html) 
+    directs to when a user clicks a specific saved submission id to see the results.
+    If files are missing locally on VM2, search if submission exists in DB, if yes search
+    for paths to files on DB and request them from VM1 (permanent storage file system).
+    """
     username = get_username()
     result_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
+    # If the files are no longer on vm2 -> must get them from permanent store vm1
     if not os.path.exists(result_dir):
-        return f"Results not found for {output_id}", 404
+        # Lookup DB
+        submission = Submission.query.filter_by(id=output_id).first()
+        if not submission:
+            return jsonify({'error': 'Submission not found in database'}), 404
+        files = File.query.filter_by(submission_id=output_id).all()
+        if not files:
+            return jsonify({'error': 'No files found in database associated with this submission'}), 404
+        relative_paths = [f.relative_path for f in files]
+        try:
+            # Send request to vm1
+            download_url = f"{VM1_API_URL}/send_files"
+            logging.info("Requesting submission files from VM1: %s", download_url)
+            response = requests.post(
+                download_url,
+                json={
+                    "username": username,
+                    "submission_id": output_id,
+                    "files": relative_paths
+                },
+                stream=True,
+                timeout=(10, 300)
+            )
+            response.raise_for_status()
+            os.makedirs(result_dir, exist_ok=True)
+            archive_path = os.path.join(result_dir, f"{output_id}.tar.gz") # Temporary save
+            with open(archive_path, 'wb') as f:
+                shutil.copyfileobj(response.raw, f)
+            # Extract all files and save
+            with tarfile.open(archive_path, 'r:gz') as tar:
+                tar.extractall(result_dir)
+            os.remove(archive_path) # Remove temporary archive
+            logging.info("Submission files restored from VM1 to VM2 successfully!")
+        except requests.RequestException as e:
+            logging.error("Failed to get files from VM1: %s", e)
+            return jsonify({'error': 'Failed to get submission files from VM1'}), 500
+
+    # Now submission files are on vm2, return results page
     statistics_files, peaks_files, other_files = get_result_files(result_dir)
     return render_template(
         "results.html",
