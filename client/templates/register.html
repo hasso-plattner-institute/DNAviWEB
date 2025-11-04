@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
   </head>
   <body class="register-page bg-light">
-    <div class="register-box">
+        <div class="register-box">
       <div class="register-logo">
         <a href="{{ url_for('home') }}" style="color: #007bff;"><b>DNA</b>vi</a>
       </div>
@@ -99,13 +99,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
+    <!--begin::Footer -->
+    <footer class="app-footer text-center py-3 border-top mt-auto"
+        style="width: 100%; position: relative; left: 0; right: 0; background-color: #f8f9fa;">
+      <small>
+        &copy; Anja Hess, Yara Matani, 2025. Design by
+        <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
+      </small>
+    </footer>
+    <!--end::Footer -->
   </body>
-    <!-- Footer -->
-  <div class="text-center mt-3">
-    <p>Copyright © Anja Hess, Yara Matani, 2025.</p>
-    <p class="text-muted small mb-0">
-      Design: <a href="https://adminlte.io/" target="_blank">AdminLTE</a> — 
-      Open source under the <a href="https://opensource.org/license/mit" target="_blank">MIT License</a>.
-    </p>
-  </div>
 </html>
