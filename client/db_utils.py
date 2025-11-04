@@ -8,7 +8,6 @@ import re
 import uuid
 import logging
 import chardet
-import numpy as np
 import pandas as pd
 import requests
 from sqlalchemy import func, select
@@ -26,9 +25,8 @@ from database.schema.sample_pixel import SamplePixel
 from database.schema.subject import Subject
 from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
+from .src.client_constants import VM1_API_URL
 from .src.tools import get_result_files
-# Path to vm1 where the database and file system are.
-VM1_API_URL = "http://10.131.22.143:8000/upload"
 
 def get_clean_value(row, column_name):
     """
@@ -166,7 +164,8 @@ def save_file_system(user_folder, username, submission_id):
     try:
         logging.info("Sending files to VM1...")
         # Send files via HTTP request to VM1, 10 sec connect timeout, 300 sec time to upload and process file transfer
-        response = requests.post(VM1_API_URL, files=files_to_send, data=data, timeout=(10, 300))
+        VM1_API_URL_UPLOAD = f"{VM1_API_URL}/upload"
+        response = requests.post(VM1_API_URL_UPLOAD, files=files_to_send, data=data, timeout=(10, 300))
         response.raise_for_status()
         vm1_data = response.json()
         saved_files_paths = vm1_data.get("saved_files", [])
