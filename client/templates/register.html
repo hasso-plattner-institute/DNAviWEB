@@ -3,8 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>DNAvi | Register Page</title>
-    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="logo" width=7%; height=auto; style="float:left"></h1>
-
 
     <!-- Accessibility & Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -21,7 +19,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
   </head>
   <body class="register-page bg-light">
-        <div class="register-box">
+      <div class="logo-header">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi logo">
+      </div>
       <div class="register-logo">
         <a href="{{ url_for('home') }}" style="color: #007bff;"><b>DNA</b>vi</a>
       </div>

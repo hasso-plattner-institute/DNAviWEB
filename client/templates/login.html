@@ -4,7 +4,6 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>DNAvi | Login Page</title>
-    <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="logo" width=7%; height=auto; style="float:left"></h1>
 
     <!--begin::Accessibility Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -66,6 +65,9 @@
   <!--begin::Body-->
   <body class="login-page bg-light">
     <div class="login-box">
+      <div class="logo-header">
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi logo">
+      </div>
       <div class="login-logo">
         <a href="{{ url_for('home') }}" style="color: #007bff;"><b>DNA</b>vi</a>
       </div>
