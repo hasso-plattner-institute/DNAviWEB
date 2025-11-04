@@ -570,11 +570,11 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                         custom_attributes[col] = val
             if custom_attributes:
                 sample_data["custom_sample_attributes"] = custom_attributes
-            sample = Sample(**sample_data)
-            # Save sample
-            session.add(sample)
-            session.flush()  # ensure sample_id is populated
-            sample_ids_in_order.append(sample.sample_id)
+        sample = Sample(**sample_data)
+        # Save sample
+        session.add(sample)
+        session.flush()  # ensure sample_id is populated
+        sample_ids_in_order.append(sample.sample_id)
     logging.info("Saved %d samples successfully.", len(sample_ids_in_order))
     return sample_ids_in_order
 

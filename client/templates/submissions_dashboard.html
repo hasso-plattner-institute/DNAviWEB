@@ -110,6 +110,14 @@
                       <li class="breadcrumb-item active" aria-current="page">Submission Dashboard</li>
                     </ol>
                   </div>
+                  <div class="container my-3">
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-info-circle-fill fs-4 me-2 text-primary"></i>
+                      <p class="mb-0 fw-semibold">
+                        Only submissions you chose to save are displayed here.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
               <!--end::Row-->
@@ -127,22 +135,22 @@
                     <span class="info-box-text">Number of Submissions</span>
                     <span class="info-box-number">{{ num_submissions }}</span>
                 </div>
-                </div>
               </div>
             </div>
+          </div>
 
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Submissions</h3>
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
-                    <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
-                    <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                </div>
+                  <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                      <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                      <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
               </div>
               <div class="card-body p-0">
                 <div class="table-responsive">
@@ -179,7 +187,7 @@
                 </div>
               </div>
               <div class="card-footer clearfix">
-                <a href="{{ url_for('protect') }}" class="btn btn-sm btn-primary float-start">Create New Submission</a>
+                <a href="{{ url_for('protect') }}" class="btn btn-success btn-sm shadow-sm"> <i class="bi bi-graph-up me-2"></i> Create New Analysis</a>
               </div>
             </div>
             <!-- begin:: Delete Confirmation Modal -->
