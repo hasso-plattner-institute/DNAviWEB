@@ -47,9 +47,3 @@ class BiologicalSexInfo(Base):
       ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
       nullable=False
     )
-# TODO: INSERT INTO "biologicalSexInfo" ("biologicalSex", "termId") VALUES
-#   ('male', 'PATO:0000384', 'A biological sex quality inhering in an individual or a population whose sex organs contain only male gametes.'),
-#   ('female', 'PATO:0000383', 'A biological sex quality inhering in an individual or a population that only produces gametes that can be fertilised by male gametes.'),
-#   ('hermaphrodite', 'PATO:0001340', 'An organism having both male and female sexual characteristics and organs.'),
-#   ('pseudohermaphrodite', 'PATO:0001827', 'Having internal reproductive organs of one sex and external sexual characteristics of the other sex.'),
-#   ('unknown', 'NCIT:C17998', 'The biological sex is unknown, not assessed or not available.');
