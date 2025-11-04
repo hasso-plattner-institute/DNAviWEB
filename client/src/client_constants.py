@@ -53,3 +53,9 @@ SESSION_ID = datetime.datetime.now().strftime("%H%M_%d-%m-%Y")
 ALLOWED_EXTENSIONS = {'txt', 'tsv', 'csv', 'png', 'jpg', 'jpeg'}
 IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 MAX_CONT_LEN =  16 * 1000 * 1000 # Max. 16MB upload
+
+####################################################################################
+# VM
+####################################################################################
+# Path to vm1 where the database and file system are.
+VM1_API_URL = "http://10.131.22.143:8000"

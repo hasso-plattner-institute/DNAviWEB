@@ -209,8 +209,7 @@ def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
         error = outpt
         # Save error to log file
         abs_dirname = os.path.dirname(os.path.abspath(__file__))
-        with open(f"{abs_dirname.rsplit('src', 
-                                        1)[0]}{log_dir}", "w") as text_file:
+        with open(f"{abs_dirname.rsplit('src', 1)[0]}{log_dir}", "w") as text_file:
             text_file.write(error)
         text_file.close()
         error_msg = f"--- Error occured: {outpt}, also see {log_dir}."
