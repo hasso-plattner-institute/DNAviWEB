@@ -138,10 +138,11 @@ def register():
     # Check if user tried to register without filling everything out
     if not username or not password:
         return render_template('register.html', error="Username and password are required")
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         # Check if username already exists
-        existing_user = db.query(UserDetails).filter_by(username=username).first()
+        existing_user = db.query(Submission).filter_by(username=username).first()
+        db.close()
         if existing_user:
             return render_template('register.html', error="User already exists")
         save_user(username, password)
@@ -467,10 +468,12 @@ def results(output_id):
     # If the files are no longer on vm2 -> must get them from permanent store vm1
     if not os.path.exists(result_dir):
         # Lookup DB
-        submission = Submission.query.filter_by(id=output_id).first()
+        db = SessionLocal()
+        submission = db.query(Submission).filter_by(submission_id=output_id).first()
         if not submission:
             return jsonify({'error': 'Submission not found in database'}), 404
-        files = File.query.filter_by(submission_id=output_id).all()
+        files = db.query(File).filter_by(submission_id=output_id).all()
+        db.close()
         if not files:
             return jsonify({'error': 'No files found in database associated with this submission'}), 404
         relative_paths = [f.relative_path for f in files]
