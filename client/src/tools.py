@@ -333,5 +333,5 @@ def get_all_files_except_saved_in_db(folder, prefix=''):
             # Skip files already saved in db
             if relative_path in EXCLUDED_FILES:
                 continue
-            collected_files.append(full_path)
+            collected_files.append(relative_path)
     return collected_files
