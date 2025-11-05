@@ -127,18 +127,23 @@
 
           <!-- Content Body -->
           <div class="content-body">
-            <div class="row">
+            <div class="row align-items-center mb-3">
               <div class="col-12 col-sm-6 col-md-3">
                 <div class="info-box">
                   <span class="info-box-icon text-bg-primary shadow-sm"><i class="bi bi-upload"></i></span>
                   <div class="info-box-content">
                     <span class="info-box-text">Number of Submissions</span>
                     <span class="info-box-number">{{ num_submissions }}</span>
+                  </div>
                 </div>
               </div>
+              <!-- Create New Analysis Button -->
+              <div class="col-12 col-sm-6 col-md-3 ms-auto">
+                <a href="{{ url_for('protect') }}" class="btn btn-success btn-lg shadow-sm">
+                  <i class="bi bi-graph-up me-2"></i> Create New Analysis
+                </a>
+              </div>
             </div>
-          </div>
-
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">Submissions</h3>
@@ -185,9 +190,6 @@
                   </tbody>
                   </table>
                 </div>
-              </div>
-              <div class="card-footer clearfix">
-                <a href="{{ url_for('protect') }}" class="btn btn-success btn-sm shadow-sm"> <i class="bi bi-graph-up me-2"></i> Create New Analysis</a>
               </div>
             </div>
             <!-- begin:: Delete Confirmation Modal -->
