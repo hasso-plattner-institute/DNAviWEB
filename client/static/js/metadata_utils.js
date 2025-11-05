@@ -396,3 +396,21 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
         })
         .catch(error => console.error('Error fetching column names:', error));
 });
+
+// Function to apply gray color on select /black if already selected value
+function applySelectColor(select) {
+  function updateColor() {
+    select.style.color = select.value ? '#000000' : '#c0c0c0';
+  }
+  updateColor();
+  select.addEventListener('change', updateColor);
+}
+
+// Function to apply gray (no date chosen)/black (date chosen)
+function applyDateColor(input) {
+  function updateColor() {
+    input.style.color = input.value ? '#000000' : '#c0c0c0';
+  }
+  updateColor();
+  input.addEventListener('input', updateColor);
+}

@@ -23,6 +23,10 @@
       display: inline-block;
       margin-right: 10px;
     }
+    input::placeholder,
+    textarea::placeholder {
+      color: #c0c0c0 !important;
+    }
   </style>
   <!--begin::Head-->
   <head>
@@ -896,6 +900,9 @@
                     document.addEventListener('DOMContentLoaded', function () {
                       const table = document.getElementById('metadata-table');
                       const tbody = table.querySelector('tbody');
+                      // Apply initial gray colors on select/date
+                      document.querySelectorAll('select.form-select').forEach(applySelectColor);
+                      document.querySelectorAll('input[type="date"]').forEach(applyDateColor);
 
                       function renumberSamples() {
                       const sampleInputs = table.querySelectorAll('input[name="sample_id[]"]');
@@ -914,6 +921,7 @@
                           try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
                         }
                       }
+
                       // Click handler (add/remove)
                       table.addEventListener('click', function (e) {
                         const addBtn = e.target.closest('.add-row');
@@ -934,7 +942,18 @@
                               dst.value = src.value;
                             }
                           });
-                          
+
+                          // In new row apply color gray/black logic for select values
+                          newRow.querySelectorAll('select.form-select').forEach(select => {
+                            select.value = '';
+                            applySelectColor(select);
+                          });
+                          // In new row apply color gray/black logic for date values
+                          newRow.querySelectorAll('input[type="date"]').forEach(input => {
+                            input.value = '';
+                            applyDateColor(input);
+                          });
+        
                           const actionsCell = newRow.querySelector('.actions-cell');
                           if (actionsCell) {
                             actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
