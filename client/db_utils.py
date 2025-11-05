@@ -135,18 +135,18 @@ def save_submission(session, username, submission_id):
 ##############################################################################
 #                          SAVE TO FILE SYSTEM VM_1                          #                 
 ##############################################################################
-def save_file_system(user_folder, username, submission_id):
+def save_file_system(submission_folder, username, submission_id):
     """
     Save result files via http request from submission number: submission_id 
     of the user: username, to the file system on vm1. 
     Save all except already saved in DB.
     """
     # Save all files (except files that will be saved to db)to file system in vm1
-    all_files = get_all_files_except_saved_in_db(user_folder)
+    all_files_full_path = get_all_files_except_saved_in_db(submission_folder)
     # Prepare files to send
     files_to_send = []
-    for path in all_files:
-        full_path = os.path.join(user_folder, path)
+    for path in all_files_full_path:
+        full_path = os.path.join(submission_folder, path)
         if os.path.isfile(full_path):
             filename = os.path.basename(full_path)
             files_to_send.append(("files", (filename, open(full_path, "rb"))))
@@ -663,9 +663,9 @@ def save_data(app, submission_id, username, save_to_db):
     if save_to_db != 'yes':
         return
     # User consented, save
-    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
-    if not os.path.exists(user_folder):
-        logging.info(f"Folder not found: {user_folder}")
+    submission_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
+    if not os.path.exists(submission_folder):
+        logging.info(f"Folder not found: {submission_folder}")
         return 
     ##############################################################################
     #                          SAVE TO FILE SYSTEM VM_1                          #                 
@@ -674,7 +674,7 @@ def save_data(app, submission_id, username, save_to_db):
     # If saving to file system failed, skip saving.
     #saved_files_paths = ["file_path1", "file_path_2"]
     try:
-        saved_files_paths = save_file_system(user_folder, username, submission_id)
+        saved_files_paths = save_file_system(submission_folder, username, submission_id)
     except Exception as e:
         logging.info("Failed to save to file system: %s", e)
         return
@@ -682,10 +682,10 @@ def save_data(app, submission_id, username, save_to_db):
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
     # Save signal table, bp translation, ladder and metadata to database
-    signal_table_path = os.path.join(user_folder, f"electropherogram.csv")
-    bp_translation_path = os.path.join(user_folder, f"electropherogram/qc/bp_translation.csv")
-    metadata_path = os.path.join(user_folder, f"electropherogram_meta_all.csv")
-    ladder_path = os.path.join(user_folder, f"electropherogram_ladder.csv")
+    signal_table_path = os.path.join(submission_folder, f"electropherogram.csv")
+    bp_translation_path = os.path.join(submission_folder, f"electropherogram/qc/bp_translation.csv")
+    metadata_path = os.path.join(submission_folder, f"electropherogram_meta_all.csv")
+    ladder_path = os.path.join(submission_folder, f"electropherogram_ladder.csv")
     save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths)
 
 def rebuild_electropherogram_and_bp_translation(submission_id, submission_folder):

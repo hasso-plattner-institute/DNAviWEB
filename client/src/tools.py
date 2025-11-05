@@ -317,13 +317,10 @@ def get_all_files_except_saved_in_db(folder, prefix=''):
     except those that are already stored in the database.
     Excluded:
       - electropherogram.csv
-      - electropherogram_ladder.csv
-      - electropherogram_meta.csv
-      - electropherogram_meta_all.csv
       - qc/bp_translation.csv
-    :param folder: str, base folder to search
+    :param folder: str, base folder to search in the first call it is the submission_folder
     :param prefix: str, relative prefix (used internally for recursion)
-    :return: list of relative file paths found in folder
+    :return: list of FULL PATHS of files found in folder and subfolders
     """
     collected_files = []
     for f in os.listdir(folder):
@@ -336,5 +333,5 @@ def get_all_files_except_saved_in_db(folder, prefix=''):
             # Skip files already saved in db
             if relative_path in EXCLUDED_FILES:
                 continue
-            collected_files.append(relative_path)
+            collected_files.append(full_path)
     return collected_files
