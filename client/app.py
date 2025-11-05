@@ -464,7 +464,8 @@ def results(output_id):
     for paths to files on DB and request them from VM1 (permanent storage file system).
     """
     username = get_username()
-    result_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
+    user_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
+    result_dir = os.path.join(user_dir, output_id)
     # If the files are no longer on vm2 -> must get them from permanent store vm1
     if not os.path.exists(result_dir):
         # Lookup DB
@@ -476,7 +477,6 @@ def results(output_id):
         db.close()
         if not files:
             return jsonify({'error': 'No files found in database associated with this submission'}), 404
-        relative_paths = [f.relative_path for f in files]
         try:
             # Send request to vm1
             download_url = f"{VM1_API_URL}/send_files"
@@ -485,20 +485,19 @@ def results(output_id):
                 download_url,
                 json={
                     "username": username,
-                    "submission_id": output_id,
-                    "files": relative_paths
+                    "submission_id": output_id
                 },
                 stream=True,
                 timeout=(10, 300)
             )
             response.raise_for_status()
-            os.makedirs(result_dir, exist_ok=True)
-            archive_path = os.path.join(result_dir, f"{output_id}.tar.gz") # Temporary save
+            os.makedirs(user_dir, exist_ok=True)
+            archive_path = os.path.join(user_dir, f"{output_id}.tar.gz") # Temporary save
             with open(archive_path, 'wb') as f:
                 shutil.copyfileobj(response.raw, f)
             # Extract all files and save
             with tarfile.open(archive_path, 'r:gz') as tar:
-                tar.extractall(result_dir)
+                tar.extractall(user_dir)
             os.remove(archive_path) # Remove temporary archive
             logging.info("Submission files restored from VM1 to VM2 successfully!")
         except requests.RequestException as e:
