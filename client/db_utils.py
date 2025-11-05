@@ -148,8 +148,7 @@ def save_file_system(submission_folder, username, submission_id):
     for path in all_files_full_path:
         full_path = os.path.join(submission_folder, path)
         if os.path.isfile(full_path):
-            filename = os.path.basename(full_path)
-            files_to_send.append(("files", (filename, open(full_path, "rb"))))
+            files_to_send.append(("files", (full_path, open(full_path, "rb"))))
     data = {
         "username": username,
         "submission_id": submission_id,
