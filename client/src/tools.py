@@ -219,6 +219,7 @@ def input2dnavi(in_vars, log_dir="/log/dnavi.log"):
         return "", None # set error to None
     # END OF FUNCTION
 
+
 def move_dnavi_files(request_id="", error=None, upload_folder="", download_folder="",
                      arx="zip"):
     """
@@ -230,15 +231,9 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     """
     current_folder_loc = f"{upload_folder}{request_id}"
 
-    if error:
-        output_id = f"ERROR_{request_id}"
-        interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
-    else:
-        output_id = request_id
-        interm_destination = f"{upload_folder}{output_id}"
-        final_destination = f"{download_folder}{output_id}"
-
+    output_id = request_id
+    interm_destination = f"{upload_folder}{output_id}"
+    final_destination = f"{download_folder}{output_id}"
     print(interm_destination)
     print(current_folder_loc)
     print(final_destination)
@@ -248,8 +243,8 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
     shutil.make_archive(zip_path, arx, current_folder_loc)
 
     if os.path.isfile(f"{zip_path}.{arx}"):
-        shutil.move(f"{interm_destination}", final_destination+"/")
-        shutil.move(f"{zip_path}.{arx}", download_folder+"/")
+        shutil.move(f"{interm_destination}", final_destination + "/")
+        shutil.move(f"{zip_path}.{arx}", download_folder + "/")
         print("Success, moving now from: ", interm_destination)
         print("Success, moving now to: ", final_destination)
         # Delete the parent folder of interm_destination
@@ -257,9 +252,10 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
         if os.path.isdir(parent_folder):
             shutil.rmtree(parent_folder)
             print(f"Deleted {parent_folder} folder from uploads")
-        
+
     return output_id
     # END OF FUNCTION
+
 
 def get_result_files(folder, prefix=''):
     """
