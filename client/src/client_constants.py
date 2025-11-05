@@ -62,5 +62,6 @@ VM1_API_URL = "http://10.131.22.143:8000"
 # Files excluded from saving to vm1 file system
 EXCLUDED_FILES = [
     "electropherogram.csv",
+    os.path.join("electropherogram", "signal_table.csv"),
     os.path.join("electropherogram", "qc", "bp_translation.csv")
 ]
