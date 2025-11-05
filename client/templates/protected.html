@@ -451,7 +451,10 @@
 
                               <tbody>
                                 <tr class="metadata-row">
-                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" placeholder="Sample_1"></td>
+                                  <td>
+                                    <span class="sample-display">Sample_1</span>
+                                    <input type="hidden" name="sample_id[]" value="Sample_1">
+                                  </td>
                                   <td><input type="text" name="subject_id[]" class="form-control form-control-sm" placeholder="Donor-10031"></td>
                                   <td>
                                     <div class="disease-wrapper">
@@ -893,6 +896,19 @@
                     document.addEventListener('DOMContentLoaded', function () {
                       const table = document.getElementById('metadata-table');
                       const tbody = table.querySelector('tbody');
+
+                      function renumberSamples() {
+                      const sampleInputs = table.querySelectorAll('input[name="sample_id[]"]');
+                      sampleInputs.forEach((input, index) => {
+                        const number = index + 1; // start from 1
+                        input.value = `Sample_${number}`;
+                        const span = input.closest('td').querySelector('.sample-display');
+                        if (span) {
+                          span.textContent = `Sample_${number}`;
+                        }
+                      });
+                    }
+                    
                       function tryInitOls(root) {
                         if (typeof window.initOlsAutocomplete === 'function') {
                           try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
@@ -910,13 +926,15 @@
                           srcFields.forEach((src, i) => {
                             const dst = dstFields[i];
                             if (!dst) return;
-                            if (dst.tagName.toLowerCase() === 'select') {
+                            if (dst.name === 'sample_id[]') {
+                              dst.readOnly = true; // make it readonly so user cannot change
+                            } else if (dst.tagName.toLowerCase() === 'select') {
                               dst.selectedIndex = src.selectedIndex;
                             } else {
                               dst.value = src.value;
-                            } 
+                            }
                           });
-
+                          
                           const actionsCell = newRow.querySelector('.actions-cell');
                           if (actionsCell) {
                             actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
@@ -924,6 +942,7 @@
                           }
 
                           currentRow.after(newRow);
+                          renumberSamples(); // update all sample numbers to not have wrong order of sampele_1, sample_3, sample_3
                           // reinitialize OLS autocomplete for all new .ols-search inputs in the new row
                           const newOlsInputs = newRow.querySelectorAll(".ols-search");
                           newOlsInputs.forEach(input => {
@@ -940,6 +959,7 @@
                           if (!row) return;
                           if (tbody.querySelectorAll('tr').length > 1) {
                             row.remove();
+                            renumberSamples(); // update all sample numbers after deletion
                           } else {
                             row.querySelectorAll('input, select, textarea').forEach(el => {
                               if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
