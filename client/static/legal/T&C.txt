@@ -6,7 +6,7 @@ By clicking "Agree" and by using DNAvi (web or command line tool), you agree to 
 
 3. You understand that the DNAvi web server does not require user registration, so that your data is potentially accessible by third parties by decrypting URLs. You hereby irrevocably agree to hold the developers harmless from any form of liability if the data which you provide DNAviWEB becomes compromised.
 
-4. You understand that all submitted data is, either temporarily or, if you agreed, long-term stored on our servers, which are located in Germany (Hasso-Plattner Institut, Potsdam). It is your own responsibility to back up any data and results.
+4. You understand that all submitted data is, either temporarily or, if you agreed, long-term stored on our servers, which are located in Germany (Hasso-Plattner Institut, Potsdam). It is your own responsibility to back up any data and results. The anticipated duration of data storage is at least 3-5 years to enable future research with the ultimate goal to enhance human health.
 
 5. The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software of the use or other dealings in the software.
 
