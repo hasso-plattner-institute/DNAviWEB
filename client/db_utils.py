@@ -681,7 +681,13 @@ def save_data(app, submission_id, username, save_to_db):
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
     # Save signal table, bp translation, ladder and metadata to database
-    signal_table_path = os.path.join(submission_folder, f"electropherogram.csv")
+    signal_table_csv = os.path.join(submission_folder, "electropherogram", "signal_table.csv")
+    # If signal_table.csv exists (image uploaded)-> save it
+    if os.path.isfile(signal_table_csv):
+        signal_table_path = signal_table_csv
+    # else (csv uploaded)-> save the uploaded csv
+    else:
+        signal_table_path = os.path.join(submission_folder, "electropherogram.csv")
     bp_translation_path = os.path.join(submission_folder, f"electropherogram/qc/bp_translation.csv")
     metadata_path = os.path.join(submission_folder, f"electropherogram_meta_all.csv")
     ladder_path = os.path.join(submission_folder, f"electropherogram_ladder.csv")
