@@ -16,7 +16,7 @@ import sys
 from weasyprint import HTML
 from jinja2 import Environment, FileSystemLoader
 import datetime
-from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, SUCCESS_TOKEN
+from .client_constants import ALLOWED_EXTENSIONS, DNAVI_EXE, EXCLUDED_FILES, SUCCESS_TOKEN
 
 
 def df2html(df, meta_df):
@@ -329,13 +329,6 @@ def get_all_files_except_saved_in_db(folder, prefix=''):
     :param prefix: str, relative prefix (used internally for recursion)
     :return: list of relative file paths found in folder
     """
-    EXCLUDED_FILES = {
-        "electropherogram.csv",
-        "electropherogram_ladder.csv",
-        "electropherogram_meta.csv",
-        "electropherogram_meta_all.csv",
-        os.path.join("qc", "bp_translation.csv"),
-    }
     collected_files = []
     for f in os.listdir(folder):
         full_path = os.path.join(folder, f)

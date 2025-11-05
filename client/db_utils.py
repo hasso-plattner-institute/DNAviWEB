@@ -687,3 +687,55 @@ def save_data(app, submission_id, username, save_to_db):
     metadata_path = os.path.join(user_folder, f"electropherogram_meta_all.csv")
     ladder_path = os.path.join(user_folder, f"electropherogram_ladder.csv")
     save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths)
+
+def rebuild_electropherogram_and_bp_translation(submission_id, submission_folder):
+    """
+    Rebuild the signal table and bp_translation from DB and save as csv
+    """
+    try:
+        with Session(engine) as session:
+            # Get all samples for this submission in order
+            samples = session.query(Sample).filter(Sample.submission_id == submission_id).order_by(Sample.sample_id).all()
+            if not samples:
+                logging.warning(f"No samples found for submission {submission_id}")
+                return None
+            sample_ids = [s.sample_id for s in samples]
+            sample_names = [s.sample_name for s in samples]
+            # Get ladder_id from first sample (assume all samples in a submission use same ladder)
+            ladder_id = samples[0].ladder_id
+            ladder_pixels = session.query(LadderPixel).filter(LadderPixel.ladder_id == ladder_id).order_by(LadderPixel.pixel_order).all()
+            ladder_values = [p.pixel_intensity for p in ladder_pixels]
+            bp_positions = [p.base_pair_position for p in ladder_pixels]
+            max_pixels = len(ladder_values)
+            # Fetch all sample pixels
+            pixels_query = session.query(SamplePixel).filter(SamplePixel.sample_id.in_(sample_ids)).order_by(SamplePixel.pixel_order).all()
+            # Build electropherogram.csv (pixel intensities)
+            df_signal = pd.DataFrame(index=range(max_pixels))
+            df_signal['Ladder'] = ladder_values
+            for i, sample_id in enumerate(sample_ids):
+                col_pixels = [None]*max_pixels
+                for p in pixels_query:
+                    if p.sample_id == sample_id and p.pixel_order < max_pixels:
+                        col_pixels[p.pixel_order] = p.pixel_intensity
+                df_signal[sample_names[i]] = col_pixels
+            # Build bp_translation.csv (base pair positions)
+            df_bp = pd.DataFrame(index=range(max_pixels))
+            df_bp['Ladder'] = bp_positions
+            for i, sample_id in enumerate(sample_ids):
+                col_bp = [None]*max_pixels
+                for p in pixels_query:
+                    if p.sample_id == sample_id and p.pixel_order < max_pixels:
+                        col_bp[p.pixel_order] = p.base_pair_position
+                df_bp[sample_names[i]] = col_bp
+            # Save both files
+            electro_path = os.path.join(submission_folder, "electropherogram.csv")
+            df_signal.to_csv(electro_path, index=False)
+            bp_dir = os.path.join(submission_folder, "electropherogram", "qc")
+            os.makedirs(bp_dir, exist_ok=True)
+            bp_path = os.path.join(bp_dir, "bp_translation.csv")
+            df_bp.to_csv(bp_path, index=False)
+            logging.info(f"Rebuilt electropherogram.csv and bp_translation.csv from DB for submission {submission_id}")
+            return electro_path, bp_path
+    except Exception as e:
+        logging.error(f"Error rebuilding electropherogram and bp_translation CSVs for submission {submission_id}: {e}")
+        return None, None
