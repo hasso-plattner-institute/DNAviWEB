@@ -289,7 +289,11 @@ def protect():
             meta_inpt = EXAMPLE_META
             example_case = True
         else:
-            data_inpt = request.files['data_file'].filename
+            # Rename uploaded gel/signal table to: electropherogram
+            uploaded_data_file = request.files['data_file']
+            ext = os.path.splitext(uploaded_data_file.filename)[1]
+
+            data_inpt = f"electropherogram{ext}"
             meta_inpt = request.files['meta_file']
             if request_dict['ladder_file'] == ["upload"]:
                 ladder_inpt = request.files['ladder_file']
