@@ -62,6 +62,5 @@ VM1_API_URL = "http://10.131.22.143:8000"
 # Files excluded from saving to vm1 file system
 EXCLUDED_FILES = [
     "electropherogram.csv",
-    "electropherogram_meta_all.csv", # save only "electropherogram_meta.csv" in file system (only what affected analysis)
     os.path.join("qc", "bp_translation.csv")
 ]
