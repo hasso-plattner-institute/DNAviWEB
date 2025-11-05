@@ -401,19 +401,15 @@
                         <!--begin::Metadata AG Grid table container -->
                         <div class="metadata-table-container mb-4">
                           <!--begin::Metadata AG Grid table header-->
-                          <div class="d-flex justify-content-start align-items-center mb-2">
+                          <div class="d-flex justify-content-end align-items-center mb-2">
                             <div class="me-2">
-                              <!-- Download CSV Button -->
-                              <button id="download-csv" type="button" class="btn btn-info mb-3">
-                                <i class="bi bi-download me-2"></i> Download CSV
+                              <button id="addColumnBtn" type="button" class="btn btn-outline-primary">
+                                + Add Custom Column
                               </button>
                             </div>
-                            <div>
-                              <!-- Submit Table Button -->
-                              <button id="submit-metadata-table" type="button" class="btn btn-success mb-3">
-                                <i class="bi bi-check-circle me-2"></i> Submit Table
-                              </button>
-                            </div>
+                            <button id="addELBSBtn" type="button" class="btn btn-outline-primary">
+                              + Add ELBS Report Criteria
+                            </button>
                           </div>
                           <!--end::Metadata AG Grid table header-->
 
@@ -647,17 +643,19 @@
                                 </tr>
                               </tbody>
                             </table>
-                            <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
-                              + Add Custom Column
-                            </button>
-                            <button id="addELBSBtn" type="button" class="btn btn-outline-primary mt-3">
-                                  + Add ELBS Report Criteria
+                            <!-- Submit Table Button -->
+                            <button id="submit-metadata-table" type="button" class="btn btn-success mb-3">
+                              <i class="bi bi-check-circle me-2"></i> Confirm Table
                             </button>
                           </div>
                           <!--end::metadata AG Grid table-->
                         </div>
                         <!--end::Metadata AG Grid table container -->
-
+                        <div class="d-flex justify-content-end mt-2">
+                          <span id="download-csv" class="text-primary" style="cursor: pointer; font-size: 0.875rem;">
+                            <i class="bi bi-download me-1"></i> Download CSV
+                          </span>
+                        </div>
                       </div>
                       <!--end::Option 1-->
 
