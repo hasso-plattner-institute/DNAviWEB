@@ -142,13 +142,13 @@ def save_file_system(submission_folder, username, submission_id):
     Save all except already saved in DB.
     """
     # Save all files (except files that will be saved to db)to file system in vm1
-    all_files_full_path = get_all_files_except_saved_in_db(submission_folder)
+    all_files_relative_path = get_all_files_except_saved_in_db(submission_folder)
     # Prepare files to send
     files_to_send = []
-    for path in all_files_full_path:
-        full_path = os.path.join(submission_folder, path)
+    for relative_path in all_files_relative_path:
+        full_path = os.path.join(submission_folder, relative_path)
         if os.path.isfile(full_path):
-            files_to_send.append(("files", (full_path, open(full_path, "rb"))))
+            files_to_send.append(("files", (relative_path, open(full_path, "rb"))))
     data = {
         "username": username,
         "submission_id": submission_id,
