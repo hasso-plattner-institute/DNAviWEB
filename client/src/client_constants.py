@@ -59,3 +59,9 @@ MAX_CONT_LEN =  16 * 1000 * 1000 # Max. 16MB upload
 ####################################################################################
 # Path to vm1 where the database and file system are.
 VM1_API_URL = "http://10.131.22.143:8000"
+# Files excluded from saving to vm1 file system
+EXCLUDED_FILES = [
+    "electropherogram.csv",
+    "electropherogram_meta_all.csv", # save only "electropherogram_meta.csv" in file system (only what affected analysis)
+    os.path.join("qc", "bp_translation.csv")
+]

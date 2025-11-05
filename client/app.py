@@ -24,7 +24,7 @@ from flask_login import LoginManager, UserMixin, current_user, login_required, l
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 
-from client.db_utils import save_data
+from client.db_utils import rebuild_electropherogram_and_bp_translation, save_data
 from database.config import SessionLocal
 from database.schema.file import File
 from database.schema.submission import Submission
@@ -512,13 +512,27 @@ def results(output_id):
         output_id=output_id
     )
 
-@app.route('/download/<filename>', methods=['GET'])
-def download(filename):
+@app.route('/download/<submission_id>', methods=['GET'])
+def download(submission_id):
     username = get_username()
     # The directory where the result files are  located
     directory = f"{app.config['DOWNLOAD_FOLDER']}{username}/"
-    # Flask's send_from_directory to send the file to the client
-    return send_from_directory(directory, filename, as_attachment=True)
+    submission_folder = os.path.join(directory, submission_id)
+    zip_filename = f"{submission_id}_compressed.zip"
+    zip_path = os.path.join(directory, zip_filename)
+    # Check if zip exists
+    if os.path.isfile(zip_path):
+        return send_from_directory(directory, zip_filename, as_attachment=True)
+    # Zip missing -> file was delted from temporary storage
+    # rebuild local folder with missing files from DB (file system files already
+    # loaded during results page retrieval)
+    electro_path, bp_path = rebuild_electropherogram_and_bp_translation(submission_id, submission_folder)
+    if not electro_path or not bp_path:
+        logging.error(f"Failed to rebuild required CSVs for submission {submission_id}. ZIP not created.")
+    # Create zip and send
+    shutil.make_archive(zip_path.replace(".zip", ""), 'zip', submission_folder)
+    logging.info(f"Created zip for submission {submission_id} at {zip_path}")
+    return send_from_directory(directory, zip_filename, as_attachment=True)
 
 @app.template_filter('datetimeformat')
 def datetimeformat(value):
