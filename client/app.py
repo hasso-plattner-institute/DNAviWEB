@@ -555,20 +555,15 @@ def request_delete():
     SHARED_MAILBOX = os.getenv("SHARED_MAILBOX")
     data = request.get_json()
     submission_id = data.get("submission_id")
-    subject = f"Automated Notification: Deletion Request for  Submission"
-    body = f"""
-            Dear DNAvi Support Team,
-
-            A deletion request has been submitted via the DNAvi WEB.
-
-            • Requested by: {get_username()}
-            • Submission ID: {submission_id}
-
-            Please review this request and proceed with the deletion process.
-
-            Best regards,
-            DNAvi WEB Automated Notification
-            """
+    # Load the message body from a text file
+    template_path = os.path.join(os.path.dirname(__file__), "templates", "delete_request_email.txt")
+    with open(template_path, "r") as f:
+        template = f.read()
+    body = template.format(
+        requested_by=get_username(),
+        submission_id=submission_id
+    )
+    subject = "Automated Notification: Deletion Request for Submission"
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = SHARED_MAILBOX
