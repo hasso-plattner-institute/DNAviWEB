@@ -561,7 +561,7 @@ def request_delete():
 
             A deletion request has been submitted via the DNAvi WEB.
 
-            • Requested by: {current_user.id}
+            • Requested by: {get_username()}
             • Submission ID: {submission_id}
 
             Please review this request and proceed with the deletion process.
