@@ -556,7 +556,7 @@ def request_delete():
     data = request.get_json()
     submission_id = data.get("submission_id")
     # Load the message body from a text file
-    template_path = os.path.join(os.path.dirname(__file__), "templates", "delete_request_email.txt")
+    template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
     with open(template_path, "r") as f:
         template = f.read()
     body = template.format(
