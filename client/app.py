@@ -550,6 +550,9 @@ def request_delete():
     """
     This method sends a mail to shared mailbox when user requests deletion of a submission.
     """
+    SMTP_SERVER = os.getenv("SMTP_SERVER")
+    SMTP_PORT = int(os.getenv("SMTP_PORT"))
+    SHARED_MAILBOX = os.getenv("SHARED_MAILBOX")
     data = request.get_json()
     submission_id = data.get("submission_id")
     subject = f"Automated Notification: Deletion Request for  Submission"
@@ -571,14 +574,12 @@ def request_delete():
     msg["From"] = SHARED_MAILBOX
     msg["To"] = SHARED_MAILBOX
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(HPI_USER, HPI_PASS)
-        server.sendmail(HPI_USER, [SHARED_MAILBOX], msg.as_string())
-        server.quit()
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
+            server.send_message(msg)
+        logging.info("Deletion request email sent for submission %s", submission_id)
         return jsonify({"status": "success"}), 200
     except Exception as e:
-        print("Email sending failed:", e)
+        logging.error("Email sending failed for submission %s: %s", submission_id, e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ =='__main__':
