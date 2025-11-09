@@ -246,25 +246,40 @@
           });
         }
       });
+
+      // Track which delete button was clicked
+      let selectedDeleteButton = null;
+      // When user clicks a delete button, remember which one it was
+      document.querySelectorAll('.delete-submission').forEach(button => {
+        button.addEventListener('click', function() {
+          selectedDeleteButton = this;
+        });
+      });
       
       // When confirm delete button is clicked trigger email via /request-delete with the
       // specific submission id to delete. If mail sent successfully close the tab
       // And give message deletion request sent, else pop up message on failure. 
       document.getElementById('confirmDeleteBtn').addEventListener('click', function(){
-        const submissionId = document.querySelector('.delete-submission[data-bs-target="#confirmDeleteModal"]').dataset.id;
+        if (!selectedDeleteButton) return;
+        const submissionId = selectedDeleteButton.dataset.id;
         fetch('/request-delete', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({submission_id: submissionId})})
-        .then(response => {
+        .then(async response => {
             const modalEl = document.getElementById('confirmDeleteModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             if (modal) modal.hide();
             if(response.ok){
                 alert('Deletion request sent!');
-                location.reload();
+                // Change the button that successfully sent the deletion request to "delete pending"
+                selectedDeleteButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Delete Pending';
+                selectedDeleteButton.classList.remove('btn-outline-danger');
+                selectedDeleteButton.classList.add('btn-warning');
+                selectedDeleteButton.disabled = true;
             } else {
-                alert('Failed to send deletion request.');
+                const data = await response.json();
+                alert('Failed to send deletion request: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
