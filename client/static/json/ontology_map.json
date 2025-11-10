@@ -6,5 +6,6 @@
   "pheno": "hp",
   "organism": "ncbitaxon",
   "condition": "xco",
-  "treatment": "dron"
+  "treatment": "dron",
+  "infection": "pathogen"
 }
