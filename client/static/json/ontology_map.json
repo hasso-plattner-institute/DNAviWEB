@@ -1,0 +1,10 @@
+{
+  "disease": "mondo",
+  "ethnicity": "efo",
+  "material": "uberon",
+  "cell": "clo",
+  "pheno": "hpo",
+  "organism": "ncbitaxon",
+  "condition": "xco",
+  "treatment": "dron"
+}

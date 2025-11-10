@@ -3,16 +3,21 @@ This module handles data saving into database and file system of vm_1.
 """
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from functools import lru_cache
+import json
+import logging
 import os
+from pathlib import Path
 import re
 import uuid
-import logging
+
 import chardet
 import pandas as pd
 import requests
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
+
 from database.config import engine
 from database.schema.file import File
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
@@ -57,23 +62,26 @@ def detect_file_encoding(file_path):
         logging.info("Detected encoding: %s for file %s", encoding, file_path)
     return encoding
 
+@lru_cache(maxsize=1)
+def load_ontology_map():
+    """
+    Load ontology mapping from JSON file, cached for performance.
+    """
+    base_dir = Path(__file__).parent
+    json_path = base_dir / "static" / "json" / "ontology_map.json"
+    with open(json_path, encoding="utf-8") as f:
+        return json.load(f)
+    
 def detect_ontology(label_col):
+    """
+    Detects the ontology type based on label_col.
+    """
+    ontology_map = load_ontology_map()
     label_lower = label_col.lower()
-    if "disease" in label_lower or "ethnicity" in label_lower:
-        return "efo"
-    if "anatomical" in label_lower:
-        return "uberon"
-    if "cell type" in label_lower:
-        return "cl"
-    if "phenotypic" in label_lower:
-        return "hp"
-    if "organism" in label_lower:
-        return "ncbitaxon"
-    if "condition" in label_lower:
-        return "xco"
-    if "treatment" in label_lower:
-        return "dron"
-    return "efo"
+    for key, value in ontology_map.items():
+        if key in label_lower:
+            return value
+    return ""
 
 def get_ols_term_id(label, label_col):
     """
