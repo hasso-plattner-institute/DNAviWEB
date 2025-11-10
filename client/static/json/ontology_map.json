@@ -3,7 +3,7 @@
   "ethnicity": "hancestro",
   "material": "uberon",
   "cell": "clo",
-  "pheno": "hpo",
+  "pheno": "hp",
   "organism": "ncbitaxon",
   "condition": "xco",
   "treatment": "dron"
