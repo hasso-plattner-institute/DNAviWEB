@@ -14,6 +14,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("upload-form");
   const loadingOverlay = document.getElementById("loading-overlay");
   const agreeCheckbox = document.getElementById("agree-terms");
+  const metadataTable = document.getElementById("metadata-table");
+  const confirmMetadataBtn = document.getElementById("submit-metadata-table");
+  let metadataConfirmed = false;
+  let metadataEdited = false;
+  // Detect edits in metadata table
+  if (metadataTable) {
+    metadataTable.addEventListener("input", (e) => {
+      // Ignore sample_id inputs (first column, always auto)
+      const input = e.target;
+      if (input.name && input.name !== "sample_id[]") {
+        metadataEdited = true;
+        metadataConfirmed = false;
+      }
+    });
+  }
+  // If user confirms metadata table
+  if (confirmMetadataBtn) {
+    confirmMetadataBtn.addEventListener("click", () => {
+      metadataConfirmed = true;
+      metadataEdited = false;
+    });
+  }
   // Disable submit button initially until terms are accepted
   if (agreeCheckbox) {
     submitBtn.disabled = !agreeCheckbox.checked;
@@ -21,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.disabled = !agreeCheckbox.checked;
     });
   }
-
   // When user clicks Submit
   submitBtn.addEventListener("click", (e) => {
     e.preventDefault();
@@ -29,6 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (agreeCheckbox && !agreeCheckbox.checked) {
       alert("Please agree to the DNAvi Terms and Conditions before submitting.");
       return;
+    }
+    // Check Metadata if filled (besides sample_id)
+    if (metadataTable) {
+      const inputs = Array.from(metadataTable.querySelectorAll("input, select, textarea"))
+        .filter(el => el.name && el.name !== "sample_id[]" && el.value.trim() !== "");
+      if (inputs.length > 0 && !metadataConfirmed) {
+        alert("You have entered metadata. Please either click 'Confirm Table' to finalize it, or delete all entries in the metadata table before submitting your analysis.");
+        return;
+      }
     }
     // Check if form is valid (all required files are uploaded)
     // Do not allow submission if not valid
