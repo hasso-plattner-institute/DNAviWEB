@@ -61,12 +61,6 @@ function initializeAutocomplete(input) {
                 // OLS json data has the term we search form inside respons:docs:label
                 // example: https://www.ebi.ac.uk/ols4/api/search?q=cancer&ontology=efo&type=class&rows=10
                 const results = data.response.docs || [];
-                // FILTER: only keep results with an id matching the ontology
-                results = results.filter(item => {
-                    if (!item.obo_id && !item.iri) return false;
-                    const id = item.obo_id || item.iri;
-                    return id.toLowerCase().includes(ontology.toLowerCase());
-                });
                 // IF API finds no matches for the user's query, hide the suggestion box
                 // and stop making an API calls
                 if (results.length == 0) {
