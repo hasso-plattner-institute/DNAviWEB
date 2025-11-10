@@ -317,7 +317,7 @@ def save_ontology_terms(session, metadata_path):
                 else:
                     # Get term ID from OLS
                     term_id = get_ols_term_id(label, label_col)
-                    if not term_id:  # None or empty string
+                    if not term_id or not term_id.startswith(detect_ontology(label_col).upper()):  # None or empty string or term_id not from the ontology
                         term_id = str(uuid.uuid4())
                     stmt = (
                         insert(OntologyTerm)

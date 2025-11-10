@@ -168,7 +168,7 @@ def ols_proxy():
         - JSON data from OLS if the request works in 10 sec, otherwise error.
     """
     query = request.args.get("q", "")
-    ontology = request.args.get("ontology", "efo")
+    ontology = request.args.get("ontology", "")
     url = f"https://www.ebi.ac.uk/ols/api/search?q={query}&ontology={ontology}&type=class&rows=10"
     try:
         # Wait for 10 sec
