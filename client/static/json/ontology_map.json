@@ -2,7 +2,7 @@
   "disease": "mondo",
   "ethnicity": "hancestro",
   "material": "uberon",
-  "cell": "clo",
+  "cell": "cl",
   "pheno": "hp",
   "organism": "ncbitaxon",
   "condition": "xco",
