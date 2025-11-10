@@ -220,7 +220,8 @@ def submissions_dashboard():
     for sub in saved_submissions:
         submissions.append({
             "submission_id": sub.submission_id,
-            "submission_date": sub.created_at.timestamp()
+            "submission_date": sub.created_at.timestamp(),
+            "delete_status": sub.delete_status
         })
     # Sort submissions newest first
     submissions.sort(key=lambda x: x["submission_date"], reverse=True)
@@ -548,34 +549,47 @@ def datetimeformat(value):
 @app.route("/request-delete", methods=["POST"])
 def request_delete():
     """
-    This method sends a mail to shared mailbox when user requests deletion of a submission.
+    Called when a user requests deletion of a submission:
+    1. Updates submission.delete_status to pending
+    2. Sends an email delete request to the shared mailbox
     """
     SMTP_SERVER = os.getenv("SMTP_SERVER")
     SMTP_PORT = int(os.getenv("SMTP_PORT"))
     SHARED_MAILBOX = os.getenv("SHARED_MAILBOX")
     data = request.get_json()
     submission_id = data.get("submission_id")
-    # Load the message body from a text file
-    template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
-    with open(template_path, "r") as f:
-        template = f.read()
-    body = template.format(
-        requested_by=get_username(),
-        submission_id=submission_id
-    )
-    subject = "Automated Notification: Deletion Request for Submission"
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = SHARED_MAILBOX
-    msg["To"] = SHARED_MAILBOX
+    # If submission_id is missing just do nothing (no blank screen)
+    if not submission_id:
+        return jsonify({"status": "ignored"}), 200
+    db = SessionLocal()
     try:
+        submission_record = db.query(Submission).filter_by(submission_id=submission_id).first()
+        if not submission_record:
+            return jsonify({"status": "ignored"}), 200
+        # Load the message body from a text file
+        template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
+        with open(template_path, "r") as f:
+            template = f.read()
+        body = template.format(
+            requested_by=get_username(),
+            submission_id=submission_id
+        )
+        subject = "Automated Notification: Deletion Request for Submission"
+        msg = MIMEText(body)
+        msg["Subject"] = subject
+        msg["From"] = SHARED_MAILBOX
+        msg["To"] = SHARED_MAILBOX
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
             server.send_message(msg)
+        submission_record.delete_status = "pending"
+        db.commit()
         logging.info("Deletion request email sent for submission %s", submission_id)
         return jsonify({"status": "success"}), 200
     except Exception as e:
         logging.error("Email sending failed for submission %s: %s", submission_id, e)
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "ignored"}), 200 # Silent dealing with exception (no blank screen)
+    finally:
+            db.close()
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)

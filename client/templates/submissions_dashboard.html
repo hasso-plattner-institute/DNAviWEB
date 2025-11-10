@@ -164,7 +164,7 @@
                       <tr>
                         <th>Submission ID</th>
                         <th>Date Submitted</th>
-                        <th>Remove Submission</th>
+                        <th>Delete Status</th>
                       </tr>
                     </thead>
                   <tbody>
@@ -177,13 +177,21 @@
                         <time datetime="{{ sub.submission_date | datetimeformat }}">{{ sub.submission_date | datetimeformat }}</time>
                       </td>
                       <td class="d-flex align-items-center">
-                        <button 
-                          class="btn btn-sm btn-outline-danger delete-submission" 
-                          data-id="{{ sub.submission_id }}" 
-                          data-bs-toggle="modal" 
-                          data-bs-target="#confirmDeleteModal">
-                          <i class="bi bi-trash"></i> Delete
-                        </button>
+                        {% if sub.delete_status == "pending" %}
+                          <button 
+                            class="btn btn-sm btn-warning" 
+                            disabled>
+                            <i class="bi bi-hourglass-split"></i> Delete Pending
+                          </button>
+                        {% else %}
+                          <button 
+                            class="btn btn-sm btn-outline-danger delete-submission" 
+                            data-id="{{ sub.submission_id }}" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#confirmDeleteModal">
+                            <i class="bi bi-trash"></i> Delete
+                          </button>
+                        {% endif %}
                       </td>
                     </tr>
                     {% endfor %}
