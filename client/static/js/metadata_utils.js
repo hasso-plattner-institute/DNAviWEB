@@ -39,7 +39,7 @@ function initializeAutocomplete(input) {
             suggestionBox.innerHTML = "";
             // If the user did not type, hide the suggestion box 
             // and stop making an API calls
-            if (query === "" || query == null) {
+            if (!query) {
                 suggestionBox.style.display = "none";
                 return;
             }

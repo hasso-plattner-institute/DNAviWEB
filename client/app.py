@@ -169,11 +169,30 @@ def ols_proxy():
     """
     query = request.args.get("q", "")
     ontology = request.args.get("ontology", "")
-    url = f"https://www.ebi.ac.uk/ols/api/search?q={query}&ontology={ontology}&type=class&rows=10"
     try:
-        # Wait for 10 sec
-        r = requests.get(url, timeout=10)
-        return jsonify(r.json())
+        if ontology == "pathogen":
+            # Use ENA taxonomy suggest-for-search (filter ncbitaxon on pathogen)
+            url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/suggest-for-search/{query}?dataPortal=pathogen&limit=20"
+            r = requests.get(url, timeout=10)
+            r.raise_for_status()
+            results = r.json()
+            # Transform results into the same format as OLS
+            response = {
+                "response": {
+                    "docs": [
+                        {
+                            "label": f"{item['scientificName']} ({item.get('commonName', '')})",
+                            "termId": f"NCBITaxon:{item['taxId']}"
+                        } for item in results
+                    ]
+                }
+            }
+            return jsonify(response)
+        else:
+            url = f"https://www.ebi.ac.uk/ols/api/search?q={query}&ontology={ontology}&type=class&rows=10"
+            # Wait for 10 sec
+            r = requests.get(url, timeout=10)
+            return jsonify(r.json())
     except requests.exceptions.RequestException as e:
         return jsonify({"error getting url in 10 sec": str(e)}), 500
     

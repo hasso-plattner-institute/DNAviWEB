@@ -89,17 +89,29 @@ def get_ols_term_id(label, label_col):
     If not found, return empty string.
     """
     ontology = detect_ontology(label_col)
-    url = "https://www.ebi.ac.uk/ols/api/search"
-    params = {"q": label, "ontology": ontology, "type": "class", "exact": "true"}
     try:
-        response = requests.get(url, params=params, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        if data.get("response", {}).get("numFound", 0) > 0:
-            doc = data["response"]["docs"][0]
-            return doc.get("obo_id") or doc.get("iri")
+        if ontology == "pathogen":
+            # Use ENA taxonomy suggest-for-search (filter ncbitaxon on pathogen)
+            url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/suggest-for-search/{label}?dataPortal=pathogen&limit=1"
+            r = requests.get(url, timeout=5)
+            r.raise_for_status()
+            results = r.json()
+            if results:
+                item = results[0]
+                return f"NCBITaxon:{item['taxId']}"
+            else:
+                return ""
         else:
-            return ""
+            url = "https://www.ebi.ac.uk/ols/api/search"
+            params = {"q": label, "ontology": ontology, "type": "class", "exact": "true"}
+            response = requests.get(url, params=params, timeout=5)
+            response.raise_for_status()
+            data = response.json()
+            if data.get("response", {}).get("numFound", 0) > 0:
+                doc = data["response"]["docs"][0]
+                return doc.get("obo_id") or doc.get("iri")
+            else:
+                return ""
     except Exception:
         return ""
 
