@@ -309,7 +309,8 @@ def save_ontology_terms(session, metadata_path):
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
     ontology_term_fields = [
         "Disease", "Cell Type", "Phenotypic Abnormality", "Treatment",
-        "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity"
+        "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity",
+        "Infection Strain"
     ]
     ontology_label_to_id = {col: {} for col in ontology_term_fields}
     # Loop through each ontology terms column in metadata
@@ -563,7 +564,7 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                 "is_deceased": yes_no_to_bool(row.get("Is Deceased?")),
                 "is_pregnant": yes_no_to_bool(row.get("Is Pregnant?")),
                 "is_infection_suspected": yes_no_to_bool(row.get("Is Infection Suspected?")),
-                "infection_strain": row.get("Infection Strain"),
+                "infection_strain": map_term("Infection Strain", row.get("Infection Strain"), ontology_label_to_id),
                 "hospitalization_status": row.get("Hospitalization Status"),
                 "extraction_kit": row.get("Extraction Kit (DNA Isolation Method)"),
                 "dna_mass": float(row.get("DNA Mass")) if pd.notnull(row.get("DNA Mass")) else None,
