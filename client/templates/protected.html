@@ -821,6 +821,7 @@
                       border-radius: 10px;
                     }
                     #metadata-table {
+                      table-layout: fixed; 
                       border-collapse: separate;
                       border-spacing: 0;
                       width: 100%;
@@ -835,8 +836,11 @@
                     }
                     #metadata-table th, #metadata-table td {
                       min-width: 120px;
+                      width: 180px; 
                       white-space: nowrap;
                       vertical-align: middle;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
                     }
                     #metadata-table tbody tr:hover {
                       background-color: #f6faff;
@@ -864,37 +868,44 @@
                     #metadata-table th .resizer:hover {
                       background-color: rgba(0, 123, 255, 0.2);
                     }
+                    #metadata-table th, #metadata-table td {
+                      min-width: 80px;
+                    }
                   </style>
 
                   <script>
                   // Enable column resizing
-                  document.querySelectorAll("#metadata-table th").forEach(th => {
-                    th.classList.add('resizable');
-                    let startX, startWidth;
-                    const resizer = document.createElement('div');
-                    resizer.classList.add('resizer');
-                    th.appendChild(resizer);
-
-                    resizer.addEventListener('mousedown', e => {
-                      startX = e.pageX;
-                      startWidth = th.offsetWidth;
-                      document.addEventListener('mousemove', resize);
-                      document.addEventListener('mouseup', stopResize);
-                    });
-                    function resize(e) {
-                      th.style.width = (startWidth + (e.pageX - startX)) + 'px';
-                    }
-                    function stopResize() {
-                      document.removeEventListener('mousemove', resize);
-                    }
-                  });
-
                   document.addEventListener("DOMContentLoaded", () => {
-                    const table = document.getElementById("metadata-table");
-                    if (table) makeTableResizable(table);
-                  });
-                  </script>
-                  <script>
+                      const table = document.getElementById("metadata-table");
+                      if (!table) return;
+                      const thElements = table.querySelectorAll("th");
+                      thElements.forEach(th => {
+                        const resizer = document.createElement("div");
+                        resizer.classList.add("resizer");
+                        th.appendChild(resizer);
+                        let startX, startWidth;
+                        resizer.addEventListener("mousedown", function(e) {
+                          e.preventDefault();
+                          startX = e.pageX;
+                          startWidth = th.offsetWidth;
+                          document.addEventListener("mousemove", resizeColumn);
+                          document.addEventListener("mouseup", stopResize);
+                        });
+                        function resizeColumn(e) {
+                          const newWidth = startWidth + (e.pageX - startX);
+                          th.style.width = newWidth + "px";
+                          const index = Array.from(th.parentNode.children).indexOf(th);
+                          table.querySelectorAll("tr").forEach(row => {
+                            const cell = row.children[index];
+                            if (cell) cell.style.width = newWidth + "px";
+                          });
+                        }
+                        function stopResize() {
+                          document.removeEventListener("mousemove", resizeColumn);
+                          document.removeEventListener("mouseup", stopResize);
+                        }
+                      });
+                    });
                     document.addEventListener('DOMContentLoaded', function () {
                       const table = document.getElementById('metadata-table');
                       const tbody = table.querySelector('tbody');

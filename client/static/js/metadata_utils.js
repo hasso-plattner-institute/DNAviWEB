@@ -31,10 +31,16 @@ function initializeAutocomplete(input) {
             border-radius: 4px;
             width: ${input.offsetWidth}px;
         `;
-        input.parentElement.style.position = "relative";
-        input.parentElement.appendChild(suggestionBox);
+        document.body.appendChild(suggestionBox);
+        const updatePosition = () => {
+            const rect = input.getBoundingClientRect();
+            suggestionBox.style.top = `${window.scrollY + rect.bottom}px`;
+            suggestionBox.style.left = `${window.scrollX + rect.left}px`;
+            suggestionBox.style.width = `${rect.width}px`;
+        };
         // Make the API call to recommend something
         const makeAPICall = async (inputEl) => {
+            updatePosition();
             const query = inputEl.value.trim();
             suggestionBox.innerHTML = "";
             // If the user did not type, hide the suggestion box 
@@ -107,6 +113,8 @@ function initializeAutocomplete(input) {
                 suggestionBox.style.display = "none";
             }
         });
+        window.addEventListener("scroll", updatePosition);
+        window.addEventListener("resize", updatePosition);
     };
 
 /*
