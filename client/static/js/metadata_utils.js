@@ -1,3 +1,14 @@
+let ontologyMap = {};
+
+async function loadOntologyMap() {
+    try {
+        const res = await fetch("/static/json/ontology_map.json");
+        if (!res.ok) throw new Error("Failed to load ontology_map.json");
+        ontologyMap = await res.json();
+    } catch (err) {
+        console.error("Error loading ontology map:", err);
+    }
+}
 
 /*
 Initialize OLS autocomplete for a single input element
@@ -34,14 +45,11 @@ function initializeAutocomplete(input) {
             }
             // Define url to search for based on the input parameters
             const detectOntology = (name) => {
-                if (name.includes("disease") || name.includes("ethnicity")) return "efo";
-                if (name.includes("anatomical")) return "uberon";
-                if (name.includes("cell_type")) return "cl";
-                if (name.includes("phenotypic")) return "hp";
-                if (name.includes("organism")) return "ncbitaxon";
-                if (name.includes("condition")) return "xco";
-                if (name.includes("treatment")) return "dron";  
-                return "efo";
+                const lower = name.toLowerCase();
+                for (const [key, value] of Object.entries(ontologyMap)) {
+                  if (lower.includes(key)) return value;
+                }
+                return "";
             };
             const ontology = detectOntology(input.name.toLowerCase());
             const url = `/ols_proxy?q=${encodeURIComponent(query)}&ontology=${ontology}`;
@@ -106,7 +114,8 @@ Implement Autocomplete Search Box with debounce technique
 this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadOntologyMap();
     const inputs = document.querySelectorAll(".ols-search");
     // Loop on every input in html and set autocomplet
     inputs.forEach(input => initializeAutocomplete(input));
