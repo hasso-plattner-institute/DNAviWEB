@@ -83,37 +83,63 @@ def detect_ontology(label_col):
             return value
     return ""
 
+def get_ontology_prefix(label_col):
+    """
+    Return the correct term id prefix for a column.
+    """
+    ontology = detect_ontology(label_col).lower()
+    if ontology == "pathogen":
+        return "ncbitaxon"
+    return ontology
+
+def query_term_id(label, ontology, limit=10):
+    """
+    Returns results of autocomplete search.
+    """
+    ontology_lower = ontology.lower()
+    try:
+        if ontology_lower == "pathogen":
+            # ENA taxonomy suggest-for-search (filter pathogens)
+            url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/suggest-for-search/{label}?dataPortal=pathogen&limit={limit}"
+            r = requests.get(url, timeout=10)
+            r.raise_for_status()
+            results = r.json()
+            transformed = [
+                {
+                    "label": f"{item['scientificName']} ({item.get('commonName', '')})",
+                    "termId": f"NCBITaxon:{item['taxId']}"
+                } for item in results
+            ]
+            return transformed
+        else:
+            # OLS lookup
+            url = "https://www.ebi.ac.uk/ols/api/search"
+            params = {"q": label, "ontology": ontology, "type": "class", "rows": limit}
+            r = requests.get(url, params=params, timeout=10)
+            r.raise_for_status()
+            data = r.json()
+            transformed = [
+                {
+                    "label": doc.get("label"),
+                    "termId": doc.get("obo_id") or doc.get("iri")
+                }
+                for doc in data.get("response", {}).get("docs", [])
+            ]
+            return transformed
+    except Exception as e:
+        print("Query error:", e)
+        return []
+
 def get_ols_term_id(label, label_col):
     """
     Query OLS for a label and return its ontology term id.
     If not found, return empty string.
     """
     ontology = detect_ontology(label_col)
-    try:
-        if ontology == "pathogen":
-            # Use ENA taxonomy suggest-for-search (filter ncbitaxon on pathogen)
-            url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/suggest-for-search/{label}?dataPortal=pathogen&limit=1"
-            r = requests.get(url, timeout=5)
-            r.raise_for_status()
-            results = r.json()
-            if results:
-                item = results[0]
-                return f"NCBITaxon:{item['taxId']}"
-            else:
-                return ""
-        else:
-            url = "https://www.ebi.ac.uk/ols/api/search"
-            params = {"q": label, "ontology": ontology, "type": "class", "exact": "true"}
-            response = requests.get(url, params=params, timeout=5)
-            response.raise_for_status()
-            data = response.json()
-            if data.get("response", {}).get("numFound", 0) > 0:
-                doc = data["response"]["docs"][0]
-                return doc.get("obo_id") or doc.get("iri")
-            else:
-                return ""
-    except Exception:
-        return ""
+    results = query_term_id(label, ontology, limit=1)
+    if results:
+        return results[0].get("termId", "")
+    return ""
 
 ##############################################################################
 #                           SAVE TO SUBMISSION TABLE                         #
@@ -330,7 +356,7 @@ def save_ontology_terms(session, metadata_path):
                 else:
                     # Get term ID from OLS
                     term_id = get_ols_term_id(label, label_col)
-                    if not term_id or not term_id.startswith(detect_ontology(label_col).upper()):  # None or empty string or term_id not from the ontology
+                    if not term_id or not term_id.lower().startswith(get_ontology_prefix(label_col)):  # None or empty string or term_id not from the ontology
                         term_id = str(uuid.uuid4())
                     stmt = (
                         insert(OntologyTerm)
