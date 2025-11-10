@@ -21,13 +21,16 @@ import pandas as pd
 import requests
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
+from sqlalchemy import select
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 
 from client.db_utils import rebuild_electropherogram_and_bp_translation, save_data
 from database.config import SessionLocal
+from sqlalchemy.orm import Session
+from database.config import engine
 from database.schema.file import File
-from database.schema.submission import Submission
+from database.schema.submission import Submission, DeleteStatus
 from database.schema.user_details import UserDetails
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
     EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS, VM1_API_URL
@@ -561,35 +564,39 @@ def request_delete():
     # If submission_id is missing just do nothing (no blank screen)
     if not submission_id:
         return jsonify({"status": "ignored"}), 200
-    db = SessionLocal()
-    try:
-        submission_record = db.query(Submission).filter_by(submission_id=submission_id).first()
-        if not submission_record:
-            return jsonify({"status": "ignored"}), 200
-        # Load the message body from a text file
-        template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
-        with open(template_path, "r") as f:
-            template = f.read()
-        body = template.format(
-            requested_by=get_username(),
-            submission_id=submission_id
-        )
-        subject = "Automated Notification: Deletion Request for Submission"
-        msg = MIMEText(body)
-        msg["Subject"] = subject
-        msg["From"] = SHARED_MAILBOX
-        msg["To"] = SHARED_MAILBOX
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
-            server.send_message(msg)
-        submission_record.delete_status = "pending"
-        db.commit()
-        logging.info("Deletion request email sent for submission %s", submission_id)
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        logging.error("Email sending failed for submission %s: %s", submission_id, e)
-        return jsonify({"status": "ignored"}), 200 # Silent dealing with exception (no blank screen)
-    finally:
-            db.close()
+    with Session(engine) as session:
+        try:
+            submission_record = session.execute(
+                select(Submission).where(Submission.submission_id == submission_id)
+            ).scalar_one_or_none()
+
+            if not submission_record:
+                return jsonify({"status": "ignored"}), 200
+            if not submission_record:
+                return jsonify({"status": "ignored"}), 200
+            # Load the message body from a text file
+            template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
+            with open(template_path, "r") as f:
+                template = f.read()
+            body = template.format(
+                requested_by=get_username(),
+                submission_id=submission_id
+            )
+            subject = "Automated Notification: Deletion Request for Submission"
+            msg = MIMEText(body)
+            msg["Subject"] = subject
+            msg["From"] = SHARED_MAILBOX
+            msg["To"] = SHARED_MAILBOX
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
+                server.send_message(msg)
+            submission_record.delete_status = DeleteStatus.PENDING
+            session.commit()
+            logging.info("Deletion request email sent for submission %s", submission_id)
+            return jsonify({"status": "success"}), 200
+        except Exception as e:
+            logging.error("Email sending failed for submission %s: %s", submission_id, e)
+            session.rollback()
+            return jsonify({"status": "ignored"}), 200 # Silent dealing with exception (no blank screen)
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)

@@ -1,13 +1,23 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <style>
+  /* Only affect delete buttons in the submissions table */
+  table .btn-sm.delete-submission,
+  table .btn-sm.btn-warning {
+      min-width: 130px; /* keep buttons same width */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem; /* spacing between icon and text */
+  }
+  </style>
   <meta charset="utf-8" />
   <title>DNAvi | Submission Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-
   <!-- Fonts -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
 
@@ -177,7 +187,7 @@
                         <time datetime="{{ sub.submission_date | datetimeformat }}">{{ sub.submission_date | datetimeformat }}</time>
                       </td>
                       <td class="d-flex align-items-center">
-                        {% if sub.delete_status == "pending" %}
+                        {% if sub.delete_status.value == "pending" %}
                           <button 
                             class="btn btn-sm btn-warning" 
                             disabled>
