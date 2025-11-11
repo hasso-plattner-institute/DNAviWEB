@@ -263,14 +263,16 @@ def get_result_files(folder, prefix=''):
       - statistics_files: CSV files containing 'statistics', each with a preview of first 5 rows
       - peaks_files: PNG files named like peaks_<num>_sample.png
       - other_files: Other PNG files in plots/qc/stats folders
+      - pdf_files: PDF files (DNAviReport.pdf)
 
     :param folder: str, base folder to search
     :param prefix: str, relative prefix (used internally for recursion)
-    :return: tuple of lists: (statistics_files, peaks_files, other_files)
+    :return: tuple of lists: (statistics_files, peaks_files, other_files, pdf_files)
     """
     statistics_files = []
     peaks_files = []
     other_files = []
+    pdf_files = []
 
     for f in os.listdir(folder):
         full_path = os.path.join(folder, f)
@@ -278,10 +280,11 @@ def get_result_files(folder, prefix=''):
 
         if os.path.isdir(full_path):
             # Recursively extend lists
-            stats, peaks, other = get_result_files(full_path, relative_path)
+            stats, peaks, other, pdfs = get_result_files(full_path, relative_path)
             statistics_files.extend(stats)
             peaks_files.extend(peaks)
             other_files.extend(other)
+            pdf_files.extend(pdfs)
         else:
             fname = f.lower()
             rel_lower = relative_path.lower()
@@ -307,8 +310,11 @@ def get_result_files(folder, prefix=''):
             elif fname.endswith(".png") and any(folder_name in rel_lower
                                                 for folder_name in ["plots", "qc", "stats"]):
                 other_files.append(relative_path)
+            # PDF files
+            elif os.path.basename(f).lower() == "dnavireport.pdf":
+                pdf_files.append(relative_path)
 
-    return statistics_files, peaks_files, other_files
+    return statistics_files, peaks_files, other_files, pdf_files
     # END OF FUNCTION
 
 def get_all_files_except_saved_in_db(folder, prefix=''):

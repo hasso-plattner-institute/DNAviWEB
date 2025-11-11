@@ -407,7 +407,7 @@ def protect():
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################
-        statistics_files, peaks_files, other_files = get_result_files(
+        statistics_files, peaks_files, other_files, pdf_files = get_result_files(
             f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
         #download(f"{output_id}.zip")    
         return render_template(
@@ -415,6 +415,7 @@ def protect():
             peaks_files=peaks_files,
             other_files=other_files,
             statistics_files=statistics_files,
+            pdf_files = pdf_files,
             output_id=output_id
         )
         # TODO: DELETE FROM VM2 ON SESSION END
@@ -508,12 +509,13 @@ def results(output_id):
             return jsonify({'error': 'Failed to get submission files from VM1'}), 500
 
     # Now submission files are on vm2, return results page
-    statistics_files, peaks_files, other_files = get_result_files(result_dir)
+    statistics_files, peaks_files, other_files, pdf_files = get_result_files(result_dir)
     return render_template(
         "results.html",
         peaks_files=peaks_files,
         other_files=other_files,
         statistics_files=statistics_files,
+        pdf_files = pdf_files,
         output_id=output_id
     )
 
