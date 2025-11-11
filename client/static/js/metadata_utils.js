@@ -71,6 +71,8 @@ this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
 function initializeAutocomplete(input) {
+        // Track last valid OLS term
+        let lastSelected = "";
         // Styling the suggestion box for recommendations
         const suggestionBox = document.createElement("div");
         suggestionBox.classList.add("autocomplete-box");
@@ -134,11 +136,13 @@ function initializeAutocomplete(input) {
                     div.textContent = item.label;
                     div.style.padding = "5px";
                     div.style.cursor = "pointer";
-                    // When mouse down even happens meaning the term is clicked
+                    // When mouse down event happens meaning the term is clicked
                     // make the label appear in the input and
                     // hide the suggestion box
+                    // and remember the term as last valid ols term
                     div.addEventListener("mousedown", () => {
                         input.value = item.label;
+                        lastSelected = item.label;
                         suggestionBox.style.display = "none";
                     });
                     suggestionBox.appendChild(div);
@@ -169,6 +173,25 @@ function initializeAutocomplete(input) {
         });
         window.addEventListener("scroll", updatePosition);
         window.addEventListener("resize", updatePosition);
+        // Prohibit free text input
+        // If not selected from ols options -> clear text and give a note
+        // To only select from given choices
+        input.addEventListener("blur", () => {
+          if (input.value.trim() !== lastSelected) {
+              input.value = "";
+              input.classList.add("is-invalid");
+
+              const msg = document.createElement("div");
+              msg.className = "invalid-feedback d-block";
+              msg.textContent = "Select from the dropdown.";
+              input.parentNode.appendChild(msg);
+
+              setTimeout(() => {
+                  msg.remove();
+                  input.classList.remove("is-invalid");
+              }, 2000);
+          }
+      });
     };
 
 /*
