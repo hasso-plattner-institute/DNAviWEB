@@ -280,7 +280,7 @@ document.addEventListener('change', function (e) {
  * value.
  */
 document.addEventListener('change', function (e) {
-  if (e.target.tagName === 'SELECT' && e.target.value === 'custom') {
+  if (e.target.tagName == 'SELECT' && e.target.value == 'custom') {
     const select = e.target;
     // Creat a text input
     const input = document.createElement('input');
@@ -294,7 +294,7 @@ document.addEventListener('change', function (e) {
     select.parentNode.replaceChild(input, select);
     // Switch back to select if text is deleted by user
     input.addEventListener('blur', () => {
-      if (input.value.trim() === '') {
+      if (input.value.trim() == '') {
         input.parentNode.replaceChild(select, input);
         select.value = '';
       }
@@ -318,13 +318,14 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                 const { ColumnName: columnName, ColumnType: columnType } = columnInfo;
                 const newHeader = document.createElement('th');
                 newHeader.textContent = columnName;
+                newHeader.style.fontWeight = 'normal';
                 headerRow.insertBefore(newHeader, headerRow.lastElementChild);
                 makeColumnResizable(newHeader, table);
                 rows.forEach(row => {
                     const newCell = document.createElement('td');
                     let input;
                     // Decide on input
-                    if (columnType === "bool") {
+                    if (columnType == "bool") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
@@ -335,8 +336,10 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                             option.value = optionText.toLowerCase();
                             option.textContent = optionText;
                             input.appendChild(option);
+                            applySelectColor(input);
                         });
-                    } else if (columnType === "purpose") {
+                        applySelectColor(input);
+                    } else if (columnType == "purpose") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
@@ -349,13 +352,14 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                             option.textContent = optionText;
                             input.appendChild(option);
                         });
-                           // input.required = true; // Optional: Make selection required
+                        applySelectColor(input);
                     }
-                    else if (columnType === "assay") {
+                    else if (columnType == "assay") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
+                        applySelectColor(input);
                         input.appendChild(defaultOption);
                         ['DNA-Sequencing - Short reads (e.g. Illumina)', 'DNA-Sequencing - Long reads (e.g. Nanopore)',
                             'PCR', 'Epigenetics - targeted','Epigenetics - genome-wide', 'RNA-Sequencing',
@@ -367,13 +371,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                         });
                            // input.required = true; // Optional: Make selection required
                     }
-                    else if (columnType === "patho") {
+                    else if (columnType == "patho") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
-
+                        applySelectColor(input);
                         ['GX', 'G1', 'G2', 'G3', 'G4'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -382,12 +386,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                         });
                            // input.required = true; // Optional: Make selection required
                     }
-                    else if (columnType === "stage") {
+                    else if (columnType == "stage") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
+                        applySelectColor(input);
                         ['I', 'II', 'III', 'IV', 'Other'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -396,12 +401,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                         });
                            // input.required = true; // Optional: Make selection required
                     }
-                    else if (columnType === "status") {
+                    else if (columnType == "status") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
+                        applySelectColor(input);
                         ['Diagnosed', 'Healthy', 'R0', 'R1', 'Relapsed'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -410,12 +416,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                         });
                            // input.required = true; // Optional: Make selection required
                     }
-                    else if (columnType === "opt") {
+                    else if (columnType == "opt") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
+                        applySelectColor(input);
                         ['Yes, OPT OUT', 'No, information is desired.'].forEach(optionText => {
                             const option = document.createElement('option');
                             option.value = optionText.toLowerCase();
@@ -423,12 +430,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                             input.appendChild(option);
                         });
                     }
-                    else if (columnType === "equivoc") {
+                    else if (columnType == "equivoc") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
+                        applySelectColor(input);
                         ['corresponding tissue testing','liquid re-biopsy', 'both tissue testing and liquid re-biopsy'
                         ].forEach(optionText => {
                             const option = document.createElement('option');
@@ -438,12 +446,13 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                         });
                            // input.required = true; // Optional: Make selection required
                     }
-                    else if (columnType === "germline") {
+                    else if (columnType == "germline") {
                         input = document.createElement('select');
                         const defaultOption = document.createElement('option');
                         defaultOption.value = '';
                         defaultOption.textContent = 'Choose';
                         input.appendChild(defaultOption);
+                        applySelectColor(input);
                         ['genetic counselling','germline testing', 'both counselling and germline testing'
                         ].forEach(optionText => {
                             const option = document.createElement('option');
