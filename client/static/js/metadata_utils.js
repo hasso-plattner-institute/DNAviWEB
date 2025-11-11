@@ -10,6 +10,60 @@ async function loadOntologyMap() {
     }
 }
 
+/**
+ * Handle adding custom columns button
+ */
+document.getElementById('addColumnBtn').addEventListener('click', function () {
+  const columnName = prompt("Enter new column name:");
+  if (!columnName) return;
+  const table = document.getElementById('metadata-table');
+  const headerRow = table.querySelector('thead tr');
+  const newHeader = document.createElement('th');
+  newHeader.textContent = columnName;
+  headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+  makeColumnResizable(newHeader, table);
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const newCell = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
+    input.className = 'form-control form-control-sm';
+    newCell.appendChild(input);
+    row.insertBefore(newCell, row.lastElementChild);
+  });
+});
+
+/**
+  * Load example data into the form without immidiate submission
+  */
+document.getElementById('load-example').addEventListener('click', async () => {
+  const files = [
+      {url: './static/tests/electropherogram.csv', inputName: 'data_file'},
+      {url: './static/tests/metadata.csv', inputName: 'meta_file'}
+  ];
+  // Load electropherogram and metadata
+  for (const file of files) {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      const fileObj = new File([blob], file.url.split('/').pop(), {type: blob.type});
+      const input = document.querySelector(`input[name="${file.inputName}"]`);
+      if (input) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(fileObj);
+          input.files = dataTransfer.files;
+      }
+  }
+  // Automatically select HSD5000 ladder option
+  const ladderOption = document.querySelector('input[name="ladder_file"][value="HSD5000"]');
+  if (ladderOption) {
+      ladderOption.checked = true;
+      const fileContainer = document.getElementById('fileUploadContainer');
+      if (fileContainer) fileContainer.style.display = 'none';
+  }
+  alert("Example data loaded! You can review or edit before submitting.");
+});
+
 /*
 Initialize OLS autocomplete for a single input element
 Implement Autocomplete Search Box with debounce technique
@@ -123,6 +177,9 @@ this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
 document.addEventListener("DOMContentLoaded", async () => {
+    const table = document.getElementById("metadata-table");
+    if (!table) return;
+    table.querySelectorAll("th").forEach(th => makeColumnResizable(th, table));
     await loadOntologyMap();
     const inputs = document.querySelectorAll(".ols-search");
     // Loop on every input in html and set autocomplet
@@ -262,6 +319,7 @@ document.getElementById('addELBSBtn').addEventListener('click', function () {
                 const newHeader = document.createElement('th');
                 newHeader.textContent = columnName;
                 headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+                makeColumnResizable(newHeader, table);
                 rows.forEach(row => {
                     const newCell = document.createElement('td');
                     let input;
@@ -430,4 +488,36 @@ function applyDateColor(input) {
   }
   updateColor();
   input.addEventListener('input', updateColor);
+}
+
+function makeColumnResizable(th, table) {
+    const resizer = document.createElement("div");
+    resizer.classList.add("resizer");
+    th.appendChild(resizer);
+
+    let startX, startWidth, colIndex;
+
+    resizer.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        startX = e.pageX;
+        const parentCell = e.target.parentElement;
+        startWidth = parentCell.offsetWidth;
+        colIndex = Array.from(parentCell.parentElement.children).indexOf(parentCell);
+
+        document.addEventListener("mousemove", resizeColumn);
+        document.addEventListener("mouseup", stopResize);
+    });
+
+    function resizeColumn(e) {
+        const newWidth = startWidth + (e.pageX - startX);
+        table.querySelectorAll("tr").forEach(row => {
+            const cell = row.children[colIndex];
+            if (cell) cell.style.width = newWidth + "px";
+        });
+    }
+
+    function stopResize() {
+        document.removeEventListener("mousemove", resizeColumn);
+        document.removeEventListener("mouseup", stopResize);
+    }
 }
