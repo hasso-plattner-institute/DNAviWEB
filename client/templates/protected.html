@@ -1,6 +1,10 @@
 <!doctype html>
 <html lang="en">
   <style>
+    /* prevents horizontal swipe from triggering backward or forward */
+    body, html {
+      overscroll-behavior-x: contain;
+    }
     input[type=button], input[type=submit], input[type=reset] {
       background-color:forestgreen;
       border: none;
