@@ -172,6 +172,7 @@
                   <table class="table m-0">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>Submission ID</th>
                         <th>Date Submitted</th>
                         <th>Delete Status</th>
@@ -180,6 +181,9 @@
                   <tbody>
                     {% for sub in submissions %}
                     <tr>
+                      <td>
+                        {{ loop.index }}
+                      </td>
                       <td class="d-flex align-items-center">
                         <a href="{{ url_for('results', output_id=sub.submission_id) }}" class="link-primary">{{ sub.submission_id }}</a>
                       </td>
