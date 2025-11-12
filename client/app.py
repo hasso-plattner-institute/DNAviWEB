@@ -418,7 +418,6 @@ def protect():
             pdf_files = pdf_files,
             output_id=output_id
         )
-        # TODO: DELETE FROM VM2 ON SESSION END
     return render_template(f'protected.html', error=error, user_logged_in = current_user.is_authenticated)
 
 ##############################################################################
