@@ -247,9 +247,11 @@ def move_dnavi_files(request_id="", error=None, upload_folder="", download_folde
         shutil.move(f"{zip_path}.{arx}", download_folder + "/")
         print("Success, moving now from: ", interm_destination)
         print("Success, moving now to: ", final_destination)
-        # Delete the parent folder of interm_destination
+        # Delete the parent folder of interm_destination only if it is empty
+        # because if parallel submissions happen per user, need to wait and
+        # not delete the uploads file until all finished
         parent_folder = os.path.dirname(interm_destination)
-        if os.path.isdir(parent_folder):
+        if os.path.isdir(parent_folder) and not os.listdir(parent_folder):
             shutil.rmtree(parent_folder)
             print(f"Deleted {parent_folder} folder from uploads")
 
