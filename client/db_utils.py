@@ -599,7 +599,6 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                 "carrying_liquid_volume": float(row.get("Carrying Liquid Volume")) if pd.notnull(row.get("Carrying Liquid Volume")) else None,
                 "carrying_liquid_volume_unit": row.get("Carrying Liquid Volume Unit"),
                 "in_vitro_in_vivo": row.get("In vitro / In vivo"),
-                # TODO: DO NOT ALLOW IN A SUBMISSION MULTIPLE DEVICE ID
                 "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", row.get("Gel Electrophoresis Device"), device_name_to_id)
             })
             # Add custom attributes for all extra columns
