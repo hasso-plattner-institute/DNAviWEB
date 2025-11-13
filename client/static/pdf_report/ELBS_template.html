@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ style_filename }}">
+</head>
+<body>
+    <div class="cover-page">
+        <img src="{{ logo_filename }}" alt="DNAvi Logo" class="logo">
+        <h1 class="report-title">{{ title }}</h1>
+        <h2 class="subheading">based on ELBS recommendations, 2025</h2>
+        <p class="creation-date">Created on: {{ creation_date_time }}</p>
+
+        <div class="citation-section">
+            <h2>Disclaimer</h2>
+            <p class="justified-text">
+                This report is adapted based on the expert consensus recommendations as outlined in the reference below. The responsibility for the accuracy of the information presented in this report lies with the individual filling out this report. Terms and conditions apply, which can be reviewed via the following link: <a href="https://example.com/terms-and-conditions" target="_blank">Terms and Conditions</a>.
+            </p>
+            <p class="justified-text">
+                No warranty, express or implied, is given as to the accuracy or completeness of this report, and no liability will be accepted for any reliance placed upon its contents.
+            </p>
+        </div>
+
+        <div class="citation-section">
+            <h2>References</h2>
+            <ol class="justified-text">
+                <li>Jager, V. D. de et al. Reporting of molecular test results from cell-free DNA analyses: expert consensus recommendations from the 2023 European Liquid Biopsy Society ctDNA Workshop. eBioMedicine 114, (2025).</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="container">
+        {% for section in Report_Detail %}
+            <div class="section">
+                <p style="page-break-before: always;"></p>
+                <h2 class="section-header">Section {{ loop.index }} - {{ section.0 }}</h2>
+                <div class="section-content">
+                    {{ section.1 | safe }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer">
+        <p class="page-number">Page <span class="page-number-counter"></span> of <span class="total-pages-counter"></span></p>
+    </div>
+</body>
+</html>

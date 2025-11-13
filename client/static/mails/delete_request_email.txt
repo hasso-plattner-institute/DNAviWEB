@@ -1,0 +1,11 @@
+Dear DNAvi Support Team,
+
+A deletion request has been submitted via the DNAviWEB.
+
+• Requested by: {requested_by}
+• Submission ID: {submission_id}
+
+Please review this request and proceed with the deletion process.
+
+Best regards,
+DNAviWEB Automated Notification

@@ -8,10 +8,12 @@ Date: 2025-AUG-29 \n
 
 """
 import datetime
+from email.mime.text import MIMEText
 import logging
 import os
 import shutil
 import tarfile
+import smtplib
 import threading
 from uuid import uuid4
 
@@ -19,16 +21,21 @@ import pandas as pd
 import requests
 from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
+from sqlalchemy import select
 from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 
-from client.db_utils import save_data
+from client.db_utils import query_term_id, rebuild_electropherogram_and_bp_translation, save_data
 from database.config import SessionLocal
+from sqlalchemy.orm import Session
+from database.config import engine
 from database.schema.file import File
-from database.schema.submission import Submission
+from database.schema.submission import Submission, DeleteStatus
 from database.schema.user_details import UserDetails
-from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, VM1_API_URL
-from .src.tools import allowed_file, input2dnavi, get_result_files, move_dnavi_files
+from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
+    EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS, VM1_API_URL
+from .src.errors import secure_error
+from .src.tools import allowed_file, file2pdf, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_username, save_user
 
 ###############################################################################
@@ -38,7 +45,7 @@ login_manager = LoginManager()
 base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, 'templates')
 static_dir = os.path.join(base_dir, 'static')
-#############################Logging####################################
+# Logging
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = BASE_DIR.rstrip("/")
 LOG_FILE = os.path.join(BASE_DIR, "log", "connect_to_vm1.log")
@@ -52,7 +59,13 @@ logging.basicConfig(
     ]
 )
 logging.info("Test log message at startup")
-#############################Logging####################################
+# Mail
+SMTP_SERVER = "smtp.office365.com"
+SMTP_PORT = 587
+HPI_USER = os.environ.get("HPI_EMAIL")
+HPI_PASS = os.environ.get("HPI_PASSWORD")
+SHARED_MAILBOX = os.environ.get("SHARED_MAILBOX")
+
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = "74352743t#+#´01230435¹^xvc1u"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -128,10 +141,11 @@ def register():
     # Check if user tried to register without filling everything out
     if not username or not password:
         return render_template('register.html', error="Username and password are required")
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         # Check if username already exists
-        existing_user = db.query(UserDetails).filter_by(username=username).first()
+        existing_user = db.query(Submission).filter_by(username=username).first()
+        db.close()
         if existing_user:
             return render_template('register.html', error="User already exists")
         save_user(username, password)
@@ -154,15 +168,10 @@ def ols_proxy():
         - JSON data from OLS if the request works in 10 sec, otherwise error.
     """
     query = request.args.get("q", "")
-    ontology = request.args.get("ontology", "efo")
-    url = f"https://www.ebi.ac.uk/ols/api/search?q={query}&ontology={ontology}&type=class&rows=10"
-    try:
-        # Wait for 10 sec
-        r = requests.get(url, timeout=10)
-        return jsonify(r.json())
-    except requests.exceptions.RequestException as e:
-        return jsonify({"error getting url in 10 sec": str(e)}), 500
-    
+    ontology = request.args.get("ontology", "")
+    results = query_term_id(query, ontology, limit=10)
+    return jsonify({"response": {"docs": results}})
+
 @app.route('/gallery', methods=['GET','POST'])
 @login_required
 def gallery():
@@ -184,20 +193,34 @@ def warning():
 def contact():
     return render_template(f'contact.html')
 
+@app.route("/legal_notice")
+def legal_notice():
+    return render_template(f'legal_notice.html')
+
+@app.route("/citation")
+def citation():
+    return render_template(f'citation.html')
+
+
 @app.route('/submissions_dashboard', methods=['GET','POST'])
-@login_required
+#@login_required
 def submissions_dashboard():
+    """
+    This route returns the submissions dashboard for the username.
+    It retrieves only submissions that the user chose to store in the DB.
+    """
     username = get_username()
-    user_downloads = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
     submissions = []
-    if os.path.exists(user_downloads):
-        for sub_id in os.listdir(user_downloads):
-            sub_path = os.path.join(user_downloads, sub_id)
-            if os.path.isdir(sub_path):
-                submissions.append({
-                    "submission_id": sub_id,
-                    "submission_date": os.path.getctime(sub_path)  # creation time
-                })
+    # Only show in the dashboard submissions submissions saved in DB
+    db = SessionLocal()
+    saved_submissions = db.query(Submission).filter_by(username=username).all()
+    db.close()
+    for sub in saved_submissions:
+        submissions.append({
+            "submission_id": sub.submission_id,
+            "submission_date": sub.created_at.timestamp(),
+            "delete_status": sub.delete_status
+        })
     # Sort submissions newest first
     submissions.sort(key=lambda x: x["submission_date"], reverse=True)
     return render_template(
@@ -210,6 +233,27 @@ def submissions_dashboard():
 def instructions():
     return render_template("instructions.html")
 
+
+##############################################################################
+#   PARSE OPTIONAL ELBS REPORT COLUMNS TO METADATA TABLE (USER INTERFACE)    #
+##############################################################################
+@app.route('/get-column-names', methods=['GET'])
+def get_column_names():
+    """
+    This function will read the columns to display in the user interface
+    from a table located in static
+    :return:
+    """
+    df = pd.read_table(REPORT_COLUMNS)
+    df = df[df["show"] == True]
+    # Prepare the information by constructing a list of dictionaries
+    columns_info = df[['Item', 'action', 'category']].rename(
+        columns={'Item': 'ColumnName', 'action': 'ColumnType',
+                 'category': 'Category'}
+    ).to_dict(orient='records')
+    return jsonify({'columnsInfo': columns_info})
+    # END OF FUNCTION
+    
 ##############################################################################
 # PROCESS INPUT
 ##############################################################################
@@ -225,43 +269,101 @@ def protect():
     username = get_username()
     if request.method == 'POST' and 'incomp_results' not in request.form:
         ######################################################################
-        # PERFORM BASIC CHECKS
+        # SET INPUT VARIABLES
         ######################################################################
-        data_inpt = request.files['data_file'].filename
-        ladder_inpt = request.files['ladder_file'].filename
-        meta_inpt = request.files['meta_file']
+        request_dict = request.form.to_dict(flat=False)
+        example_case = False
+        default_ladder = False
         m = None
+        m_all = None
+        print(request_dict)
+        print("............................")
+
+        ######################################################################
+        # CHECK IF SOME OF THE DATA ARE REPOSITORY DEFAULTS
+        ######################################################################
+        if 'Example' in request_dict:
+            data_inpt = EXAMPLE_TABLE
+            ladder_inpt = EXAMPLE_LADDER
+            meta_inpt = EXAMPLE_META
+            example_case = True
+        else:
+            # Rename uploaded gel/signal table to: electropherogram
+            uploaded_data_file = request.files['data_file']
+            ext = os.path.splitext(uploaded_data_file.filename)[1]
+
+            data_inpt = f"electropherogram{ext}"
+            meta_inpt = request.files['meta_file']
+            if request_dict['ladder_file'] == ["upload"]:
+                ladder_inpt = request.files['ladder_file']
+            else:
+                default_ladder = True
+                ladder_inpt = LADDER_DICT[request_dict['ladder_file'][0]]
+                print(f"LADDER SELECTED FROM DEFAULTS {ladder_inpt}")
+
+        ######################################################################
+        # BASIC QC
+        ######################################################################
         if data_inpt == '' or not allowed_file(data_inpt):
             error = "Missing DNA file (table/image) or format not allowed"
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
         if ladder_inpt == '':
             error = "Missing Ladder file."
-            return render_template(f'protected.html',
-                               missing_error=error, user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                missing_error=error,
+                user_logged_in = current_user.is_authenticated)
+
         ######################################################################
-        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY(VM2)  #
+        # UNIQUE ID, CREATE PROCESSING DIRECTORY,SAVE FILES TEMPORARLY (VM2) #
         ######################################################################
         request_id = str(uuid4())
         processing_folder = f"{app.config['UPLOAD_FOLDER']}{username}/{request_id}/"
         os.makedirs(processing_folder, exist_ok=True)
         f = f"{processing_folder}{secure_filename(data_inpt)}"
-        request.files['data_file'].save(f)
-        l = f"{f.rsplit('.',1)[0]}_ladder.csv"
-        request.files['ladder_file'].save(l)
-        if meta_inpt:
+        l = f"{f.rsplit('.', 1)[0]}_ladder.csv"
+
+        ######################################################################
+        #  If it's the example or default, simply compy #
+        ######################################################################
+        if example_case or default_ladder:
+            if example_case:
+                m = f"{f.rsplit('.', 1)[0]}_meta.csv"
+                shutil.copyfile(data_inpt, f)
+                shutil.copyfile(ladder_inpt, l)
+                shutil.copyfile(meta_inpt, m)
+            if default_ladder:
+                shutil.copyfile(ladder_inpt, l)
+                request.files['data_file'].save(f)
+        ######################################################################
+        #  Otherwise save user input
+        ######################################################################
+        else: # otherwise save user input
+            request.files['data_file'].save(f)
+            request.files['ladder_file'].save(l)
+
+        ######################################################################
+        #  Handle meta data and report
+        ######################################################################
+        if meta_inpt and not example_case:
             m = f"{f.rsplit('.',1)[0]}_meta.csv"
             request.files['meta_file'].save(m)
-            # Make a backup copy first to save all metadata in db even if some empty
-            backup_meta_path = m.replace(".csv", "_backup.csv")
-            shutil.copy(m, backup_meta_path)
-            print(f"Backup of metadata saved as: {backup_meta_path}")
+            # Make a all copy first to save all metadata in db even if some empty
+            m_all = m.replace(".csv", "_all.csv")
+            shutil.copy(m, m_all)
+            print(f"all of metadata saved as: {m_all}")
             # List of metadata columns (values) chosen by user to group by
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
-            if group_columns:
-                selected_columns += group_columns
             meta_df = pd.read_csv(m)
+            #! Important validate of these cols even exist
+            if group_columns:
+                valid_group_columns = [e for e in group_columns if e in meta_df.columns]
+                print("--- Valid group columns", valid_group_columns)
+                selected_columns += valid_group_columns
             meta_df = meta_df[selected_columns]
             # Remove all not selected columns
             meta_df.to_csv(m, index=False)
@@ -271,6 +373,13 @@ def protect():
         ######################################################################
         assigned_vars = [e for e in [("i",f),("l",l),("m",m)] if e[1]]
         op, error = input2dnavi(in_vars=assigned_vars)
+
+        ######################################################################
+        #                       CREATE PDF REPORT                           #
+        ######################################################################
+        if m_all:
+            file2pdf(file_dir=m_all, static_dir=STATIC_DIR)
+
         ######################################################################
         #               ZIP + MOVE OUTPUT TO DOWNLOAD (VM2)                  #
         ######################################################################
@@ -283,8 +392,10 @@ def protect():
         #                          DISPLAY ERROR                             #
         ######################################################################
         if error:
-            return render_template(f'protected.html',
-                               error=error, user_logged_in = current_user.is_authenticated)
+            return render_template(
+                f'protected.html',
+                error=secure_error(error),
+                user_logged_in = current_user.is_authenticated)
         ######################################################################
         #                        SAVE DATA TO DATABASE                       #
         ######################################################################
@@ -296,16 +407,17 @@ def protect():
         ######################################################################
         #                RETURN ANALYSIS RESULTS                             #
         ######################################################################
-        statistics_files, peaks_files, other_files = get_result_files(f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
+        statistics_files, peaks_files, other_files, pdf_files = get_result_files(
+            f"{app.config['DOWNLOAD_FOLDER']}{username}/{output_id}")
         #download(f"{output_id}.zip")    
         return render_template(
             "results.html",
             peaks_files=peaks_files,
             other_files=other_files,
             statistics_files=statistics_files,
+            pdf_files = pdf_files,
             output_id=output_id
         )
-        # TODO: DELETE FROM VM2 ON SESSION END
     return render_template(f'protected.html', error=error, user_logged_in = current_user.is_authenticated)
 
 ##############################################################################
@@ -355,17 +467,19 @@ def results(output_id):
     for paths to files on DB and request them from VM1 (permanent storage file system).
     """
     username = get_username()
-    result_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username, output_id)
+    user_dir = os.path.join(app.config['DOWNLOAD_FOLDER'], username)
+    result_dir = os.path.join(user_dir, output_id)
     # If the files are no longer on vm2 -> must get them from permanent store vm1
     if not os.path.exists(result_dir):
         # Lookup DB
-        submission = Submission.query.filter_by(id=output_id).first()
+        db = SessionLocal()
+        submission = db.query(Submission).filter_by(submission_id=output_id).first()
         if not submission:
             return jsonify({'error': 'Submission not found in database'}), 404
-        files = File.query.filter_by(submission_id=output_id).all()
+        files = db.query(File).filter_by(submission_id=output_id).all()
+        db.close()
         if not files:
             return jsonify({'error': 'No files found in database associated with this submission'}), 404
-        relative_paths = [f.relative_path for f in files]
         try:
             # Send request to vm1
             download_url = f"{VM1_API_URL}/send_files"
@@ -374,20 +488,19 @@ def results(output_id):
                 download_url,
                 json={
                     "username": username,
-                    "submission_id": output_id,
-                    "files": relative_paths
+                    "submission_id": output_id
                 },
                 stream=True,
                 timeout=(10, 300)
             )
             response.raise_for_status()
-            os.makedirs(result_dir, exist_ok=True)
-            archive_path = os.path.join(result_dir, f"{output_id}.tar.gz") # Temporary save
+            os.makedirs(user_dir, exist_ok=True)
+            archive_path = os.path.join(user_dir, f"{output_id}.tar.gz") # Temporary save
             with open(archive_path, 'wb') as f:
                 shutil.copyfileobj(response.raw, f)
             # Extract all files and save
             with tarfile.open(archive_path, 'r:gz') as tar:
-                tar.extractall(result_dir)
+                tar.extractall(user_dir)
             os.remove(archive_path) # Remove temporary archive
             logging.info("Submission files restored from VM1 to VM2 successfully!")
         except requests.RequestException as e:
@@ -395,26 +508,91 @@ def results(output_id):
             return jsonify({'error': 'Failed to get submission files from VM1'}), 500
 
     # Now submission files are on vm2, return results page
-    statistics_files, peaks_files, other_files = get_result_files(result_dir)
+    statistics_files, peaks_files, other_files, pdf_files = get_result_files(result_dir)
     return render_template(
         "results.html",
         peaks_files=peaks_files,
         other_files=other_files,
         statistics_files=statistics_files,
+        pdf_files = pdf_files,
         output_id=output_id
     )
 
-@app.route('/download/<filename>', methods=['GET'])
-def download(filename):
+@app.route('/download/<submission_id>', methods=['GET'])
+def download(submission_id):
     username = get_username()
     # The directory where the result files are  located
     directory = f"{app.config['DOWNLOAD_FOLDER']}{username}/"
-    # Flask's send_from_directory to send the file to the client
-    return send_from_directory(directory, filename, as_attachment=True)
+    submission_folder = os.path.join(directory, submission_id)
+    zip_filename = f"{submission_id}_compressed.zip"
+    zip_path = os.path.join(directory, zip_filename)
+    # Check if zip exists
+    if os.path.isfile(zip_path):
+        return send_from_directory(directory, zip_filename, as_attachment=True)
+    # Zip missing -> file was delted from temporary storage
+    # rebuild local folder with missing files from DB (file system files already
+    # loaded during results page retrieval)
+    electro_path, bp_path = rebuild_electropherogram_and_bp_translation(submission_id, submission_folder)
+    if not electro_path or not bp_path:
+        logging.error(f"Failed to rebuild required CSVs for submission {submission_id}. ZIP not created.")
+    # Create zip and send
+    shutil.make_archive(zip_path.replace(".zip", ""), 'zip', submission_folder)
+    logging.info(f"Created zip for submission {submission_id} at {zip_path}")
+    return send_from_directory(directory, zip_filename, as_attachment=True)
 
 @app.template_filter('datetimeformat')
 def datetimeformat(value):
     return datetime.datetime.fromtimestamp(value).strftime('%b %d, %Y')
+
+
+@app.route("/request-delete", methods=["POST"])
+def request_delete():
+    """
+    Called when a user requests deletion of a submission:
+    1. Updates submission.delete_status to pending
+    2. Sends an email delete request to the shared mailbox
+    """
+    SMTP_SERVER = os.getenv("SMTP_SERVER")
+    SMTP_PORT = int(os.getenv("SMTP_PORT"))
+    SHARED_MAILBOX = os.getenv("SHARED_MAILBOX")
+    data = request.get_json()
+    submission_id = data.get("submission_id")
+    # If submission_id is missing just do nothing (no blank screen)
+    if not submission_id:
+        return jsonify({"status": "ignored"}), 200
+    with Session(engine) as session:
+        try:
+            submission_record = session.execute(
+                select(Submission).where(Submission.submission_id == submission_id)
+            ).scalar_one_or_none()
+
+            if not submission_record:
+                return jsonify({"status": "ignored"}), 200
+            if not submission_record:
+                return jsonify({"status": "ignored"}), 200
+            # Load the message body from a text file
+            template_path = os.path.join(os.path.dirname(__file__), "static", "mails", "delete_request_email.txt")
+            with open(template_path, "r") as f:
+                template = f.read()
+            body = template.format(
+                requested_by=get_username(),
+                submission_id=submission_id
+            )
+            subject = "Automated Notification: Deletion Request for Submission"
+            msg = MIMEText(body)
+            msg["Subject"] = subject
+            msg["From"] = SHARED_MAILBOX
+            msg["To"] = SHARED_MAILBOX
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT, timeout=10) as server:
+                server.send_message(msg)
+            submission_record.delete_status = DeleteStatus.PENDING
+            session.commit()
+            logging.info("Deletion request email sent for submission %s", submission_id)
+            return jsonify({"status": "success"}), 200
+        except Exception as e:
+            logging.error("Email sending failed for submission %s: %s", submission_id, e)
+            session.rollback()
+            return jsonify({"status": "ignored"}), 200 # Silent dealing with exception (no blank screen)
 
 if __name__ =='__main__':
     app.run(host="0.0.0.0", debug=True)

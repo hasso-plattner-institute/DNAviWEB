@@ -1,7 +1,8 @@
 """
 This module stores the sample pixels table.
 """
-from sqlalchemy import Integer, ForeignKey, Numeric
+from datetime import datetime
+from sqlalchemy import DateTime, Integer, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.schema.base import Base
 
@@ -34,6 +35,13 @@ class SamplePixel(Base):
         Numeric(30, 20),
         nullable=False,
         comment="Translation of pixel intensity into fragment size (base pairs)."
+    )
+
+    # Timestamp when the record was inserted.
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
     # Relationships

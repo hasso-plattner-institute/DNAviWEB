@@ -1,3 +1,68 @@
+let ontologyMap = {};
+
+async function loadOntologyMap() {
+    try {
+        const res = await fetch("/static/json/ontology_map.json");
+        if (!res.ok) throw new Error("Failed to load ontology_map.json");
+        ontologyMap = await res.json();
+    } catch (err) {
+        console.error("Error loading ontology map:", err);
+    }
+}
+
+/**
+ * Handle adding custom columns button
+ */
+document.getElementById('addColumnBtn').addEventListener('click', function () {
+  const columnName = prompt("Enter new column name:");
+  if (!columnName) return;
+  const table = document.getElementById('metadata-table');
+  const headerRow = table.querySelector('thead tr');
+  const newHeader = document.createElement('th');
+  newHeader.textContent = columnName;
+  headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+  makeColumnResizable(newHeader, table);
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const newCell = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
+    input.className = 'form-control form-control-sm';
+    newCell.appendChild(input);
+    row.insertBefore(newCell, row.lastElementChild);
+  });
+});
+
+/**
+  * Load example data into the form without immidiate submission
+  */
+document.getElementById('load-example').addEventListener('click', async () => {
+  const files = [
+      {url: './static/tests/electropherogram.csv', inputName: 'data_file'},
+      {url: './static/tests/metadata.csv', inputName: 'meta_file'}
+  ];
+  // Load electropherogram and metadata
+  for (const file of files) {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      const fileObj = new File([blob], file.url.split('/').pop(), {type: blob.type});
+      const input = document.querySelector(`input[name="${file.inputName}"]`);
+      if (input) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(fileObj);
+          input.files = dataTransfer.files;
+      }
+  }
+  // Automatically select HSD5000 ladder option
+  const ladderOption = document.querySelector('input[name="ladder_file"][value="HSD5000"]');
+  if (ladderOption) {
+      ladderOption.checked = true;
+      const fileContainer = document.getElementById('fileUploadContainer');
+      if (fileContainer) fileContainer.style.display = 'none';
+  }
+  alert("Example data loaded! You can review or edit before submitting.");
+});
 
 /*
 Initialize OLS autocomplete for a single input element
@@ -6,6 +71,8 @@ this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
 function initializeAutocomplete(input) {
+        // Track last valid OLS term
+        let lastSelected = "";
         // Styling the suggestion box for recommendations
         const suggestionBox = document.createElement("div");
         suggestionBox.classList.add("autocomplete-box");
@@ -20,28 +87,31 @@ function initializeAutocomplete(input) {
             border-radius: 4px;
             width: ${input.offsetWidth}px;
         `;
-        input.parentElement.style.position = "relative";
-        input.parentElement.appendChild(suggestionBox);
+        document.body.appendChild(suggestionBox);
+        const updatePosition = () => {
+            const rect = input.getBoundingClientRect();
+            suggestionBox.style.top = `${window.scrollY + rect.bottom}px`;
+            suggestionBox.style.left = `${window.scrollX + rect.left}px`;
+            suggestionBox.style.width = `${rect.width}px`;
+        };
         // Make the API call to recommend something
         const makeAPICall = async (inputEl) => {
+            updatePosition();
             const query = inputEl.value.trim();
             suggestionBox.innerHTML = "";
             // If the user did not type, hide the suggestion box 
             // and stop making an API calls
-            if (query === "" || query == null) {
+            if (!query) {
                 suggestionBox.style.display = "none";
                 return;
             }
             // Define url to search for based on the input parameters
             const detectOntology = (name) => {
-                if (name.includes("disease") || name.includes("ethnicity")) return "efo";
-                if (name.includes("anatomical")) return "uberon";
-                if (name.includes("cell_type")) return "cl";
-                if (name.includes("phenotypic")) return "hp";
-                if (name.includes("organism")) return "ncbitaxon";
-                if (name.includes("condition")) return "xco";
-                if (name.includes("treatment")) return "dron";  
-                return "efo";
+                const lower = name.toLowerCase();
+                for (const [key, value] of Object.entries(ontologyMap)) {
+                  if (lower.includes(key)) return value;
+                }
+                return "";
             };
             const ontology = detectOntology(input.name.toLowerCase());
             const url = `/ols_proxy?q=${encodeURIComponent(query)}&ontology=${ontology}`;
@@ -66,11 +136,13 @@ function initializeAutocomplete(input) {
                     div.textContent = item.label;
                     div.style.padding = "5px";
                     div.style.cursor = "pointer";
-                    // When mouse down even happens meaning the term is clicked
+                    // When mouse down event happens meaning the term is clicked
                     // make the label appear in the input and
                     // hide the suggestion box
+                    // and remember the term as last valid ols term
                     div.addEventListener("mousedown", () => {
                         input.value = item.label;
+                        lastSelected = item.label;
                         suggestionBox.style.display = "none";
                     });
                     suggestionBox.appendChild(div);
@@ -99,6 +171,27 @@ function initializeAutocomplete(input) {
                 suggestionBox.style.display = "none";
             }
         });
+        window.addEventListener("scroll", updatePosition);
+        window.addEventListener("resize", updatePosition);
+        // Prohibit free text input
+        // If not selected from ols options -> clear text and give a note
+        // To only select from given choices
+        input.addEventListener("blur", () => {
+          if (input.value.trim() !== lastSelected) {
+              input.value = "";
+              input.classList.add("is-invalid");
+
+              const msg = document.createElement("div");
+              msg.className = "invalid-feedback d-block";
+              msg.textContent = "Select from the dropdown.";
+              input.parentNode.appendChild(msg);
+
+              setTimeout(() => {
+                  msg.remove();
+                  input.classList.remove("is-invalid");
+              }, 2000);
+          }
+      });
     };
 
 /*
@@ -106,7 +199,11 @@ Implement Autocomplete Search Box with debounce technique
 this way not for every letter typed an expensive API call is made
 Based on: https://www.geeksforgeeks.org/html/implement-search-box-with-debounce-in-javascript/
 */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const table = document.getElementById("metadata-table");
+    if (!table) return;
+    table.querySelectorAll("th").forEach(th => makeColumnResizable(th, table));
+    await loadOntologyMap();
     const inputs = document.querySelectorAll(".ols-search");
     // Loop on every input in html and set autocomplet
     inputs.forEach(input => initializeAutocomplete(input));
@@ -206,7 +303,7 @@ document.addEventListener('change', function (e) {
  * value.
  */
 document.addEventListener('change', function (e) {
-  if (e.target.tagName === 'SELECT' && e.target.value === 'custom') {
+  if (e.target.tagName == 'SELECT' && e.target.value == 'custom') {
     const select = e.target;
     // Creat a text input
     const input = document.createElement('input');
@@ -220,10 +317,239 @@ document.addEventListener('change', function (e) {
     select.parentNode.replaceChild(input, select);
     // Switch back to select if text is deleted by user
     input.addEventListener('blur', () => {
-      if (input.value.trim() === '') {
+      if (input.value.trim() == '') {
         input.parentNode.replaceChild(select, input);
         select.value = '';
       }
     });
   }
 });
+
+/**
+ * Handle adding ELBS report columns
+ */
+document.getElementById('addELBSBtn').addEventListener('click', function () {
+    const button = this;
+    fetch('/get-column-names')
+        .then(response => response.json())
+        .then(data => {
+            const table = document.getElementById('metadata-table');
+            const headerRow = table.querySelector('thead tr');
+            const rows = table.querySelectorAll('tbody tr');
+            // Render column infos from dictionary
+            data.columnsInfo.forEach(columnInfo => {
+                const { ColumnName: columnName, ColumnType: columnType } = columnInfo;
+                const newHeader = document.createElement('th');
+                newHeader.textContent = columnName;
+                newHeader.style.fontWeight = 'normal';
+                headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+                makeColumnResizable(newHeader, table);
+                rows.forEach(row => {
+                    const newCell = document.createElement('td');
+                    let input;
+                    // Decide on input
+                    if (columnType == "bool") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        ['Yes', 'No'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                            applySelectColor(input);
+                        });
+                        applySelectColor(input);
+                    } else if (columnType == "purpose") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        ['Screening', 'Therapy decision aid', 'MRD', 'Relapse',
+                            'Clinical study', 'Basic Research'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                        applySelectColor(input);
+                    }
+                    else if (columnType == "assay") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        applySelectColor(input);
+                        input.appendChild(defaultOption);
+                        ['DNA-Sequencing - Short reads (e.g. Illumina)', 'DNA-Sequencing - Long reads (e.g. Nanopore)',
+                            'PCR', 'Epigenetics - targeted','Epigenetics - genome-wide', 'RNA-Sequencing',
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType == "patho") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['GX', 'G1', 'G2', 'G3', 'G4'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType == "stage") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['I', 'II', 'III', 'IV', 'Other'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType == "status") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['Diagnosed', 'Healthy', 'R0', 'R1', 'Relapsed'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType == "opt") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['Yes, OPT OUT', 'No, information is desired.'].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                    }
+                    else if (columnType == "equivoc") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['corresponding tissue testing','liquid re-biopsy', 'both tissue testing and liquid re-biopsy'
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else if (columnType == "germline") {
+                        input = document.createElement('select');
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choose';
+                        input.appendChild(defaultOption);
+                        applySelectColor(input);
+                        ['genetic counselling','germline testing', 'both counselling and germline testing'
+                        ].forEach(optionText => {
+                            const option = document.createElement('option');
+                            option.value = optionText.toLowerCase();
+                            option.textContent = optionText;
+                            input.appendChild(option);
+                        });
+                           // input.required = true; // Optional: Make selection required
+                    }
+                    else {
+                        input = document.createElement('input');
+                        input.type = 'text';
+                    }
+                    input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
+                    input.className = 'form-control form-control-sm';
+                    newCell.appendChild(input);
+                    row.insertBefore(newCell, row.lastElementChild);
+                });
+            });
+            // Change button color to green and disable it
+            button.style.backgroundColor = 'green';
+            button.style.color = 'white';
+            button.textContent = 'Columns Added';
+            button.disabled = true;
+        })
+        .catch(error => console.error('Error fetching column names:', error));
+});
+
+// Function to apply gray color on select /black if already selected value
+function applySelectColor(select) {
+  function updateColor() {
+    select.style.color = select.value ? '#000000' : '#c0c0c0';
+  }
+  updateColor();
+  select.addEventListener('change', updateColor);
+}
+
+// Function to apply gray (no date chosen)/black (date chosen)
+function applyDateColor(input) {
+  function updateColor() {
+    input.style.color = input.value ? '#000000' : '#c0c0c0';
+  }
+  updateColor();
+  input.addEventListener('input', updateColor);
+}
+
+function makeColumnResizable(th, table) {
+    const resizer = document.createElement("div");
+    resizer.classList.add("resizer");
+    th.appendChild(resizer);
+
+    let startX, startWidth, colIndex;
+
+    resizer.addEventListener("mousedown", function(e) {
+        e.preventDefault();
+        startX = e.pageX;
+        const parentCell = e.target.parentElement;
+        startWidth = parentCell.offsetWidth;
+        colIndex = Array.from(parentCell.parentElement.children).indexOf(parentCell);
+
+        document.addEventListener("mousemove", resizeColumn);
+        document.addEventListener("mouseup", stopResize);
+    });
+
+    function resizeColumn(e) {
+        const newWidth = startWidth + (e.pageX - startX);
+        table.querySelectorAll("tr").forEach(row => {
+            const cell = row.children[colIndex];
+            if (cell) cell.style.width = newWidth + "px";
+        });
+    }
+
+    function stopResize() {
+        document.removeEventListener("mousemove", resizeColumn);
+        document.removeEventListener("mouseup", stopResize);
+    }
+}

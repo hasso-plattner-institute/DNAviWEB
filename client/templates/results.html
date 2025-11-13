@@ -27,9 +27,11 @@
         <li class="nav-item">
           <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
         </li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
-        <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">License</a></li>
-        <li class="nav-item d-none d-md-block"><a href="{{ url_for('contact') }}" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <!--begin::Navbar Login/logout-->
@@ -72,14 +74,12 @@
     <div class="sidebar-wrapper">
       <nav class="mt-2">
         <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
-          {% if current_user.is_authenticated %}
-              <li class="nav-item">
-                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="nav-icon bi bi-speedometer"></i>
-                  <p>Submissions Dashboard</p>
-                </a>
-              </li>
-          {% endif %}
+          <li class="nav-item">
+            <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
+              <i class="bi bi-grid"></i>
+              <p>Submissions Dashboard</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="{{ url_for('instructions') }}" class="nav-link">
               <i class="bi bi-graph-up"></i>
@@ -106,7 +106,7 @@
                 </div>
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Results</li>
                   </ol>
                 </div>
@@ -129,7 +129,7 @@
                 </p>
               </div>
               <div class="mt-3 mt-md-0">
-                <a href="{{ url_for('download', filename=output_id ~ '_compressed.zip') }}" class="btn btn-success btn">
+                <a href="{{ url_for('download', submission_id=output_id) }}" class="btn btn-success btn">
                   <i class="bi bi-download me-2"></i> Download All as ZIP
                 </a>
               </div>
@@ -159,6 +159,26 @@
             </div>
           </section>
           {% endif %}
+          <!-- PDF -->
+          {% for f in pdf_files %}
+          <section class="mb-5">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h4 class="card-title mb-0">{{ f }}</h4>
+              </div>
+              <div class="card-body p-3" style="overflow:auto; display:flex; justify-content:center; align-items:center; flex-direction:column;">
+                {% if f.lower().endswith('.pdf') %}
+                  <embed src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
+                        type="application/pdf" 
+                        style="width:80%; height:600px; margin-bottom:0.5rem; border:1px solid #ccc;">
+                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" target="_blank" class="btn btn-primary mt-2">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> View full report {{ f }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+          {% endfor %}
           <!-- Other files -->
           {% for f in other_files %}
           <section class="mb-5">

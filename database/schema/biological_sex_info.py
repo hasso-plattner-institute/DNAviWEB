@@ -8,7 +8,8 @@ mainly male or female. Term chosen from a list of controlled vocabulary (CV). If
 find your term in the CV list, please create an issue at our [metadata GitHub repository]
 (https://github.com/EbiEga/ega-metadata-schema/issues/new/choose) proposing its addition.
 """
-from sqlalchemy import String, ForeignKey
+from datetime import datetime
+from sqlalchemy import DateTime, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ENUM as PG_ENUM
 from sqlalchemy.orm import Mapped, mapped_column
 from database.schema.base import Base
@@ -35,6 +36,8 @@ class BiologicalSexInfo(Base):
     term_id : String(50), ForeignKey to ontology_term.term_id
         A foreign key linking to the ontology_term table that provides the CURIE identifier 
         and detailed metadata describing the biological sex term.
+    created_at : DateTime
+        Timestamp when the record was inserted.
     """
     __tablename__ = 'biological_sex_info'
 
@@ -42,8 +45,15 @@ class BiologicalSexInfo(Base):
         biological_sex_enum,
         primary_key=True
     )
+
     biological_sex_term_id: Mapped[str] = mapped_column(
       String(50),
       ForeignKey('ontology_term.term_id', ondelete='CASCADE'),
       nullable=False
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )

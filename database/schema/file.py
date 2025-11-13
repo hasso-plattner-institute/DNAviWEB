@@ -3,8 +3,8 @@ This module defines the file table.
 The table stores all result files for a specific submission.
 Each file belongs to one submission.
 """
+from datetime import datetime
 import uuid
-from sqlalchemy.sql import functions
 from sqlalchemy import ForeignKey, String, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
@@ -18,7 +18,7 @@ class File(Base):
     - submission_id: FK to Submission table
     - file_name
     - relative_path: relative path to the file on file system (vm1)
-    - uploaded_at: timestamp when file was saved
+    - created_at: timestamp when file was saved
     """
     __tablename__ = "file"
 
@@ -44,13 +44,13 @@ class File(Base):
         nullable=False
     )
 
-    uploaded_at: Mapped[DateTime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=functions.now(),
-        nullable=False
-    )
-
     submission: Mapped["Submission"] = relationship(
         "Submission",
         back_populates="files"
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )

@@ -51,6 +51,12 @@
       line-height: 1.8;
       margin-bottom: 2rem;
     }
+    .hero-section p.cute {
+      font-size: 1rem;
+      color: #007bff;
+      line-height: 1;
+      margin-bottom:1rem;
+    }
 
     /* Feature list styles */
     .feature-list {
@@ -78,17 +84,6 @@
       transform: translateY(20px);
       animation: slideFadeIn 0.5s forwards;
     }
-    .feature-item:nth-child(1) { animation-delay: 0.2s; }
-    .feature-item:nth-child(2) { animation-delay: 0.4s; }
-    .feature-item:nth-child(3) { animation-delay: 0.6s; }
-    .feature-item:nth-child(4) { animation-delay: 0.8s; }
-    .feature-item:hover {
-      background: #007bff;
-      color: #ffffff;
-      transition: all 0.3s ease;
-      transform: translateY(-3px);
-    }
-
     @keyframes slideFadeIn {
       to { opacity: 1; transform: translateY(0); }
     }
@@ -144,13 +139,16 @@
   <!-- Header -->
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
-      <a href="#" class="navbar-brand d-flex align-items-center" style="text-decoration: none;">
+      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center" style="text-decoration: none;">
         <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
       </ul>
     </div>
   </nav>
@@ -162,35 +160,42 @@
         <div class="hero-section">
           <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="mb-4" style="height:90px;" />
           <h1>Welcome to DNAvi</h1>
+            <p class="cute">DNAvi-WEB is <strong>free</strong> and <strong>open to all users</strong>.</p>
+          </p>
+
+          <!--  <img src="{{ url_for('static', filename='img/schematic_v2.png') }}" alt="DNAvi Logo" class="mb-4" style="height:20%;" /> -->
           <p class="lead">
-            DNAvi makes cell-free DNA analysis simple and fast. Upload your gel electrophoresis images, ladder tables, and sample metadata, and instantly receive:
+            DNAvi is a tool for fast cell-free DNA fragmentation analysis in liquid biopsy research. Upload your gel electrophoresis images or signal tables and metadata and receive:
           </p>
 
           <!-- Animated feature list -->
-          <ul class="feature-list">
-            <li class="feature-item"><i class="bi bi-arrows-expand"></i> Height normalization</li>
-            <li class="feature-item"><i class="bi bi-graph-up-arrow"></i> Peak detection</li>
-            <li class="feature-item"><i class="bi bi-grid-1x2"></i> Metadata-based grouping</li>
-            <li class="feature-item"><i class="bi bi-download"></i> Downloadable reports for your research</li>
+          <p class="cute"><i class="bi bi-arrows-expand"></i> Height normalization
+          <i class="bi bi-graph-up-arrow"></i> Peak detection </p>
+           <p class="cute"><i class="bi bi-grid-1x2"></i> Metadata-based grouping
+          <i class="bi bi-download"></i> Reports for your research</p>
           </ul>
 
-          <p class="lead">
-            You can <strong>log in</strong> to view your previous submissions or <strong>register</strong> to save all your analyses in one place. Or simply <strong>use the tool without logging in</strong> by starting a new analysis below.
-          </p>
-
+          <!-- <p class="lead">You can <strong>log in</strong> to view your previous submissions or <strong>register</strong> to save all your analyses in one place. Or simply <strong>use the tool without logging in</strong> by starting a new analysis below.</p>
+             -->
           <!-- Navigation buttons -->
           <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('submissions_dashboard') }}" class="btn btn-success btn-lg">
+              <i class="bi bi-graph-up me-2"></i> Analyse your data
+            </a>
+              <p></p>
+              <br>
+          </div>
+            <p></p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
             <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">
-              <i class="bi bi-box-arrow-in-right me-2"></i> Login
+              <i class="bi bi-box-arrow-in-right me-2"></i> Login (See previous anaylses)
             </a>
             <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
               <i class="bi bi-person-plus me-2"></i> Register
             </a>
-            <a href="{{ url_for('instructions') }}" class="btn btn-success btn-lg">
-              <i class="bi bi-graph-up me-2"></i> Create New Analysis
-            </a>
           </div>
-        </div>
+            <br>
+            <p class="cute"> DNAvi is for research use only. <p/></div>
       </div>
       <!-- Partner Logos Section -->
       <div class="d-flex justify-content-center flex-wrap gap-4 mt-4 partner-logos">
@@ -207,6 +212,8 @@
   <footer class="app-footer text-center py-3 border-top mt-auto">
     <small>&copy; Anja Hess, Yara Matani, 2025. Design by 
       <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
+        <p  class="cute"> Temporal session cookies are used to ensure smooth data handling, data is saved for the time of your visit only.</p>
+
     </small>
   </footer>
 </div>

@@ -16,3 +16,6 @@ wheel
 gunicorn
 requests
 chardet
+jinja2
+weasyprint
+datetime

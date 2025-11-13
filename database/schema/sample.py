@@ -3,11 +3,13 @@ This module defines the 'sample' table.
 The Sample table stores all samples and all associated metadata is either stored 
 directly in the table or in additional tables that reference its primary key.
 """
+from datetime import datetime
 from typing import List
 from sqlalchemy import (
     JSON,
     Boolean,
     Date,
+    DateTime,
     Float,
     Integer,
     String,
@@ -188,6 +190,9 @@ class Sample(Base):
      otherwise if it came from a lab setup it is in vitro.
 
    - treatment_term_id: Medications the patient used.
+
+   - created_at : DateTime
+     Timestamp when the record was inserted.
     """
 
     __tablename__ = 'sample'
@@ -379,6 +384,12 @@ class Sample(Base):
         ForeignKey("gel_electrophoresis_devices.device_id", ondelete="CASCADE"),
         nullable=True,
         comment="Reference to the gel electrophoresis device used."
+    )
+    
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now(),
+        nullable=False
     )
 
     # Relationships

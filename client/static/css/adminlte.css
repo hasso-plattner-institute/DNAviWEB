@@ -94,7 +94,7 @@
   --bs-tertiary-bg: #f8f9fa;
   --bs-tertiary-bg-rgb: 248, 249, 250;
   --bs-heading-color: inherit;
-  --bs-link-color: #0d6efd;
+  --bs-link-color: #7d9cb5;
   --bs-link-color-rgb: 13, 110, 253;
   --bs-link-decoration: underline;
   --bs-link-hover-color: rgb(10.4, 88, 202.4);
@@ -15181,12 +15181,24 @@ html.maximized-card {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding-top: 50px;
 }
 
 .login-box,
 .register-box {
   width: 360px;
+  margin-top: 5px;
 }
+
+.logo-header {
+  text-align: center;
+}
+
+.logo-header img {
+  width: 100px;
+  height: auto;
+}
+
 @media (max-width: 576px) {
   .login-box,
   .register-box {

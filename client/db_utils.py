@@ -3,16 +3,21 @@ This module handles data saving into database and file system of vm_1.
 """
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from functools import lru_cache
+import json
+import logging
 import os
+from pathlib import Path
 import re
 import uuid
-import logging
+
 import chardet
 import pandas as pd
 import requests
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
+
 from database.config import engine
 from database.schema.file import File
 from database.schema.gel_electrophoresis_devices import GelElectrophoresisDevice
@@ -26,19 +31,24 @@ from database.schema.subject import Subject
 from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
 from .src.client_constants import VM1_API_URL
-from .src.tools import get_result_files
+from .src.tools import get_all_files_except_saved_in_db
 
 def get_clean_value(row, column_name):
     """
     Extract from column_name the value in row. 
-    Return None if value in column is None, else return the value striped
+    Return None if value in column is None or nan or empty, else return the value striped
     from whitesapces.
     """
     value = None
     if column_name in row:
         value = row[column_name]
-    if value is not None:
-        return str(value).strip()
+    else: 
+        return None
+    if value is None:
+        return None 
+    value = str(value).strip()
+    if value == "" or value.lower() == "nan":
+        return None
     return value
 
 def detect_file_encoding(file_path):
@@ -52,23 +62,73 @@ def detect_file_encoding(file_path):
         logging.info("Detected encoding: %s for file %s", encoding, file_path)
     return encoding
 
+@lru_cache(maxsize=1)
+def load_ontology_map():
+    """
+    Load ontology mapping from JSON file, cached for performance.
+    """
+    base_dir = Path(__file__).parent
+    json_path = base_dir / "static" / "json" / "ontology_map.json"
+    with open(json_path, encoding="utf-8") as f:
+        return json.load(f)
+    
 def detect_ontology(label_col):
+    """
+    Detects the ontology type based on label_col.
+    """
+    ontology_map = load_ontology_map()
     label_lower = label_col.lower()
-    if "disease" in label_lower or "ethnicity" in label_lower:
-        return "efo"
-    if "anatomical" in label_lower:
-        return "uberon"
-    if "cell type" in label_lower:
-        return "cl"
-    if "phenotypic" in label_lower:
-        return "hp"
-    if "organism" in label_lower:
+    for key, value in ontology_map.items():
+        if key in label_lower:
+            return value
+    return ""
+
+def get_ontology_prefix(label_col):
+    """
+    Return the correct term id prefix for a column.
+    """
+    ontology = detect_ontology(label_col).lower()
+    if ontology == "pathogen":
         return "ncbitaxon"
-    if "condition" in label_lower:
-        return "xco"
-    if "treatment" in label_lower:
-        return "dron"
-    return "efo"
+    return ontology
+
+def query_term_id(label, ontology, limit=10):
+    """
+    Returns results of autocomplete search.
+    """
+    ontology_lower = ontology.lower()
+    try:
+        if ontology_lower == "pathogen":
+            # ENA taxonomy suggest-for-search (filter pathogens)
+            url = f"https://www.ebi.ac.uk/ena/taxonomy/rest/suggest-for-search/{label}?dataPortal=pathogen&limit={limit}"
+            r = requests.get(url, timeout=10)
+            r.raise_for_status()
+            results = r.json()
+            transformed = [
+                {
+                    "label": f"{item['scientificName']} ({item.get('commonName', '')})",
+                    "termId": f"NCBITaxon:{item['taxId']}"
+                } for item in results
+            ]
+            return transformed
+        else:
+            # OLS lookup
+            url = "https://www.ebi.ac.uk/ols/api/search"
+            params = {"q": label, "ontology": ontology, "type": "class", "rows": limit}
+            r = requests.get(url, params=params, timeout=10)
+            r.raise_for_status()
+            data = r.json()
+            transformed = [
+                {
+                    "label": doc.get("label"),
+                    "termId": doc.get("obo_id") or doc.get("iri")
+                }
+                for doc in data.get("response", {}).get("docs", [])
+            ]
+            return transformed
+    except Exception as e:
+        print("Query error:", e)
+        return []
 
 def get_ols_term_id(label, label_col):
     """
@@ -76,19 +136,10 @@ def get_ols_term_id(label, label_col):
     If not found, return empty string.
     """
     ontology = detect_ontology(label_col)
-    url = "https://www.ebi.ac.uk/ols/api/search"
-    params = {"q": label, "ontology": ontology, "type": "class", "exact": "true"}
-    try:
-        response = requests.get(url, params=params, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        if data.get("response", {}).get("numFound", 0) > 0:
-            doc = data["response"]["docs"][0]
-            return doc.get("obo_id") or doc.get("iri")
-        else:
-            return ""
-    except Exception:
-        return ""
+    results = query_term_id(label, ontology, limit=1)
+    if results:
+        return results[0].get("termId", "")
+    return ""
 
 ##############################################################################
 #                           SAVE TO SUBMISSION TABLE                         #
@@ -130,27 +181,20 @@ def save_submission(session, username, submission_id):
 ##############################################################################
 #                          SAVE TO FILE SYSTEM VM_1                          #                 
 ##############################################################################
-def save_file_system(user_folder, username, submission_id):
+def save_file_system(submission_folder, username, submission_id):
     """
     Save result files via http request from submission number: submission_id 
     of the user: username, to the file system on vm1. 
+    Save all except already saved in DB.
     """
-    # Save only result files to file system in vm1
-    statistics_files, peaks_files, other_result_files = get_result_files(user_folder)
-    # Combine all paths
-    all_files = []
-    for f in statistics_files:
-        all_files.append(os.path.join(user_folder, f['name']))
-    for f in peaks_files:
-        all_files.append(os.path.join(user_folder, f))
-    for f in other_result_files:
-        all_files.append(os.path.join(user_folder, f))
+    # Save all files (except files that will be saved to db)to file system in vm1
+    all_files_relative_path = get_all_files_except_saved_in_db(submission_folder)
     # Prepare files to send
     files_to_send = []
-    for path in all_files:
-        if os.path.isfile(path):
-            filename = os.path.basename(path)
-            files_to_send.append(("files", (filename, open(path, "rb"))))
+    for relative_path in all_files_relative_path:
+        full_path = os.path.join(submission_folder, relative_path)
+        if os.path.isfile(full_path):
+            files_to_send.append(("files", (relative_path, open(full_path, "rb"))))
     data = {
         "username": username,
         "submission_id": submission_id,
@@ -291,7 +335,8 @@ def save_ontology_terms(session, metadata_path):
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
     ontology_term_fields = [
         "Disease", "Cell Type", "Phenotypic Abnormality", "Treatment",
-        "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity"
+        "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity",
+        "Infection Strain"
     ]
     ontology_label_to_id = {col: {} for col in ontology_term_fields}
     # Loop through each ontology terms column in metadata
@@ -311,8 +356,9 @@ def save_ontology_terms(session, metadata_path):
                 else:
                     # Get term ID from OLS
                     term_id = get_ols_term_id(label, label_col)
-                    if not term_id:  # None or empty string
-                        term_id = str(uuid.uuid4())
+                    if not term_id or not term_id.lower().startswith(get_ontology_prefix(label_col)):  # None or empty string or term_id not from the ontology
+                        #term_id = str(uuid.uuid4())
+                        continue
                     stmt = (
                         insert(OntologyTerm)
                         .values(term_id=term_id, term_label=label)
@@ -365,7 +411,8 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
     """
     Save all subjects appearing in the metadata file in the path provided.
     If a subject_name appears multiple times in the same metadata file,
-    only insert it once.
+    only insert it once. Each empty subject_name we assume the sample belongs to
+    a new subject and give it a completely new ID.
     NOTE: Different files can use the same subject_name, but they will be treated
     as different subjects and inserted multiple times.
     Assume metadata file exists at metadata_path.
@@ -393,24 +440,29 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
             if key in seen_subjects:
                 subject_id = seen_subjects[key]
             else:
-                stmt = insert(Subject).values(
+                new_subject = Subject(
+                    subject_id=uuid.uuid4(),
                     subject_name=subject_name,
                     biological_sex=biological_sex,
                     ethnicity_term_id=ethnicity_term_id,
                     organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
-                ).returning(Subject.subject_id)
-                result = session.execute(stmt)
-                subject_id = result.scalar()
+                )
+                session.add(new_subject)
+                session.flush()
+                subject_id = new_subject.subject_id
                 seen_subjects[key] = subject_id
         # No subject name found -> create new unique subject id and None name
         else:
-            stmt = insert(Subject).values(
+            new_subject = Subject(
+                subject_id=uuid.uuid4(),
                 subject_name=None,
                 biological_sex=biological_sex,
-                ethnicity_term_id=ethnicity_term_id
-            ).returning(Subject.subject_id)
-            result = session.execute(stmt)
-            subject_id = result.scalar()
+                ethnicity_term_id=ethnicity_term_id,
+                organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
+            )
+            session.add(new_subject)
+            session.flush()
+            subject_id = new_subject.subject_id
         sample_to_subject_id[sample_value] = subject_id
     logging.info("Subjects saved successfully.")
     return sample_to_subject_id
@@ -539,7 +591,7 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                 "is_deceased": yes_no_to_bool(row.get("Is Deceased?")),
                 "is_pregnant": yes_no_to_bool(row.get("Is Pregnant?")),
                 "is_infection_suspected": yes_no_to_bool(row.get("Is Infection Suspected?")),
-                "infection_strain": row.get("Infection Strain"),
+                "infection_strain": map_term("Infection Strain", row.get("Infection Strain"), ontology_label_to_id),
                 "hospitalization_status": row.get("Hospitalization Status"),
                 "extraction_kit": row.get("Extraction Kit (DNA Isolation Method)"),
                 "dna_mass": float(row.get("DNA Mass")) if pd.notnull(row.get("DNA Mass")) else None,
@@ -547,7 +599,6 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                 "carrying_liquid_volume": float(row.get("Carrying Liquid Volume")) if pd.notnull(row.get("Carrying Liquid Volume")) else None,
                 "carrying_liquid_volume_unit": row.get("Carrying Liquid Volume Unit"),
                 "in_vitro_in_vivo": row.get("In vitro / In vivo"),
-                # TODO: DO NOT ALLOW IN A SUBMISSION MULTIPLE DEVICE ID
                 "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", row.get("Gel Electrophoresis Device"), device_name_to_id)
             })
             # Add custom attributes for all extra columns
@@ -559,11 +610,11 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                         custom_attributes[col] = val
             if custom_attributes:
                 sample_data["custom_sample_attributes"] = custom_attributes
-            sample = Sample(**sample_data)
-            # Save sample
-            session.add(sample)
-            session.flush()  # ensure sample_id is populated
-            sample_ids_in_order.append(sample.sample_id)
+        sample = Sample(**sample_data)
+        # Save sample
+        session.add(sample)
+        session.flush()  # ensure sample_id is populated
+        sample_ids_in_order.append(sample.sample_id)
     logging.info("Saved %d samples successfully.", len(sample_ids_in_order))
     return sample_ids_in_order
 
@@ -658,9 +709,9 @@ def save_data(app, submission_id, username, save_to_db):
     if save_to_db != 'yes':
         return
     # User consented, save
-    user_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
-    if not os.path.exists(user_folder):
-        logging.info(f"Folder not found: {user_folder}")
+    submission_folder = os.path.join(app.config['DOWNLOAD_FOLDER'], username, submission_id)
+    if not os.path.exists(submission_folder):
+        logging.info(f"Folder not found: {submission_folder}")
         return 
     ##############################################################################
     #                          SAVE TO FILE SYSTEM VM_1                          #                 
@@ -669,7 +720,7 @@ def save_data(app, submission_id, username, save_to_db):
     # If saving to file system failed, skip saving.
     #saved_files_paths = ["file_path1", "file_path_2"]
     try:
-        saved_files_paths = save_file_system(user_folder, username, submission_id)
+        saved_files_paths = save_file_system(submission_folder, username, submission_id)
     except Exception as e:
         logging.info("Failed to save to file system: %s", e)
         return
@@ -677,8 +728,66 @@ def save_data(app, submission_id, username, save_to_db):
     #                          SAVE TO DATABASE VM_1                             #                 
     ##############################################################################
     # Save signal table, bp translation, ladder and metadata to database
-    signal_table_path = os.path.join(user_folder, f"gel/signal_table.csv")
-    bp_translation_path = os.path.join(user_folder, f"gel/qc/bp_translation.csv")
-    metadata_path = os.path.join(user_folder, f"gel_meta_backup.csv")
-    ladder_path = os.path.join(user_folder, f"gel_ladder.csv")
+    signal_table_csv = os.path.join(submission_folder, "electropherogram", "signal_table.csv")
+    # If signal_table.csv exists (image uploaded)-> save it
+    if os.path.isfile(signal_table_csv):
+        signal_table_path = signal_table_csv
+    # else (csv uploaded)-> save the uploaded csv
+    else:
+        signal_table_path = os.path.join(submission_folder, "electropherogram.csv")
+    bp_translation_path = os.path.join(submission_folder, f"electropherogram/qc/bp_translation.csv")
+    metadata_path = os.path.join(submission_folder, f"electropherogram_meta_all.csv")
+    ladder_path = os.path.join(submission_folder, f"electropherogram_ladder.csv")
     save_data_to_db(submission_id, username, signal_table_path, bp_translation_path, ladder_path, metadata_path, saved_files_paths)
+
+def rebuild_electropherogram_and_bp_translation(submission_id, submission_folder):
+    """
+    Rebuild the signal table and bp_translation from DB and save as csv
+    """
+    try:
+        with Session(engine) as session:
+            # Get all samples for this submission in order
+            samples = session.query(Sample).filter(Sample.submission_id == submission_id).order_by(Sample.sample_id).all()
+            if not samples:
+                logging.warning(f"No samples found for submission {submission_id}")
+                return None
+            sample_ids = [s.sample_id for s in samples]
+            sample_names = [s.sample_name for s in samples]
+            # Get ladder_id from first sample (assume all samples in a submission use same ladder)
+            ladder_id = samples[0].ladder_id
+            ladder_pixels = session.query(LadderPixel).filter(LadderPixel.ladder_id == ladder_id).order_by(LadderPixel.pixel_order).all()
+            ladder_values = [p.pixel_intensity for p in ladder_pixels]
+            bp_positions = [p.base_pair_position for p in ladder_pixels]
+            max_pixels = len(ladder_values)
+            # Fetch all sample pixels
+            pixels_query = session.query(SamplePixel).filter(SamplePixel.sample_id.in_(sample_ids)).order_by(SamplePixel.pixel_order).all()
+            # Build electropherogram.csv (pixel intensities)
+            df_signal = pd.DataFrame(index=range(max_pixels))
+            df_signal['Ladder'] = ladder_values
+            for i, sample_id in enumerate(sample_ids):
+                col_pixels = [None]*max_pixels
+                for p in pixels_query:
+                    if p.sample_id == sample_id and p.pixel_order < max_pixels:
+                        col_pixels[p.pixel_order] = p.pixel_intensity
+                df_signal[sample_names[i]] = col_pixels
+            # Build bp_translation.csv (base pair positions)
+            df_bp = pd.DataFrame(index=range(max_pixels))
+            df_bp['Ladder'] = bp_positions
+            for i, sample_id in enumerate(sample_ids):
+                col_bp = [None]*max_pixels
+                for p in pixels_query:
+                    if p.sample_id == sample_id and p.pixel_order < max_pixels:
+                        col_bp[p.pixel_order] = p.base_pair_position
+                df_bp[sample_names[i]] = col_bp
+            # Save both files
+            electro_path = os.path.join(submission_folder, "electropherogram.csv")
+            df_signal.to_csv(electro_path, index=False)
+            bp_dir = os.path.join(submission_folder, "electropherogram", "qc")
+            os.makedirs(bp_dir, exist_ok=True)
+            bp_path = os.path.join(bp_dir, "bp_translation.csv")
+            df_bp.to_csv(bp_path, index=False)
+            logging.info(f"Rebuilt electropherogram.csv and bp_translation.csv from DB for submission {submission_id}")
+            return electro_path, bp_path
+    except Exception as e:
+        logging.error(f"Error rebuilding electropherogram and bp_translation CSVs for submission {submission_id}: {e}")
+        return None, None
