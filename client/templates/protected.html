@@ -1,5 +1,37 @@
 <!doctype html>
 <html lang="en">
+  <style>
+    /* prevents horizontal swipe from triggering backward or forward */
+    body, html {
+      overscroll-behavior-x: contain;
+    }
+    input[type=button], input[type=submit], input[type=reset] {
+      background-color:forestgreen;
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-decoration: none;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    .radio-group input[type="radio"]:after {
+      display: inline-block;
+      margin-right: 20px;
+      appearance: none;
+        border: none;
+        appearance: none;
+        background-color: rgba(255,252,229,1);
+
+    }
+    .radio-group label{
+      display: inline-block;
+      margin-right: 10px;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: #c0c0c0 !important;
+    }
+  </style>
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -85,12 +117,11 @@
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
-            </li>
+            <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
           </ul>
           <!--end::Start Navbar Links-->
 
@@ -162,14 +193,12 @@
               data-accordion="false"
               id="navigation"
             >
-              {% if current_user.is_authenticated %}
               <li class="nav-item">
                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="nav-icon bi bi-speedometer"></i>
+                  <i class="bi bi-grid"></i>
                   <p>Submissions Dashboard</p>
                 </a>
               </li>
-              {% endif %}
 
               <li class="nav-item">
                  <a href="{{ url_for('instructions') }}" class="nav-link">
@@ -190,31 +219,11 @@
       <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Container-->
-          <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="row align-items-center">
-                <div class="col-sm-6">
-                  <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
-                </div>
-                <div class="col-sm-6">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="{{ url_for('home')}}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
-
           <!--begin::Progression Tab -->
           <div class="container my-4">
             <div class="progress" style="height: 40px;">
               <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                1. Instructions
+                <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary" style="color:white ">1. Quickstart Guide</a>
               </div>
               <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
                 2. Upload Files
@@ -225,46 +234,134 @@
             </div>
           </div>
           <!--end::Progression Tab -->
-
-          <!--begin::Navigation buttons -->
-          <div class="d-flex justify-content-between mt-4 me-3">
-              <!--begin::prev button -->
-              <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary">
-                  <i class="bi bi-arrow-left"></i> Previous
-              </a>
-              <!--end::Prev button -->
-          </div>
-          <!--end::Navigation buttons -->
         </div>
         <!--end::App Content Header-->
         <div class="app-content">
           <main id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
+              <div class="container"
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- DISPLAY ERRORS HERE ON TOP -->
+                <!-- ------------------------------------------------------------------------------ -->
+                <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
+                <div class="flash-container">
+                  {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                      <ul class="flashes">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  {% endwith %}
+                </div>
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- FILE MISSING-->
+                <!-- ------------------------------------------------------------------------------ -->
+                {% if missing_error %}
+                  <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                {% endif %}
+                <!-- ------------------------------------------------------------------------------ -->
+                <!-- OTHER ERROR-->
+                <!-- ------------------------------------------------------------------------------ -->
+                {% if error %}
+                  <pre class="error"><strong>Error message from DNAvi: </strong>{{ error }}</pre>
+                  <p>
+                    <strong>Note: This is the end of your error message. Please read it carefully, check out our
+                        <a href="{{ url_for('instructions') }}">quickstart guide</a> or
+                        <a href="{{ url_for('documentation') }}">documentation</a>,
+                        and try again.
+                        If this doesn't solve your issues, contact us with this error message copied,
+                        the date of your submission, and the submission ID (see dashboard) under dnavi-info@hpi.de.
+                        <br>
+                    </strong>
+                  </p>
+                {% endif %}
+                <!-- ---------------------------------------------------------------------------------------- -->
+                <!-- EXAMPLE FORM -->
+                <!-- ---------------------------------------------------------------------------------------- -->
+                <br>
+                <form id="example-form" method="POST" enctype="multipart/form-data">
+                  <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
+                    Quick test: Run DNAvi with our example data
+                  </button>
+                  <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">
+                    Download examples: Signal Table ↓
+                  </a> 
+                  <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">
+                    Size Standard ↓
+                  </a>
+                  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">
+                    Metadata ↓
+                  </a>
+                  <p></p><p></p><br>
+                </form>
+              </div>
+            <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
+                  <h3> Upload your own data:</h3>
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DNA GEL OR CSV -->
+                  <!--                                DNA GEL OR CSV                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
                       <h5 class="mb-0 fw-normal text-dark">Step 1: Upload Gel Electrophoresis Image or Signal Table</h5>
+                      <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
-                      <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT, PNG, JPG, JPEG.</p>
-                      <input type="file" name="data_file" accept=".txt,.tsv,.csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
+                      <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
+                      <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
+                      <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                     </div>
                   </div>
                   <br></br>
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- LADDER ANNOTATION CSV-->
+                  <!--                        DNA SIZE STANDARD ANNOTATION CSV                        -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 2: Upload annotated DNA Ladder</h5>
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 2: Annotated the DNA marker</h5>
+                      <img src="./static/img/annotate.svg" alt="Annotate Standard" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
-                      <p class="text-muted mb-2">Please fill out the ladder template and upload it here. Accepted formats: CSV, TSV, TXT.</p>
-                      <input type="file" name="ladder_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded" required>
+                      <!-- The radio buttons -->
+                      <p>Select from defaults:</p>
+                      <div class="radio-group"> 
+                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D7500"><label>D7500 (Bioanalyzer) <a href="./static/ladders/D7500.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="HSDNA"><label>HSDNA (Bioanalyzer) <a href="./static/ladders/HSDNAB.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" id="uploadOption" name="ladder_file" value="upload" accept=".csv"><label for="uploadOption"> Custom </label>
+                      </div>
+                      <!-- The file browse input, initially shown -->
+                      <div id="fileUploadContainer" style="display: none;" ><input type="file" id="myFile" name="ladder_file">
+                        <a href="./static/tests/ladder.csv" style="color:#b5b9bd;">↓ Download template</a>
+                      </div>
+                      <!-- The script to hide the file browse -->
+                      <script>
+                        // Get references to the radio buttons and the file upload container
+                        const uploadRadio = document.getElementById('uploadOption');
+                        const defaultRadios = document.getElementsByClassName('predef');
+                        const fileContainer = document.getElementById('fileUploadContainer');
+                        // Listen for clicks on the radio buttons
+                        uploadRadio.addEventListener('change', () => {
+                          if (uploadRadio.checked) {
+                            fileContainer.style.display = 'block'; // Show the file input
+                          }
+                        });
+                        // Hide file input when any "predef" option is selected
+                        Array.from(defaultRadios).forEach(radio => {
+                          radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                              fileContainer.style.display = 'none';
+                            }
+                          });
+                        });
+                      </script>
                     </div>
                   </div>
                   <br></br>
@@ -273,8 +370,9 @@
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--begin::metadata-->
                   <div class="card mb-4 shadow-sm">
-                    <div class="card-header d-flex align-items-center" style="background-color: #89CFF0;">
-                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Samples Metadata</h5>
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h5 class="mb-0 fw-normal text-dark">Step 3: Add Patient Metadata</h5>
+                      <img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:15%; height:auto;">
                     </div>
                     <div class="card-body">
                       <!--begin::metadata two options header-->
@@ -295,7 +393,7 @@
                           <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
                         </div>
                         <p class="mb-2">
-                          Fill out the table below for all your samples directly on this page.  
+                          Fill out the table below for all your samples directly on this page, then click "Confirm Table".  
                           <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
                           <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
                           <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
@@ -307,15 +405,15 @@
                         <!--begin::Metadata AG Grid table container -->
                         <div class="metadata-table-container mb-4">
                           <!--begin::Metadata AG Grid table header-->
-                          <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                              <button id="download-csv" type="button" class="btn btn-primary mb-3">
-                                Download CSV
-                              </button>
-                              <button id="submit-metadata-table" type="button" class="btn btn-primary mb-3">
-                                Submit Table
+                          <div class="d-flex justify-content-end align-items-center mb-2">
+                            <div class="me-2">
+                              <button id="addColumnBtn" type="button" class="btn btn-outline-primary">
+                                + Add Custom Column
                               </button>
                             </div>
+                            <button id="addELBSBtn" type="button" class="btn btn-outline-primary">
+                              + Add ELBS Report Criteria
+                            </button>
                           </div>
                           <!--end::Metadata AG Grid table header-->
 
@@ -357,7 +455,10 @@
 
                               <tbody>
                                 <tr class="metadata-row">
-                                  <td><input type="text" name="sample_id[]" class="form-control form-control-sm" placeholder="Sample_1"></td>
+                                  <td>
+                                    <span class="sample-display">Sample_1</span>
+                                    <input type="hidden" name="sample_id[]" value="Sample_1">
+                                  </td>
                                   <td><input type="text" name="subject_id[]" class="form-control form-control-sm" placeholder="Donor-10031"></td>
                                   <td>
                                     <div class="disease-wrapper">
@@ -369,7 +470,7 @@
                                   <td>
                                     <div class="celltype-wrapper">
                                       <div class="celltype-field mb-2">
-                                        <input type="text" name="celltype[]" class="form-control form-control-sm ols-search" placeholder="Red blood cell">
+                                        <input type="text" name="celltype[]" class="form-control form-control-sm ols-search" placeholder="blood cell">
                                       </div>
                                     </div>
                                   </td>
@@ -400,7 +501,7 @@
                                   <td>
                                     <div class="phenotype-wrapper">
                                       <div class="phenotype-field mb-2">
-                                        <input type="text" name="phenotype[]" class="form-control form-control-sm ols-search" placeholder="Hearing impairment">
+                                        <input type="text" name="phenotype[]" class="form-control form-control-sm ols-search" placeholder="Hearing abnormality">
                                       </div>
                                     </div>
                                   </td>
@@ -453,7 +554,7 @@
                                       <option>No</option>
                                     </select>
                                   </td>
-                                  <td><input type="text" name="infection_strain[]" class="form-control form-control-sm" placeholder="E. coli"></td>
+                                  <td><input type="text" name="infection_strain[]" class="form-control form-control-sm ols-search" placeholder="Coronavirus red knot/p60/2006/GBR ()"></td>
                                   <td>
                                     <select name="hospitalization_status[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
@@ -532,7 +633,7 @@
                                   <td>
                                     <div class="treatment-wrapper">
                                       <div class="treatment mb-2">
-                                        <input type="text" name="treatment[]" class="form-control form-control-sm ols-search" placeholder="Ibuprofen">
+                                        <input type="text" name="treatment[]" class="form-control form-control-sm ols-search" placeholder="paracetamol">
                                       </div>
                                     </div>
                                   </td>
@@ -546,14 +647,19 @@
                                 </tr>
                               </tbody>
                             </table>
-                            <button id="addColumnBtn" type="button" class="btn btn-outline-primary mt-3">
-                              + Add Custom Column
-                            </button>
                           </div>
                           <!--end::metadata AG Grid table-->
                         </div>
                         <!--end::Metadata AG Grid table container -->
-
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                          <!-- Submit Table Button -->
+                          <button id="submit-metadata-table" type="button" class="btn btn-success mb-3">
+                            <i class="bi bi-check-circle me-2"></i> Confirm Table
+                          </button>
+                          <span id="download-csv" class="text-primary" style="cursor: pointer; font-size: 0.875rem;">
+                            <i class="bi bi-download me-1"></i> Download CSV
+                          </span>
+                        </div>
                       </div>
                       <!--end::Option 1-->
 
@@ -578,12 +684,12 @@
                         <p class="text-muted">
                           Select one or more metadata fields to group your results by.
                           <br>
-                          <strong>Each selected metadata will trigger a separate analysis rerun.</strong>
+                          <strong>Each selected metadata will trigger a separate analysis run.</strong>
                           <br>
                           For example, selecting <em>Disease</em> and <em>Biological Sex</em> will produce two full analyses —
                           one grouped by Disease and another grouped by Biological Sex.
                           <br>
-                          <em>If you do not select any, a single combined analysis using all metadata will be performed (this may take longer).</em>
+                          <em>If no metadata is selected, no grouping will be applied.</em>
                         </p>
 
                         <div class="mt-3 mb-3">
@@ -708,99 +814,123 @@
                   </div>
                   <!--end::metadata -->
                   <style>
-                  .metadata-table-container {
-                    background: #fafafa;
-                    border-radius: 12px;
-                    padding: 1rem;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-                  }
-                  .table-wrapper {
-                    overflow-x: auto;
-                    border-radius: 10px;
-                  }
-                  #metadata-table {
-                    border-collapse: separate;
-                    border-spacing: 0;
-                    width: 100%;
-                    font-size: 0.9rem;
-                  }
-                  #metadata-table thead th {
-                    position: sticky;
-                    top: 0;
-                    background: #f8f9fa;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                    z-index: 2;
-                  }
-                  #metadata-table th, #metadata-table td {
-                    min-width: 120px;
-                    white-space: nowrap;
-                    vertical-align: middle;
-                  }
-                  #metadata-table tbody tr:hover {
-                    background-color: #f6faff;
-                  }
-                  .optional-col {
-                    transition: all 0.3s ease;
-                  }
-                  .hidden-col {
-                    display: none;
-                  }
-                  #metadata-table th {
-                    position: relative;
-                    user-select: none;
-                  }
-                  #metadata-table th .resizer {
-                    position: absolute;
-                    right: 0;
-                    top: 0;
-                    width: 6px;
-                    cursor: col-resize;
-                    user-select: none;
-                    height: 100%;
-                    z-index: 3;
-                  }
-                  #metadata-table th .resizer:hover {
-                    background-color: rgba(0, 123, 255, 0.2);
-                  }
+                    .metadata-table-container {
+                      background: #fafafa;
+                      border-radius: 12px;
+                      padding: 1rem;
+                      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                    }
+                    .table-wrapper {
+                      overflow-x: auto;
+                      border-radius: 10px;
+                    }
+                    #metadata-table {
+                      table-layout: fixed; 
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      width: 100%;
+                      font-size: 0.9rem;
+                      border: 1px solid #dee2e6;
+                    }
+                    #metadata-table thead th {
+                      position: sticky;
+                      top: 0;
+                      background: #f8f9fa;
+                      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                      z-index: 2;
+                    }
+                    #metadata-table th, #metadata-table td {
+                      border: 1px solid #dee2e6;
+                      min-width: 120px;
+                      width: 180px; 
+                      white-space: nowrap;
+                      vertical-align: middle;
+                      overflow: hidden;
+                      text-overflow: ellipsis;
+                    }
+                    #metadata-table tbody tr:hover {
+                      background-color: #f6faff;
+                    }
+                    .optional-col {
+                      transition: all 0.3s ease;
+                    }
+                    .hidden-col {
+                      display: none;
+                    }
+                    #metadata-table th {
+                      position: relative;
+                      user-select: none;
+                    }
+                    #metadata-table th .resizer {
+                      position: absolute;
+                      right: 0;
+                      top: 0;
+                      width: 6px;
+                      cursor: col-resize;
+                      user-select: none;
+                      height: 100%;
+                      z-index: 3;
+                    }
+                    #metadata-table th .resizer:hover {
+                      background-color: rgba(0, 123, 255, 0.2);
+                    }
+                    #metadata-table th, #metadata-table td {
+                      min-width: 80px;
+                    }
                   </style>
 
                   <script>
                   // Enable column resizing
-                  document.querySelectorAll("#metadata-table th").forEach(th => {
-                    th.classList.add('resizable');
-                    let startX, startWidth;
-                    const resizer = document.createElement('div');
-                    resizer.classList.add('resizer');
-                    th.appendChild(resizer);
-
-                    resizer.addEventListener('mousedown', e => {
-                      startX = e.pageX;
-                      startWidth = th.offsetWidth;
-                      document.addEventListener('mousemove', resize);
-                      document.addEventListener('mouseup', stopResize);
-                    });
-
-                    function resize(e) {
-                      th.style.width = (startWidth + (e.pageX - startX)) + 'px';
-                    }
-                    function stopResize() {
-                      document.removeEventListener('mousemove', resize);
-                    }
-                  });
-
-                  xs
                   document.addEventListener("DOMContentLoaded", () => {
-                    const table = document.getElementById("metadata-table");
-                    if (table) makeTableResizable(table);
-                  });
-                  </script>
-
-
-                  <script>
+                      const table = document.getElementById("metadata-table");
+                      if (!table) return;
+                      const thElements = table.querySelectorAll("th");
+                      thElements.forEach(th => {
+                        const resizer = document.createElement("div");
+                        resizer.classList.add("resizer");
+                        th.appendChild(resizer);
+                        let startX, startWidth;
+                        resizer.addEventListener("mousedown", function(e) {
+                          e.preventDefault();
+                          startX = e.pageX;
+                          startWidth = th.offsetWidth;
+                          document.addEventListener("mousemove", resizeColumn);
+                          document.addEventListener("mouseup", stopResize);
+                        });
+                        function resizeColumn(e) {
+                          const newWidth = startWidth + (e.pageX - startX);
+                          th.style.width = newWidth + "px";
+                          const index = Array.from(th.parentNode.children).indexOf(th);
+                          table.querySelectorAll("tr").forEach(row => {
+                            const cell = row.children[index];
+                            if (cell) cell.style.width = newWidth + "px";
+                          });
+                        }
+                        function stopResize() {
+                          document.removeEventListener("mousemove", resizeColumn);
+                          document.removeEventListener("mouseup", stopResize);
+                        }
+                      });
+                    });
                     document.addEventListener('DOMContentLoaded', function () {
                       const table = document.getElementById('metadata-table');
                       const tbody = table.querySelector('tbody');
+                      // Apply initial gray colors on select/date
+                      document.querySelectorAll('select.form-select').forEach(applySelectColor);
+                      document.querySelectorAll('input[type="date"]').forEach(applyDateColor);
 
+                      function renumberSamples() {
+                      const sampleInputs = table.querySelectorAll('input[name="sample_id[]"]');
+                      sampleInputs.forEach((input, index) => {
+                        const number = index + 1; // start from 1
+                        input.value = `Sample_${number}`;
+                        const span = input.closest('td').querySelector('.sample-display');
+                        if (span) {
+                          span.textContent = `Sample_${number}`;
+                        }
+                      });
+                    }
+                    
                       function tryInitOls(root) {
                         if (typeof window.initOlsAutocomplete === 'function') {
                           try { window.initOlsAutocomplete(root); } catch(e){ console.warn('initOlsAutocomplete failed', e); }
@@ -819,13 +949,26 @@
                           srcFields.forEach((src, i) => {
                             const dst = dstFields[i];
                             if (!dst) return;
-                            if (dst.tagName.toLowerCase() === 'select') {
+                            if (dst.name === 'sample_id[]') {
+                              dst.readOnly = true; // make it readonly so user cannot change
+                            } else if (dst.tagName.toLowerCase() === 'select') {
                               dst.selectedIndex = src.selectedIndex;
                             } else {
                               dst.value = src.value;
-                            } 
+                            }
                           });
 
+                          // In new row apply color gray/black logic for select values
+                          newRow.querySelectorAll('select.form-select').forEach(select => {
+                            select.value = '';
+                            applySelectColor(select);
+                          });
+                          // In new row apply color gray/black logic for date values
+                          newRow.querySelectorAll('input[type="date"]').forEach(input => {
+                            input.value = '';
+                            applyDateColor(input);
+                          });
+        
                           const actionsCell = newRow.querySelector('.actions-cell');
                           if (actionsCell) {
                             actionsCell.innerHTML = '<button type="button" class="btn btn-sm btn-outline-primary add-row">+</button> ' +
@@ -833,6 +976,7 @@
                           }
 
                           currentRow.after(newRow);
+                          renumberSamples(); // update all sample numbers to not have wrong order of sampele_1, sample_3, sample_3
                           // reinitialize OLS autocomplete for all new .ols-search inputs in the new row
                           const newOlsInputs = newRow.querySelectorAll(".ols-search");
                           newOlsInputs.forEach(input => {
@@ -849,6 +993,7 @@
                           if (!row) return;
                           if (tbody.querySelectorAll('tr').length > 1) {
                             row.remove();
+                            renumberSamples(); // update all sample numbers after deletion
                           } else {
                             row.querySelectorAll('input, select, textarea').forEach(el => {
                               if (el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
@@ -921,74 +1066,27 @@
                     });
                     
                   </script>
-
-                  <script>
-                    /**
-                     * Handle adding custom columns button
-                     */
-                    document.getElementById('addColumnBtn').addEventListener('click', function () {
-                      const columnName = prompt("Enter new column name:");
-                      if (!columnName) return;
-                      const table = document.getElementById('metadata-table');
-                      const headerRow = table.querySelector('thead tr');
-                      const newHeader = document.createElement('th');
-                      newHeader.textContent = columnName;
-                      headerRow.insertBefore(newHeader, headerRow.lastElementChild);
-                      const rows = table.querySelectorAll('tbody tr');
-                      rows.forEach(row => {
-                        const newCell = document.createElement('td');
-                        const input = document.createElement('input');
-                        input.type = 'text';
-                        input.name = `custom_${columnName.toLowerCase().replace(/\s+/g, '_')}[]`;
-                        input.className = 'form-control form-control-sm';
-                        newCell.appendChild(input);
-                        row.insertBefore(newCell, row.lastElementChild);
-                      });
-                    });
-                  </script>
+                    
 
                   <!-- ---------------------------------------------------------------------------------------- -->
                   <!-- SUBMISSION -->
                   <!-- ---------------------------------------------------------------------------------------- -->
                   <h3>Submit for Analysis</h3>
-                  <p>Your DNA file will be analysed for peaks, height normalized,
-                      and grouped in case you provided metadata. Be patient, this may take a while.</p>
+                  <p>
+                    Your DNA file will be analysed for peaks, height normalized,
+                    and grouped in case you provided metadata. Be patient, this may take a while.
+                  </p>
+                  <!-- Terms checkbox -->
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" value="" id="agree-terms">
+                    <label class="form-check-label" for="agree-terms">
+                      I have read and agree to the 
+                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>
+                    </label>
+                  </div>
                   <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
-
                   <!-- ------------------------------------------------------------------------------ -->
-                  <!-- DISPLAY ERROR MESSAGES HERE-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                  {% with messages = get_flashed_messages() %}
-                  {% if messages %}
-                      <ul class=flashes>
-                      {% for message in messages %}
-                      <li>{{ message }}</li>
-                      {% endfor %}
-                      </ul>
-                      {% endif %}
-                  {% endwith %}
-                  {% block body %}{% endblock %}
-
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- FILE MISSING-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      <br></br>
-                      {% if missing_error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ missing_error }} </p>
-                      {% endif %}
-
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
-                  <!-- ------------------------------------------------------------------------------ -->
-                      {% if error %}
-                      <br></br>
-                      <p class=error><strong>Error:</strong> {{ error }} </p>
-                      <br></br>
-                      {% endif %}
-                  <!-- ------------------------------------------------------------------------------ -->
-                  <!-- OTHER ERROR-->
+                  <!--                            SAVE TO DB CONSENT                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--begin::Popup do you consent to save to db?-->
                   <div class="modal fade" id="saveConsent" tabindex="-1" aria-labelledby="saveConsentLabel" aria-hidden="true">
@@ -999,28 +1097,43 @@
                           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <p>
-                            Do you agree to save your uploaded files and analysis results to the DNAvi database?
+                          <p class="mb-3">
+                            Your analysis is ready to be submitted. Please choose how you would like DNAvi to handle your uploaded files and results:
                           </p>
-                          <ul>
-                            {% if user_logged_in %}
-                              <li>By saving your analysis, you can view and download your past analyses from your submissions dashboard at any time.</li>
-                              <li>Your stored data will also help drive future discoveries in cell-free DNA research.</li>
-                              <li>If you choose not to save, your files will be deleted after this session ends.</li>
-                            {% else %}
-                              <li>By saving your analysis, you help drive future discoveries in cell-free DNA research.</li>
-                            {% endif %}
-                          </ul>
+                            <div class="list-group mb-3">
+                              {% if user_logged_in %}
+                                <div class="list-group-item">
+                                  <span class="badge bg-success me-2">Analyze & Save</span>
+                                  Your data will be securely stored in the DNAvi database. You can revisit and download your results anytime from your <em>Submissions Dashboard</em>.
+                                </div>
+                                <div class="list-group-item">
+                                  <span class="badge bg-secondary me-2">Analyze Only</span>
+                                  Your data will be processed now, but deleted after this session ends.
+                                </div>
+                                <div class="list-group-item text-muted">
+                                  All saved data helps advance ongoing cell-free DNA research.
+                                </div>
+                              {% else %}
+                                <div class="list-group-item">
+                                  <span class="badge bg-success me-2">Analyze & Save</span>
+                                  Your data will be securely stored in the DNAvi database to support future research.
+                                </div>
+                                <div class="list-group-item">
+                                  <span class="badge bg-secondary me-2">Analyze Only</span>
+                                  Your data will be processed once, then deleted after the session ends.
+                                </div>
+                              {% endif %}
+                            </div>
                           <p class="text-muted small mb-0">
-                            By clicking ‘Yes, Save’, you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                            By choosing “Analyze & Save” you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
                           </p>
                         </div>
                         <div class="modal-footer d-flex justify-content-between">
-                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                            No, just analyze once
+                          <button type="button" class="btn btn-outline-secondary btn-sm me-2 bg-secondary text-white" style="padding: 0.25rem 0.5rem; font-size: 0.85rem;">
+                            Analyze Only
                           </button>
                           <button type="button" class="btn btn-success" id="confirm-save-btn">
-                            Yes, save my data
+                            Analyze & Save
                           </button>
                         </div>
                       </div>

@@ -1,0 +1,11 @@
+{
+  "disease": "mondo",
+  "ethnicity": "hancestro",
+  "material": "uberon",
+  "cell": "cl",
+  "pheno": "hp",
+  "organism": "ncbitaxon",
+  "condition": "xco",
+  "treatment": "dron",
+  "infection": "pathogen"
+}

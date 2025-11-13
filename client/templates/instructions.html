@@ -84,12 +84,11 @@
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('home') }}" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-              <a href="{{ url_for('contact') }}" class="nav-link">Contact</a>
-            </li>
+            <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
           </ul>
 
           <ul class="navbar-nav ms-auto">
@@ -147,14 +146,12 @@
               data-accordion="false"
               id="navigation"
             >
-              {% if current_user.is_authenticated %}
               <li class="nav-item">
                 <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="nav-icon bi bi-speedometer"></i>
+                  <i class="bi bi-grid"></i>
                   <p>Submissions Dashboard</p>
                 </a>
               </li>
-              {% endif %}
               <li class="nav-item">
                 <a href="{{ url_for('instructions') }}" class="nav-link">
                   <i class="bi bi-graph-up"></i>
@@ -198,10 +195,11 @@
           <div class="container my-4">
             <div class="progress" style="height: 40px;">
               <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:34%">
-                1. Instructions
+                1. Quickstart Guide
               </div>
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-                2. Upload Files
+              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
+                <a href="{{ url_for('protect') }}" class="btn btn-outline-secondary" style="color:white ">2. Upload Files
+              </a>
               </div>
               <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
                 3. Results
@@ -223,35 +221,16 @@
                   <div class="item col-md-4">
                     <div class="effect-julia item">
                       <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:100%; height:auto;">
-                      <h3>1. Upload Your Data</h3>
-
+                      <h3>1. How it works</h3>
                       <!--begin::Image/Table Upload -->
-                      <details>
-                        <summary>Required: upload gel electrophoresis image or signal table.</summary>
-                        <a href="./static/tables/examples.zip">Download examples</a>.
-                        <p>Max. 16 MB file size allowed.</p>
-                      </details>
+                      <p>Step 1: upload gel electrophoresis image or signal table.</p>
                       <!--end::Image/Table Upload -->
-                      <!--begin::Ladder Annotation -->
-                      <details>
-                        <summary>Required: upload annotated DNA ladder</summary>
-                        <a href="./static/tables/ladder.csv">Download example</a>
-                        <img src="./static/img/annotate.svg" alt="Annotate Ladder" style="width:60%; height:auto;">
-                        <p>Next, annotate basepairs (bp). Note: peaks annotated as "marker" will be excluded from analysis.</p>
-                      </details>
-                      <!--end::Ladder Annotation -->
-
+                      <!--begin::Size standard Annotation -->
+                      <p>Step 2: choose your DNA size standard</p>
+                      <!--end::Size standardAnnotation -->
                       <!--begin::Metadata CSV -->
-                      <details>
-                        <summary>Optional: Add sample metadata</summary>
-                        <img src="./static/img/metadata.svg" alt="Metadata CSV" style="width:60%; height:auto;">
-                        <p>
-                          Add any group information 
-                          <a href="./static/tables/metadata.csv">Download example</a>.
-                        </p>
-                      </details>
+                      <p>Step 3: (optional) Add sample metadata</p>
                       <!--end::Metadata CSV -->
-
                       <footer class="mt-4">
                         <p>Need help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
                       </footer>
