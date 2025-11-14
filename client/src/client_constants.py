@@ -30,7 +30,7 @@ REPORT_COLUMNS =  f"{STATIC_DIR}pdf_report/ELBS_columns.csv"
 
 EXAMPLE_DIR = f"{STATIC_DIR}tests/"
 EXAMPLE_TABLE = f"{EXAMPLE_DIR}electropherogram.csv"
-EXAMPLE_LADDER = f"{EXAMPLE_DIR}ladder.csv"
+EXAMPLE_LADDER = f"{EXAMPLE_DIR}size_standard.csv"
 EXAMPLE_META = f"{EXAMPLE_DIR}metadata.csv"
 
 LADDER_DIR = f"{STATIC_DIR}/ladders/"
