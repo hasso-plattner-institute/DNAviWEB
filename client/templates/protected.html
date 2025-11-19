@@ -821,8 +821,21 @@
                       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
                     }
                     .table-wrapper {
-                      overflow-x: auto;
+                      overflow-x: scroll;
                       border-radius: 10px;
+                      position: relative;
+                      padding-bottom: 5px;
+                      min-width: 100%;
+                    }
+                    .table-wrapper::-webkit-scrollbar {
+                      height: 8px;
+                    }
+                    .table-wrapper::-webkit-scrollbar-thumb {
+                      background-color: #4FA8E5;
+                      border-radius: 4px;
+                    }
+                    .table-wrapper::-webkit-scrollbar-track {
+                      background: #EAF6FE; 
                     }
                     #metadata-table {
                       table-layout: fixed; 
