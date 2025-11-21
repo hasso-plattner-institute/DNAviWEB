@@ -219,21 +219,6 @@
       <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Progression Tab -->
-          <div class="container my-4">
-            <div class="progress" style="height: 40px;">
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary" style="color:white ">1. Quickstart Guide</a>
-              </div>
-              <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
-                2. Upload Files
-              </div>
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-                3. Results
-              </div>
-            </div>
-          </div>
-          <!--end::Progression Tab -->
         </div>
         <!--end::App Content Header-->
         <div class="app-content">
@@ -286,12 +271,13 @@
                   <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
                     Quick test: Run DNAvi with our example data
                   </button>
+                    <br></br>
                 </form>
               </div>
             <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
-                  <h3> Upload your own data </h3><p><a href="{{ url_for('instructions') }}" style="color:#297022;">  Step-by-step guide</a></p>
+                  <h3> Upload your own data </h3> <a href="{{ url_for('instructions') }}" style="color:#297022;">  Visit the step-by-step guide</a>
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--                                DNA GEL OR CSV                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
