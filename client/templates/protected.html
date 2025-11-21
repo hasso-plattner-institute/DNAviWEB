@@ -143,6 +143,9 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('register') }}">Register</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+                </li>
               {% endif %}
             </li>
             <!--end::Navbar Login/logout-->
@@ -183,34 +186,6 @@
         <!--end::Sidebar Brand-->
         <!--begin::Sidebar Wrapper-->
         <div class="sidebar-wrapper">
-          <nav class="mt-2">
-            <!--begin::Sidebar Menu-->
-            <ul
-              class="nav sidebar-menu flex-column"
-              data-lte-toggle="treeview"
-              role="navigation"
-              aria-label="Main navigation"
-              data-accordion="false"
-              id="navigation"
-            >
-              <li class="nav-item">
-                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="bi bi-grid"></i>
-                  <p>Submissions Dashboard</p>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                 <a href="{{ url_for('instructions') }}" class="nav-link">
-                  <i class="bi bi-graph-up"></i>
-                  <p>
-                    New Analysis
-                  </p>
-                </a>
-              </li>
-              <li class="nav-item"><a href="{{ url_for('documentation') }}" class="nav-link"><i class="bi bi-file-earmark-text"></i><p>Documentation</p></a></li>
-            <!--end::Sidebar Menu-->
-          </nav>
         </div>
         <!--end::Sidebar Wrapper-->
       </aside>
@@ -278,6 +253,7 @@
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
                   <h3> Upload your own data </h3> <a href="{{ url_for('instructions') }}" style="color:#297022;">  Visit the step-by-step guide</a>
+                    <br></br>
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--                                DNA GEL OR CSV                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
@@ -1071,7 +1047,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="agree-terms">
                     <label class="form-check-label" for="agree-terms">
                       I have read and agree to the 
-                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>
+                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>. In short: I will not upload identifiable information (e.g., birth dates, names). I have the full right and consent to provide the uploaded data. Research use only.
                     </label>
                   </div>
                   <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
