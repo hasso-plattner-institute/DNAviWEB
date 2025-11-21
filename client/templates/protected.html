@@ -136,6 +136,9 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+                </li>
               {% else %}
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('login') }}">Login</a>
@@ -163,33 +166,7 @@
         <!--end::Container-->
       </nav>
       <!--end::Header-->
-      <!--begin::Sidebar-->
-      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-        <!--begin::Sidebar Brand-->
-        <div class="sidebar-brand">
-          <!--begin::Brand Link-->
-          <a href="{{ url_for('home') }}" class="d-flex align-items-center" style="text-decoration: none;">
-            <!--begin::Brand Image-->
-            <img
-              src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt="DNAvi Logo"
-              class="brand-image opacity-75 shadow me-2"
-              style="height: 60px; width: auto;"
-            />
-            <!--end::Brand Image-->
-            <!--begin::Brand Text-->
-            <span class="brand-text fw-light">DNAvi</span>
-            <!--end::Brand Text-->
-          </a>
-          <!--end::Brand Link-->
-        </div>
-        <!--end::Sidebar Brand-->
-        <!--begin::Sidebar Wrapper-->
-        <div class="sidebar-wrapper">
-        </div>
-        <!--end::Sidebar Wrapper-->
-      </aside>
-      <!--end::Sidebar-->
+
       <!--begin::App Main-->
       <main class="app-main">
         <!--begin::App Content Header-->
@@ -281,8 +258,8 @@
                       <!-- The radio buttons -->
                       <p>Select from defaults:</p>
                       <div class="radio-group">
-                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label for="defaultOption">HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
-                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label>D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="HSD5000" checked ><label for="defaultOption">HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D1000"><label>D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
