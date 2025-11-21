@@ -285,15 +285,6 @@
                   <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
                     Quick test: Run DNAvi with our example data
                   </button>
-                  <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">
-                    Download examples: Signal Table ↓
-                  </a> 
-                  <a href="./static/tests/size_standard.csv" style="color:#b5b9bd;">
-                    Size Standard ↓
-                  </a>
-                  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">
-                    Metadata ↓
-                  </a>
                   <p></p><p></p><br>
                 </form>
               </div>
@@ -311,7 +302,7 @@
                     </div>
                     <div class="card-body">
                       <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
-                      <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
+                      <p class="text-muted mb-2">Max. 16 MB file size allowed. <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">↓ Download template</a></p>
                       <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                     </div>
                   </div>
@@ -327,9 +318,9 @@
                     <div class="card-body">
                       <!-- The radio buttons -->
                       <p>Select from defaults:</p>
-                      <div class="radio-group"> 
-                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
-                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <div class="radio-group">
+                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label for="defaultOption">HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label>D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
@@ -381,7 +372,7 @@
                       <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
                       <ul class="mb-3 ps-3">
                         <li>Fill out the metadata table for all your samples directly on this page.</li>
-                        <li>Or, download our template metadata file, after filling it, upload it here.</li>
+                        <li>Or, download our template metadata file, after filling it, upload it here. <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a></li>
                       </ul>
                       <!--end::metadata two options header-->
 
@@ -427,7 +418,7 @@
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Disease that the subject was diagnosed with at the time the sample was collected.">Disease<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Type<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Type<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormality<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any unexpected (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Feature<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell type.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age<i class="bi bi-info-circle text-muted"></i></th>
@@ -715,7 +706,7 @@
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormality" id="group_phenotype">
-                                <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
+                                <label class="form-check-label" for="group_phenotype">Phenotypic Feature</label>
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">
