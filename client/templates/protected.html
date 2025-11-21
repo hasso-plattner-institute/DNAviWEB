@@ -280,13 +280,14 @@
                 <!-- ---------------------------------------------------------------------------------------- -->
                 <!-- EXAMPLE FORM -->
                 <!-- ---------------------------------------------------------------------------------------- -->
+                <div>
                 <br>
                 <form id="example-form" method="POST" enctype="multipart/form-data">
                   <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
                     Quick test: Run DNAvi with our example data
                   </button>
-                  <p></p><a href="{{ url_for('instructions') }}" Step-by-step guide</a><p></p><br>
                 </form>
+                <p><a href="{{ url_for('instructions') }}" style="color:#297022;">Step-by-step guide</a></p>
               </div>
             <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
