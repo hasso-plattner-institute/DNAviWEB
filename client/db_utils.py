@@ -456,7 +456,7 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
                     subject_name=subject_name,
                     biological_sex=biological_sex,
                     ethnicity_term_id=ethnicity_term_id,
-                    organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
+                    organism_term_id = map_term("Organism", extract_label(row.get("Organism")), ontology_label_to_id)
                 )
                 session.add(new_subject)
                 session.flush()
@@ -469,7 +469,7 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
                 subject_name=None,
                 biological_sex=biological_sex,
                 ethnicity_term_id=ethnicity_term_id,
-                organism_term_id = map_term("Organism", row.get("Organism"), ontology_label_to_id)
+                organism_term_id = map_term("Organism", extract_label(row.get("Organism")), ontology_label_to_id)
             )
             session.add(new_subject)
             session.flush()
@@ -587,22 +587,22 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
             subject_id = sample_to_subject_id.get(str(sample_name).strip()) if sample_name else None
             sample_data.update({
                 "subject_id": subject_id,
-                "disease_term_id": map_term("Disease", row.get("Disease"), ontology_label_to_id),
-                "phenotypic_abnormality_term_id": map_term("Phenotypic Abnormality", row.get("Phenotypic Abnormality"), ontology_label_to_id),
-                "treatment_term_id": map_term("Treatment", row.get("Treatment"), ontology_label_to_id),
-                "cell_type_term_id": map_term("Cell Type", row.get("Cell Type"), ontology_label_to_id),
+                "disease_term_id": map_term("Disease", extract_label(row.get("Disease")), ontology_label_to_id),
+                "phenotypic_abnormality_term_id": map_term("Phenotypic Abnormality", extract_label(row.get("Phenotypic Abnormality")), ontology_label_to_id),
+                "treatment_term_id": map_term("Treatment", extract_label(row.get("Treatment")), ontology_label_to_id),
+                "cell_type_term_id": map_term("Cell Type", extract_label(row.get("Cell Type")), ontology_label_to_id),
                 "sample_type": row.get("Sample Type"),
                 "sample_collection_date": (datetime.strptime(row.get("Sample Collection Date"), "%Y-%m-%d").date() 
                            if pd.notnull(row.get("Sample Collection Date")) and re.match(r"\d{4}-\d{2}-\d{2}$", str(row.get("Sample Collection Date"))) 
                            else None),
                 "age_at_collection": float(row.get("Age")) if pd.notnull(row.get("Age")) else None,
-                "sampling_site_term_id": map_term("Material Anatomical Entity", row.get("Material Anatomical Entity"), ontology_label_to_id),
+                "sampling_site_term_id": map_term("Material Anatomical Entity", extract_label(row.get("Material Anatomical Entity")), ontology_label_to_id),
                 "case_vs_control": row.get("Case vs Control"),
-                "condition_under_study_term_id": map_term("Condition Under Study", row.get("Condition Under Study"), ontology_label_to_id),
+                "condition_under_study_term_id": map_term("Condition Under Study", extract_label(row.get("Condition Under Study")), ontology_label_to_id),
                 "is_deceased": yes_no_to_bool(row.get("Is Deceased?")),
                 "is_pregnant": yes_no_to_bool(row.get("Is Pregnant?")),
                 "is_infection_suspected": yes_no_to_bool(row.get("Is Infection Suspected?")),
-                "infection_strain": map_term("Infection Strain", row.get("Infection Strain"), ontology_label_to_id),
+                "infection_strain": map_term("Infection Strain", extract_label(row.get("Infection Strain")), ontology_label_to_id),
                 "hospitalization_status": row.get("Hospitalization Status"),
                 "extraction_kit": row.get("Extraction Kit (DNA Isolation Method)"),
                 "dna_mass": float(row.get("DNA Mass")) if pd.notnull(row.get("DNA Mass")) else None,
@@ -610,7 +610,7 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
                 "carrying_liquid_volume": float(row.get("Carrying Liquid Volume")) if pd.notnull(row.get("Carrying Liquid Volume")) else None,
                 "carrying_liquid_volume_unit": row.get("Carrying Liquid Volume Unit"),
                 "in_vitro_in_vivo": row.get("In vitro / In vivo"),
-                "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", row.get("Gel Electrophoresis Device"), device_name_to_id)
+                "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", extract_label(row.get("Gel Electrophoresis Device")), device_name_to_id)
             })
             # Add custom attributes for all extra columns
             custom_attributes = {}
