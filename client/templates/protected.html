@@ -112,11 +112,6 @@
         <div class="container-fluid">
           <!--begin::Start Navbar Links-->
           <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-                <i class="bi bi-list"></i>
-              </a>
-            </li>
             <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
@@ -136,12 +131,18 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                 </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+                </li>
               {% else %}
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
                 </li>
               {% endif %}
             </li>
@@ -160,80 +161,11 @@
         <!--end::Container-->
       </nav>
       <!--end::Header-->
-      <!--begin::Sidebar-->
-      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-        <!--begin::Sidebar Brand-->
-        <div class="sidebar-brand">
-          <!--begin::Brand Link-->
-          <a href="{{ url_for('home') }}" class="d-flex align-items-center" style="text-decoration: none;">
-            <!--begin::Brand Image-->
-            <img
-              src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt="DNAvi Logo"
-              class="brand-image opacity-75 shadow me-2"
-              style="height: 60px; width: auto;"
-            />
-            <!--end::Brand Image-->
-            <!--begin::Brand Text-->
-            <span class="brand-text fw-light">DNAvi</span>
-            <!--end::Brand Text-->
-          </a>
-          <!--end::Brand Link-->
-        </div>
-        <!--end::Sidebar Brand-->
-        <!--begin::Sidebar Wrapper-->
-        <div class="sidebar-wrapper">
-          <nav class="mt-2">
-            <!--begin::Sidebar Menu-->
-            <ul
-              class="nav sidebar-menu flex-column"
-              data-lte-toggle="treeview"
-              role="navigation"
-              aria-label="Main navigation"
-              data-accordion="false"
-              id="navigation"
-            >
-              <li class="nav-item">
-                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="bi bi-grid"></i>
-                  <p>Submissions Dashboard</p>
-                </a>
-              </li>
 
-              <li class="nav-item">
-                 <a href="{{ url_for('instructions') }}" class="nav-link">
-                  <i class="bi bi-graph-up"></i>
-                  <p>
-                    New Analysis
-                  </p>
-                </a>
-              </li>
-              <li class="nav-item"><a href="{{ url_for('documentation') }}" class="nav-link"><i class="bi bi-file-earmark-text"></i><p>Documentation</p></a></li>
-            <!--end::Sidebar Menu-->
-          </nav>
-        </div>
-        <!--end::Sidebar Wrapper-->
-      </aside>
-      <!--end::Sidebar-->
       <!--begin::App Main-->
       <main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
-          <!--begin::Progression Tab -->
-          <div class="container my-4">
-            <div class="progress" style="height: 40px;">
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                <a href="{{ url_for('instructions') }}" class="btn btn-outline-secondary" style="color:white ">1. Quickstart Guide</a>
-              </div>
-              <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:33%">
-                2. Upload Files
-              </div>
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-                3. Results
-              </div>
-            </div>
-          </div>
-          <!--end::Progression Tab -->
         </div>
         <!--end::App Content Header-->
         <div class="app-content">
@@ -280,27 +212,20 @@
                 <!-- ---------------------------------------------------------------------------------------- -->
                 <!-- EXAMPLE FORM -->
                 <!-- ---------------------------------------------------------------------------------------- -->
+                <div>
                 <br>
                 <form id="example-form" method="POST" enctype="multipart/form-data">
                   <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
                     Quick test: Run DNAvi with our example data
                   </button>
-                  <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">
-                    Download examples: Signal Table ↓
-                  </a> 
-                  <a href="./static/tests/size_standard.csv" style="color:#b5b9bd;">
-                    Size Standard ↓
-                  </a>
-                  <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">
-                    Metadata ↓
-                  </a>
-                  <p></p><p></p><br>
+                    <br></br>
                 </form>
               </div>
             <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
-                  <h3> Upload your own data:</h3>
+                  <h3> Upload your own data </h3> <a href="{{ url_for('instructions') }}" style="color:#297022;">  Visit the step-by-step guide</a>
+                    <br></br>
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--                                DNA GEL OR CSV                                  -->
                   <!-- ------------------------------------------------------------------------------ -->
@@ -311,7 +236,7 @@
                     </div>
                     <div class="card-body">
                       <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
-                      <p class="text-muted mb-2">Max. 16 MB file size allowed.</p>
+                      <p class="text-muted mb-2">Max. 16 MB file size allowed. <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">↓ Download template</a></p>
                       <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
                     </div>
                   </div>
@@ -327,9 +252,9 @@
                     <div class="card-body">
                       <!-- The radio buttons -->
                       <p>Select from defaults:</p>
-                      <div class="radio-group"> 
-                        <input type="radio" class="predef" name="ladder_file" value="D1000" checked ><label for="defaultOption">D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
-                        <input type="radio" class="predef" name="ladder_file" value="HSD5000"><label>HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                      <div class="radio-group">
+                        <input type="radio" class="predef" name="ladder_file" value="HSD5000" checked ><label for="defaultOption">HSD5000 <a href="./static/ladders/HSD5000.csv" style="color:#b5b9bd;">↓</a></label>
+                        <input type="radio" class="predef" name="ladder_file" value="D1000"><label>D1000 <a href="./static/ladders/D1000.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="gDNA"><label>gDNA <a href="./static/ladders/gDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="cfDNA"><label>cfDNA <a href="./static/ladders/cfDNA.csv" style="color:#b5b9bd;">↓</a></label>
                         <input type="radio" class="predef" name="ladder_file" value="D1000B"><label>D1000 (Bioanalyzer) <a href="./static/ladders/D1000B.csv" style="color:#b5b9bd;">↓</a></label>
@@ -381,7 +306,7 @@
                       <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
                       <ul class="mb-3 ps-3">
                         <li>Fill out the metadata table for all your samples directly on this page.</li>
-                        <li>Or, download our template metadata file, after filling it, upload it here.</li>
+                        <li>Or, download our template metadata file, after filling it, upload it here. <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a></li>
                       </ul>
                       <!--end::metadata two options header-->
 
@@ -427,7 +352,7 @@
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Disease that the subject was diagnosed with at the time the sample was collected.">Disease<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Type<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Type<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any abnormal (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Abnormality<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any unexpected (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Feature<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell type.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age<i class="bi bi-info-circle text-muted"></i></th>
@@ -715,7 +640,7 @@
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Phenotypic Abnormality" id="group_phenotype">
-                                <label class="form-check-label" for="group_phenotype">Phenotypic Abnormality</label>
+                                <label class="form-check-label" for="group_phenotype">Phenotypic Feature</label>
                               </div>
                               <div class="form-check">
                                 <input class="form-check-input" name="metadata_group_columns_checkbox" type="checkbox" value="Material Anatomical Entity" id="group_material">
@@ -1094,7 +1019,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="agree-terms">
                     <label class="form-check-label" for="agree-terms">
                       I have read and agree to the 
-                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>
+                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>. In short: I will not upload identifiable information (e.g., birth dates, names). I have the full right and consent to provide the uploaded data. Research use only.
                     </label>
                   </div>
                   <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
@@ -1193,7 +1118,7 @@
       <!--begin::Footer-->
       <footer class="app-footer d-flex justify-content-between align-items-center px-3 py-2 border-top">
         <div>
-            Copyright &copy; Anja Hess, Yara Matani, 2025.
+            &copy; Anja Hess, Yara Matani, 2025. License: GPL-3.0.
         </div>
         <div>
             Design by &copy; 
