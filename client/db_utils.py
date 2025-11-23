@@ -6,6 +6,7 @@ from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 import json
 import logging
+import math
 import os
 from pathlib import Path
 import re
@@ -327,11 +328,24 @@ def extract_label(label_with_id):
     """
     Extracts the label from a string 'Label (term_id)'.
     """
-    match = re.match(r"^(.*)\s*\(([^()]+)\)\s*$", label_with_id.strip())
+    match = re.match(r"^(.*)\s*\(([^()]+)\)\s*$", str(label_with_id).strip())
     if match:
         label = match.group(1).strip()
         return label
-    return label_with_id.strip()
+    return str(label_with_id).strip()
+
+def normalize_nullable(value):
+    """
+    Convert any NaN, empty string, or invalid enum value to None.
+    """
+    if value is None:
+        return None
+    if isinstance(value, float) and math.isnan(value):
+        return None
+    s = str(value).strip()
+    if not s or s.lower() == "nan":
+        return None
+    return s 
 
 ##############################################################################
 #                           SAVE ONTOLOGY TERMS                              #
@@ -345,7 +359,7 @@ def save_ontology_terms(session, metadata_path):
     metadata_encoding = detect_file_encoding(metadata_path)
     meta_df = pd.read_csv(metadata_path, encoding=metadata_encoding)
     ontology_term_fields = [
-        "Disease", "Cell Type", "Phenotypic Abnormality", "Treatment",
+        "Disease", "Cell Type", "Phenotypic Feature", "Treatment",
         "Ethnicity", "Organism", "Condition Under Study", "Material Anatomical Entity",
         "Infection Strain"
     ]
@@ -436,7 +450,7 @@ def save_subjects(session, metadata_path, ontology_label_to_id):
         subject_name = get_clean_value(row, "Subject ID")
         sample_value = get_clean_value(row, "SAMPLE")
         biological_sex = get_clean_value(row, "Biological Sex")
-        ethnicity_label = get_clean_value(row, "Ethnicity")
+        ethnicity_label =  extract_label(get_clean_value(row, "Ethnicity"))
         ethnicity_term_id = None
         # Map ethnicity label to term_id
         if ethnicity_label:
@@ -563,7 +577,7 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
     if sample_to_subject_id is None:
         sample_to_subject_id = {}
     predefined_columns = [
-        "SAMPLE", "Subject ID", "Disease", "Phenotypic Abnormality", "Cell Type",
+        "SAMPLE", "Subject ID", "Disease", "Phenotypic Feature", "Cell Type",
         "Sample Type", "Sample Collection Date", "Age", "Material Anatomical Entity",
         "Case vs Control", "Condition Under Study", "Is Deceased?", "Is Pregnant?",
         "Is Infection Suspected?", "Infection Strain", "Hospitalization Status",
@@ -588,29 +602,29 @@ def save_samples(session, signal_table_path, metadata_path, submission_id,
             sample_data.update({
                 "subject_id": subject_id,
                 "disease_term_id": map_term("Disease", extract_label(row.get("Disease")), ontology_label_to_id),
-                "phenotypic_abnormality_term_id": map_term("Phenotypic Abnormality", extract_label(row.get("Phenotypic Abnormality")), ontology_label_to_id),
+                "phenotypic_abnormality_term_id": map_term("Phenotypic Feature", extract_label(row.get("Phenotypic Feature")), ontology_label_to_id),
                 "treatment_term_id": map_term("Treatment", extract_label(row.get("Treatment")), ontology_label_to_id),
                 "cell_type_term_id": map_term("Cell Type", extract_label(row.get("Cell Type")), ontology_label_to_id),
-                "sample_type": row.get("Sample Type"),
+                "sample_type": normalize_nullable(row.get("Sample Type")),
                 "sample_collection_date": (datetime.strptime(row.get("Sample Collection Date"), "%Y-%m-%d").date() 
                            if pd.notnull(row.get("Sample Collection Date")) and re.match(r"\d{4}-\d{2}-\d{2}$", str(row.get("Sample Collection Date"))) 
                            else None),
                 "age_at_collection": float(row.get("Age")) if pd.notnull(row.get("Age")) else None,
                 "sampling_site_term_id": map_term("Material Anatomical Entity", extract_label(row.get("Material Anatomical Entity")), ontology_label_to_id),
-                "case_vs_control": row.get("Case vs Control"),
+                "case_vs_control": normalize_nullable(row.get("Case vs Control")),
                 "condition_under_study_term_id": map_term("Condition Under Study", extract_label(row.get("Condition Under Study")), ontology_label_to_id),
                 "is_deceased": yes_no_to_bool(row.get("Is Deceased?")),
                 "is_pregnant": yes_no_to_bool(row.get("Is Pregnant?")),
                 "is_infection_suspected": yes_no_to_bool(row.get("Is Infection Suspected?")),
                 "infection_strain": map_term("Infection Strain", extract_label(row.get("Infection Strain")), ontology_label_to_id),
-                "hospitalization_status": row.get("Hospitalization Status"),
-                "extraction_kit": row.get("Extraction Kit (DNA Isolation Method)"),
+                "hospitalization_status": normalize_nullable(row.get("Hospitalization Status")),
+                "extraction_kit": normalize_nullable(row.get("Extraction Kit (DNA Isolation Method)")),
                 "dna_mass": float(row.get("DNA Mass")) if pd.notnull(row.get("DNA Mass")) else None,
-                "dna_mass_units": row.get("DNA Mass Units"),
+                "dna_mass_units": normalize_nullable(row.get("DNA Mass Units")),
                 "carrying_liquid_volume": float(row.get("Carrying Liquid Volume")) if pd.notnull(row.get("Carrying Liquid Volume")) else None,
-                "carrying_liquid_volume_unit": row.get("Carrying Liquid Volume Unit"),
-                "in_vitro_in_vivo": row.get("In vitro / In vivo"),
-                "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", extract_label(row.get("Gel Electrophoresis Device")), device_name_to_id)
+                "carrying_liquid_volume_unit": normalize_nullable(row.get("Carrying Liquid Volume Unit")),
+                "in_vitro_in_vivo": normalize_nullable(row.get("In vitro / In vivo")),
+                "gel_electrophoresis_device_id": map_term("Gel Electrophoresis Device", row.get("Gel Electrophoresis Device"), device_name_to_id)
             })
             # Add custom attributes for all extra columns
             custom_attributes = {}
