@@ -122,18 +122,31 @@ function initializeAutocomplete(input) {
                 const data = await res.json(); // full JSON returned
                 // OLS json data has the term we search form inside respons:docs:label
                 // example: https://www.ebi.ac.uk/ols4/api/search?q=cancer&ontology=efo&type=class&rows=10
-                const results = data.response.docs || [];
+                const results = data.response?.docs || data || [];
+                // Filter to only display terms with id starting with the ontology prefix
+                let filtered = [];
+                if (ontology === "pathogen") {
+                    filtered = results.filter(item =>
+                        item.termId && item.termId.startsWith("NCBITaxon")
+                    );
+                } else {
+                    const prefix = ontology.toUpperCase();
+                    filtered = results.filter(item =>
+                        item.termId && item.termId.toLowerCase().startsWith(prefix.toLowerCase())
+                    );
+                }
                 // IF API finds no matches for the user's query, hide the suggestion box
                 // and stop making an API calls
-                if (results.length == 0) {
+                if (filtered.length === 0) {
                     suggestionBox.style.display = "none";
                     return;
                 }
                 // Present API call results on suggestion box
-                results.forEach(item => {
+                filtered.forEach(item => {
                     const div = document.createElement("div");
-                    // Add Style
-                    div.textContent = item.label;
+                    // Cancer (MONDO:0004992)
+                    const id = item.termId || "";
+                    div.textContent = `${item.label} (${id})`;
                     div.style.padding = "5px";
                     div.style.cursor = "pointer";
                     // When mouse down event happens meaning the term is clicked
@@ -141,8 +154,8 @@ function initializeAutocomplete(input) {
                     // hide the suggestion box
                     // and remember the term as last valid ols term
                     div.addEventListener("mousedown", () => {
-                        input.value = item.label;
-                        lastSelected = item.label;
+                        input.value = `${item.label} (${id})`;
+                        lastSelected = input.value;
                         suggestionBox.style.display = "none";
                     });
                     suggestionBox.appendChild(div);
