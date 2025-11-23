@@ -322,6 +322,17 @@ def save_ladder_pixel(session, signal_table_path, bp_translation_path, ladder_id
     session.add_all(ladder_pixels)
     logging.info("Saved ladder pixels successfully.")
 
+
+def extract_label(label_with_id):
+    """
+    Extracts the label from a string 'Label (term_id)'.
+    """
+    match = re.match(r"^(.*?)\s*\(([\w:]+)\)\s*$", label_with_id.strip())
+    if match:
+        label = match.group(1).strip()
+        return label
+    return label_with_id.strip()
+
 ##############################################################################
 #                           SAVE ONTOLOGY TERMS                              #
 ##############################################################################
@@ -344,28 +355,28 @@ def save_ontology_terms(session, metadata_path):
         if label_col not in meta_df.columns:
             continue
         for raw_value in meta_df[label_col].dropna():
-            labels = [lbl.strip() for lbl in str(raw_value).split(";") if lbl.strip()]
-            for label in labels:
-                # If this label already exists in DB do not save
-                exists = session.query(OntologyTerm).filter(
-                    func.lower(OntologyTerm.term_label) == label.lower()
-                ).first()
-                if exists:
-                    term_id = exists.term_id
-                # New label -> Store to DB
-                else:
-                    # Get term ID from OLS
-                    term_id = get_ols_term_id(label, label_col)
-                    if not term_id or not term_id.lower().startswith(get_ontology_prefix(label_col)):  # None or empty string or term_id not from the ontology
-                        #term_id = str(uuid.uuid4())
-                        continue
-                    stmt = (
-                        insert(OntologyTerm)
-                        .values(term_id=term_id, term_label=label)
-                        .on_conflict_do_nothing(index_elements=["term_id"])
-                    )
-                    session.execute(stmt)
-                ontology_label_to_id[label_col][label] = term_id
+            input_value = str(raw_value).strip()
+            label = extract_label(input_value)
+            # If this label already exists in DB do not save
+            exists = session.query(OntologyTerm).filter(
+                func.lower(OntologyTerm.term_label) == label.lower()
+            ).first()
+            if exists:
+                term_id = exists.term_id
+            # New label -> Store to DB only if we have a valid label
+            else:
+                # Get term ID from OLS
+                term_id = get_ols_term_id(label, label_col)
+                if not term_id or not term_id.lower().startswith(get_ontology_prefix(label_col)):  # None or empty string or term_id not from the ontology
+                    #term_id = str(uuid.uuid4())
+                    continue
+                stmt = (
+                    insert(OntologyTerm)
+                    .values(term_id=term_id, term_label=label)
+                    .on_conflict_do_nothing(index_elements=["term_id"])
+                )
+                session.execute(stmt)
+            ontology_label_to_id[label_col][label] = term_id
     logging.info("Ontology terms saved successfully.")
     return ontology_label_to_id
 
