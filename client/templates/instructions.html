@@ -109,6 +109,9 @@
                   <a class="nav-link" href="{{ url_for('register') }}">Register</a>
                 </li>
               {% endif %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+              </li>
             </li>
             <!--end::Navbar Login/logout-->
             <li class="nav-item">
@@ -122,54 +125,6 @@
       </nav>
       <!--end::Header-->
 
-      <!--begin::Sidebar-->
-      <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-        <div class="sidebar-brand">
-          <a href="{{ url_for('home') }}" class="d-flex align-items-center" style="text-decoration: none;">
-            <img
-              src="{{ url_for('static', filename='img/logo.svg') }}"
-              alt="DNAvi Logo"
-              class="brand-image opacity-75 shadow me-2"
-              style="height: 60px; width: auto;"
-            />
-            <span class="brand-text fw-light">DNAvi</span>
-          </a>
-        </div>
-
-        <div class="sidebar-wrapper">
-          <nav class="mt-2">
-            <ul
-              class="nav sidebar-menu flex-column"
-              data-lte-toggle="treeview"
-              role="navigation"
-              aria-label="Main navigation"
-              data-accordion="false"
-              id="navigation"
-            >
-              <li class="nav-item">
-                <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-                  <i class="bi bi-grid"></i>
-                  <p>Submissions Dashboard</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ url_for('instructions') }}" class="nav-link">
-                  <i class="bi bi-graph-up"></i>
-                  <p>New Analysis</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="{{ url_for('documentation') }}" class="nav-link">
-                  <i class="bi bi-file-earmark-text"></i>
-                  <p>Documentation</p>
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
-      <!--end::Sidebar-->
-
       <!--begin::App Main-->
       <main class="app-main">
         <!--begin::App Content Header-->
@@ -181,32 +136,10 @@
                 <div class="col-sm-6">
                   <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
                 </div>
-                <div class="col-sm-6">
-                  <ol class="breadcrumb float-sm-end">
-                    <li class="breadcrumb-item"><a href="{{ url_for('home')}}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Analysis</li>
-                  </ol>
-                </div>
               </div>
             </div>
             <!--end::Row-->
           </div>
-          <!--begin::Progression Tab -->
-          <div class="container my-4">
-            <div class="progress" style="height: 40px;">
-              <div class="progress-bar progress-bar-animated bg-primary" role="progressbar" style="font-size: 1rem; width:34%">
-                1. Quickstart Guide
-              </div>
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:34%">
-                <a href="{{ url_for('protect') }}" class="btn btn-outline-secondary" style="color:white ">2. Upload Files
-              </a>
-              </div>
-              <div class="progress-bar progress-bar-animated bg-secondary" role="progressbar" style="font-size: 1rem; width:33%">
-                3. Results
-              </div>
-            </div>
-          </div>
-          <!--end::Progression Tab -->
         </div>
         <!--end::App Content Header-->
         
