@@ -327,7 +327,7 @@ def extract_label(label_with_id):
     """
     Extracts the label from a string 'Label (term_id)'.
     """
-    match = re.match(r"^(.*?)\s*\(([\w:]+)\)\s*$", label_with_id.strip())
+    match = re.match(r"^(.*)\s*\(([^()]+)\)\s*$", label_with_id.strip())
     if match:
         label = match.group(1).strip()
         return label
