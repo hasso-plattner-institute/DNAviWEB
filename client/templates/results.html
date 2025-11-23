@@ -51,6 +51,9 @@
               <a class="nav-link" href="{{ url_for('register') }}">Register</a>
             </li>
           {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+          </li>
         </li>
         <!--end::Navbar Login/logout-->
         <li class="nav-item">
@@ -62,35 +65,6 @@
       </ul>
     </div>
   </nav>
-
-  <!-- Sidebar -->
-  <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-    <div class="sidebar-brand">
-      <a href="{{ url_for('home') }}" class="d-flex align-items-center" style="text-decoration: none;">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="brand-image opacity-75 shadow me-2" style="height: 60px; width: auto;" />
-        <span class="brand-text fw-light">DNAvi</span>
-      </a>
-    </div>
-    <div class="sidebar-wrapper">
-      <nav class="mt-2">
-        <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation" data-accordion="false" id="navigation">
-          <li class="nav-item">
-            <a href="{{ url_for('submissions_dashboard') }}" class="nav-link">
-              <i class="bi bi-grid"></i>
-              <p>Submissions Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('instructions') }}" class="nav-link">
-              <i class="bi bi-graph-up"></i>
-              <p>New Analysis</p>
-            </a>
-          </li>
-          <li class="nav-item"><a href="{{ url_for('documentation') }}" class="nav-link"><i class="bi bi-file-earmark-text"></i><p>Documentation</p></a></li>
-        </ul>
-      </nav>
-    </div>
-  </aside>
 
     <!-- Main Content -->
   <main class="app-main">
