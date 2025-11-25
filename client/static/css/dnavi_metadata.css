@@ -1,0 +1,162 @@
+/**
+ * This css file contains custom styles for the metadata table and grouping sections and the protected.html in DNAviWEB
+ */
+
+/* prevents horizontal swipe from triggering backward or forward */
+body, html {
+    overscroll-behavior-x: contain;
+}
+input[type=button], input[type=submit], input[type=reset] {
+    background-color:forestgreen;
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+/* styles for ladder options*/
+.radio-group input[type="radio"]:after {
+    display: inline-block;
+    margin-right: 20px;
+    appearance: none;
+    border: none;
+    appearance: none;
+    background-color: rgba(255,252,229,1);
+
+}
+.radio-group label{
+    display: inline-block;
+    margin-right: 10px;
+}
+input::placeholder,
+textarea::placeholder {
+    color: #c0c0c0 !important;
+}
+
+ /* styles for the metadata table and grouping sections in DNAviWEB */
+.metadata-table-container {
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.table-wrapper {
+    overflow-x: scroll;
+    border-radius: 10px;
+    position: relative;
+    padding-bottom: 5px;
+    min-width: 100%;
+}
+.table-wrapper .simplebar-scrollbar:before {
+    background-color: #4FA8E5 !important;
+    opacity: 1 !important;
+}
+.table-wrapper .simplebar-track.simplebar-horizontal {
+    height: 12px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.table-wrapper .simplebar-track.simplebar-vertical {
+    width: 12px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+#metadata-table {
+    table-layout: fixed; 
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    font-size: 0.9rem;
+    border: 1px solid #dee2e6;
+}
+#metadata-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8f9fa;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+#metadata-table th, #metadata-table td {
+    border: 1px solid #dee2e6;
+    min-width: 120px;
+    width: 180px; 
+    white-space: nowrap;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#metadata-table tbody tr:hover {
+    background-color: #f6faff;
+}
+.optional-col {
+    transition: all 0.3s ease;
+}
+.hidden-col {
+    display: none;
+}
+#metadata-table th {
+    position: relative;
+    user-select: none;
+}
+#metadata-table th .resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 6px;
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    z-index: 3;
+}
+#metadata-table th .resizer:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+}
+#metadata-table th, #metadata-table td {
+    min-width: 80px;
+}
+.simplebar-scrollbar:before {
+    background-color: #4FA8E5;
+    opacity: 1;
+}
+#metadata-group-wrapper {
+    max-height: 300px;
+}
+#metadata-group-wrapper .simplebar-track.simplebar-vertical {
+    opacity: 1 !important;
+    visibility: visible !important;
+    width: 12px;
+}
+#metadata-group-wrapper .simplebar-scrollbar:before {
+    background-color: #4FA8E5;
+    opacity: 1 !important;
+}
+#metadata-group-wrapper .simplebar-track.simplebar-horizontal {
+    opacity: 1 !important;
+    visibility: visible !important;
+    height: 12px;
+}
+
+/* Loading overlay styles */
+#loading-overlay {
+display: none;
+position: fixed;
+top: 0; left: 0;
+width: 100%; height: 100%;
+background: rgba(255, 255, 255, 0.9);
+z-index: 9999;
+text-align: center;
+padding-top: 20%;
+font-size: 1.5em;
+color: #007bff;
+}
+.spinner {
+border: 8px solid #f3f3f3;
+border-top: 8px solid #007bff;
+border-radius: 50%;
+width: 60px; height: 60px;
+animation: spin 1s linear infinite;
+margin: 20px auto;
+}
+@-webkit-keyframes spin { 100% { transform: rotate(360deg); }}
+@keyframes spin {100% {transform: rotate(360deg);}}
