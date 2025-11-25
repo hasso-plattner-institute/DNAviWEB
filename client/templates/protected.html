@@ -145,8 +145,7 @@
                 <!-- ------------------------------------------------------------------------------ -->
                 <!-- DISPLAY ERRORS HERE ON TOP -->
                 <!-- ------------------------------------------------------------------------------ -->
-                <style> .error {background-color: #ea7f81 !important; display: inline-block}</style>
-                <div class="flash-container">
+                <div class="flash-container my-3">
                   {% with messages = get_flashed_messages() %}
                     {% if messages %}
                       <ul class="flashes">
@@ -161,35 +160,46 @@
                 <!-- FILE MISSING-->
                 <!-- ------------------------------------------------------------------------------ -->
                 {% if missing_error %}
-                  <p class=error><strong>Error:</strong> {{ missing_error }} </p>
+                  <div class="alert alert-danger rounded shadow-sm p-3">
+                    <h5 class="mb-2" style="color:#721c24;">⚠️ Something is missing</h5>
+                    <p class="mb-0">{{ missing_error }}</p>
+                  </div>
                 {% endif %}
                 <!-- ------------------------------------------------------------------------------ -->
                 <!-- OTHER ERROR-->
                 <!-- ------------------------------------------------------------------------------ -->
                 {% if error %}
-                  <pre class="error"><strong>Error message from DNAvi: </strong>{{ error }}</pre>
-                  <p>
-                    <strong>Note: This is the end of your error message. Please read it carefully, check out our
-                        <a href="{{ url_for('instructions') }}">quickstart guide</a> or
-                        <a href="{{ url_for('documentation') }}">documentation</a>,
-                        and try again.
-                        If this doesn't solve your issues, contact us with this error message copied,
-                        the date of your submission, and the submission ID (see dashboard) under dnavi-info@hpi.de.
-                        <br>
-                    </strong>
-                  </p>
+                  {% set lines = error.split('\n') %}
+                  {% set error_last_line = lines[-2:][0] if lines|length > 1 else "" %}
+                  <div class="alert alert-warning rounded shadow-sm p-3 mt-3" style="background-color:#fff4e5; border-color:#ffc107;">
+                    <h5 class="mb-2" style="color:#856404;">⚠️ Error message from DNAvi</h5>
+                    <p class="mb-2"><strong>Quick summary:</strong> {{ error_last_line }}</p>
+                    <p class="mb-2" style="font-size:0.9rem; color:#6c757d;">
+                          Please read carefully. Check our 
+                          <a href="{{ url_for('instructions') }}">quickstart guide</a> or
+                          <a href="{{ url_for('documentation') }}">documentation</a>,
+                          and try again.
+                        If this doesn't solve your issues, contact us via email: <a href="mailto:dnavi-info@hpi.de">dnavi-info@hpi.de</a> attach the full error message (download it below).
+                          <br>
+                      </strong>
+                    </p>
+                    <!-- Download Error button -->
+                    <button id="download-error-btn" type="button" class="btn btn-warning btn-sm">
+                      Download Full Error
+                    </button>
+                  </div>
                 {% endif %}
-                <!-- ---------------------------------------------------------------------------------------- -->
-                <!-- EXAMPLE FORM -->
-                <!-- ---------------------------------------------------------------------------------------- -->
-                <div>
-                <br>
-                <form id="example-form" method="POST" enctype="multipart/form-data">
-                  <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
-                    Quick test: Run DNAvi with our example data
-                  </button>
-                    <br></br>
-                </form>
+                  <!-- ---------------------------------------------------------------------------------------- -->
+                  <!-- EXAMPLE FORM -->
+                  <!-- ---------------------------------------------------------------------------------------- -->
+                  <div>
+                  <br>
+                  <form id="example-form" method="POST" enctype="multipart/form-data">
+                    <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
+                      Quick test: Run DNAvi with our example data
+                    </button>
+                      <br></br>
+                  </form>
               </div>
             <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
@@ -788,7 +798,25 @@
                         URL.revokeObjectURL(url);
                       });
                     });
-                    
+
+                    /**
+                     * Download error in text format on button click
+                     */
+                    document.getElementById('download-error-btn').addEventListener('click', () => {
+                        const errorContent = `{{ error }}`;
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = "{{ url_for('download_error') }}";
+                        form.style.display = 'none';
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'error_content';
+                        input.value = errorContent;
+                        form.appendChild(input);
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form);
+                    });
                   </script>
                     
 

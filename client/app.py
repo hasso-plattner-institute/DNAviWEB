@@ -9,6 +9,7 @@ Date: 2025-AUG-29 \n
 """
 import datetime
 from email.mime.text import MIMEText
+import io
 import logging
 import os
 import shutil
@@ -19,7 +20,7 @@ from uuid import uuid4
 
 import pandas as pd
 import requests
-from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory, g
+from flask import Flask, jsonify, make_response, request, render_template, redirect, url_for, send_from_directory, g
 from flask_login import LoginManager, UserMixin, current_user, login_required, login_user, logout_user
 from sqlalchemy import select
 from werkzeug.security import check_password_hash
@@ -201,6 +202,20 @@ def legal_notice():
 def citation():
     return render_template(f'citation.html')
 
+@app.route('/download_error', methods=['POST'])
+def download_error():
+    """
+    Route to download the full error message as a text file, used in protected.html.
+    """
+    error_content = request.form.get('error_content', '')
+    buffer = io.StringIO()
+    buffer.write(error_content)
+    buffer.seek(0)
+    response = make_response(buffer.getvalue())
+    filename = f"DNAvi_error_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    response.mimetype = 'text/plain'
+    return response
 
 @app.route('/submissions_dashboard', methods=['GET','POST'])
 #@login_required
