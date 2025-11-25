@@ -327,18 +327,17 @@ function getGroupByCheckBoxes() {
     );
     allColumns.forEach(col => {
         const safeId = "group_" + col.toLowerCase().replace(/\s+/g, "_");
-        container.insertAdjacentHTML("beforeend", `
-        <div class="col">
-            <div class="form-check">
-                <input class="form-check-input"
-                       name="metadata_group_columns_checkbox"
-                       type="checkbox"
-                       value="${col}"
-                       id="${safeId}">
-                <label class="form-check-label" for="${safeId}">${col}</label>
-            </div>
-        </div>
-        `);
+        const div = document.createElement("div");
+        div.className = "form-check mb-1";
+        div.innerHTML = `
+            <input class="form-check-input"
+                   name="metadata_group_columns_checkbox"
+                   type="checkbox"
+                   value="${col}"
+                   id="${safeId}">
+            <label class="form-check-label" for="${safeId}">${col}</label>
+        `;
+        container.appendChild(div);
     });
 }
 
