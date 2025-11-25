@@ -11,11 +11,15 @@ async function loadOntologyMap() {
 }
 
 /**
- * Handle adding custom columns button
+ * Handle adding custom columns button and adding new grouping checkbox for new column
  */
 document.getElementById('addColumnBtn').addEventListener('click', function () {
   const columnName = prompt("Enter new column name:");
   if (!columnName) return;
+  // Add new custom column checkbox to the grouping options
+  if (!ALL_METADATA_COLUMNS.includes(columnName)) {
+    ALL_METADATA_COLUMNS.push(columnName);
+  }
   const table = document.getElementById('metadata-table');
   const headerRow = table.querySelector('thead tr');
   const newHeader = document.createElement('th');
@@ -32,6 +36,8 @@ document.getElementById('addColumnBtn').addEventListener('click', function () {
     newCell.appendChild(input);
     row.insertBefore(newCell, row.lastElementChild);
   });
+  //Refresh grouping checkboxess
+  getGroupByCheckBoxes();
 });
 
 /**
@@ -225,89 +231,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
       new bootstrap.Tooltip(tooltipTriggerEl);
     });
+    // Initial display of grouping checkboxes on page load
+    getGroupByCheckBoxes();
 });
-
-// Commented section for ladder type that was removed from metadata table
-/**
- ** Ladder options to show based on chosen gel electrophoresis device.
- */
-/**
-const ladderOptions = {
-  "2100 Bioanalyzer Instrument, Agilent": [
-    "DNA 1000", "DNA 12000", "DNA 7500"
-  ],
-  "4150 TapeStation System, Agilent": [
-    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
-  ],
-  "4200 TapeStation System, Agilent": [
-    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
-  ],
-  "5200 Fragment Analyzer System, Agilent": [
-    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
-    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
-    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
-    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
-    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
-    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
-    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
-  ],
-  "5300 Fragment Analyzer System, Agilent": [
-    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
-    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
-    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
-    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
-    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
-    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
-    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
-  ],
-  "5400 Fragment Analyzer System, Agilent": [
-    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
-    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
-    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
-    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
-    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
-    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
-    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
-  ],
-  "Qsep 1 Bio-Fragment Analyzer, Nippon": [
-    "10-50000 bp", "10-1500 bp", "10-5000 bp"
-  ],
-  "Qsep 100 Bio-Fragment Analyzer, Nippon": [
-    "10-50000 bp", "10-1500 bp", "10-5000 bp"
-  ],
-  "Qsep 400 Bio-Fragment Analyzer, Nippon": [
-    "10-50000 bp", "10-1500 bp", "10-5000 bp"
-  ]
-};
-*/
-/**
- ** Update ladder options displayed to the user automatically when a device is chosen.
- */
-/**
-document.addEventListener('change', function (e) {
-  if (e.target.matches('.device-select')) {
-    const row = e.target.closest('tr');
-    const ladderSelect = row.querySelector('.ladder-select');
-    // Load chosen device
-    const selectedDevice = e.target.value;
-    const ladders = ladderOptions[selectedDevice] || [];
-    // Set display ladder type to default Select
-    ladderSelect.innerHTML = '<option value="">Select</option>';
-    // Create ladder options based on device
-    ladders.forEach(ladder => {
-      const opt = document.createElement('option');
-      opt.textContent = ladder;
-      opt.value = ladder;
-      ladderSelect.appendChild(opt);
-    });
-    // Always enable also Custom option
-    const customOpt = document.createElement('option');
-    customOpt.textContent = 'Custom';
-    customOpt.value = 'custom';
-    ladderSelect.appendChild(customOpt);
-  }
-});
-*/
 
 /**
  * This method handles any select that has the custom option.
@@ -337,6 +263,142 @@ document.addEventListener('change', function (e) {
     });
   }
 });
+
+let EGA_COLUMNS = [
+    "Subject ID", "Disease", "Cell Type", "Sample Type", "Sample Collection Date", "Phenotypic Feature",
+    "Material Anatomical Entity", "Biological Sex", "Age", "Organism",
+    "Case vs Control", "Condition Under Study", "Is Deceased?", "Is Pregnant?",
+    "Is Infection Suspected?", "Infection Strain", "Hospitalization Status",
+    "Extraction Kit (DNA Isolation Method)",
+    "DNA Mass", "DNA Mass Units", "Carrying Liquid Volume",
+    "Carrying Liquid Volume Unit", "In vitro / In vivo",
+    "Gel Electrophoresis Device", "Treatment", "Ethnicity"
+];
+
+let ELBS_COLUMNS = [
+    "My patient(s) were informed about the potential consequences of unexpected or incidental ﬁndings",
+    "Opt-out: My patient(s) do NOT wish to be informed about unexpected and/or incidental findings",
+    "Test purpose (Why is this test performed):",
+    "Pathological diagnosis",
+    "Disease stage",
+    "Burden of disease",
+    "Disease status",
+    "Previous and current oncological treatment",
+    "Previously diagnosed malignancies",
+    "Conﬁrmed tumor predisposition",
+    "Mutations from previous tissue or liquid proﬁling available",
+    "Previously identiﬁed CH (clonal hematopoiesis)-related variants",
+    "Macroscopic abnormalities (e.g. hemolysis)",
+    "Any sample QC not meeting criteria?",
+    "Type of planned downstream assay",
+    "LOD (limit of detection)",
+    "LOB (limit of blank)",
+    "LOQ (limit of quantiﬁcation)",
+    "analytical sensitivity",
+    "analytical speciﬁcity",
+    "Sequencing: percentage of target region covered with the minimum required depth",
+    "Sequencing: average sequencing depth",
+    "Any downstream QC not meeting criteria?",
+    "Recommendation for equivocal variants",
+    "Pathogenic and likely pathogenic variants (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level)",
+    "Variants in cancer susceptibility genes with VAF indicating germline origin (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level)",
+    "Potential CH-related variants (incl. number of supporting reads, sequencing depth, VAF, number of mutated molecules, conﬁdence level)",
+    "Recommendation for putative germline variants",
+    "SCNA (estimated copy number or log2 ratio, conﬁdence level, potentially co-ampliﬁed genes and estimated size of the ampliﬁed/deleted segment)",
+    "Negative results ( Tumor fraction – Not detected or Requested mutation is not detected)",
+    "Unexpected findings",
+    "Explanation why the ﬁndings were unexpected",
+    "Clinically actionable results and evidence-based associations with response to speciﬁc drugs"
+];
+
+// This array will be dynamically updated when new columns are added from CSV upload/or custom columns added via UI
+let ALL_METADATA_COLUMNS = [...EGA_COLUMNS, ...ELBS_COLUMNS];
+
+/** 
+ * Update grouping columns display to show all columns inside ALL_METADATA_COLUMNS
+ * excluding Actions and SAMPLE columns
+ */
+function getGroupByCheckBoxes() {
+    const container = document.getElementById("metadata-group-container");
+    container.innerHTML = ""; 
+    const EXCLUDED_COLUMNS = ["actions", "sample"];
+        const allColumns = ALL_METADATA_COLUMNS.filter(col => 
+        !EXCLUDED_COLUMNS.includes(col.toLowerCase())
+    );
+    allColumns.forEach(col => {
+        const safeId = "group_" + col.toLowerCase().replace(/\s+/g, "_");
+        container.insertAdjacentHTML("beforeend", `
+        <div class="col">
+            <div class="form-check">
+                <input class="form-check-input"
+                       name="metadata_group_columns_checkbox"
+                       type="checkbox"
+                       value="${col}"
+                       id="${safeId}">
+                <label class="form-check-label" for="${safeId}">${col}</label>
+            </div>
+        </div>
+        `);
+    });
+}
+
+/**
+ * On event: change of metadata file input upload
+ * Read the new CSV file and add any new columns found
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const metaInput = document.querySelector('input[name="meta_file"]');
+    if (metaInput) {
+        metaInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                addCSVColumnsToAll(file);
+            }
+        });
+    }
+});
+
+/**
+ * This function reads a CSV file that was uploaded 
+ * and adds any new columns found to grouping checkboxes.
+ * This method ensures that even if the file was uploaded as csv all 
+ * columns are available for grouping in the checkboxes.
+ */
+function addCSVColumnsToAll(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        let headers = text.split('\n')[0].split(',').map(h => h.trim());
+        const EXCLUDED_COLUMNS = ["actions", "sample"];
+        headers = headers.filter(h => !EXCLUDED_COLUMNS.includes(h.toLowerCase()));
+        const table = document.getElementById('metadata-table');
+        const headerRow = table.querySelector('thead tr');
+        const rows = table.querySelectorAll('tbody tr');
+        headers.forEach(header => {
+            if (!ALL_METADATA_COLUMNS.includes(header)) {
+                ALL_METADATA_COLUMNS.push(header);
+                const newHeader = document.createElement('th');
+                newHeader.textContent = header;
+                newHeader.style.fontWeight = 'normal';
+                headerRow.insertBefore(newHeader, headerRow.lastElementChild);
+                makeColumnResizable(newHeader, table);
+                rows.forEach(row => {
+                    const newCell = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = `custom_${header.toLowerCase().replace(/\s+/g, '_')}[]`;
+                    input.className = 'form-control form-control-sm';
+                    newCell.appendChild(input);
+                    row.insertBefore(newCell, row.lastElementChild);
+                });
+            }
+        });
+        // Refresh grouping checkboxes display
+        getGroupByCheckBoxes();
+    };
+    reader.readAsText(file);
+}
+
 
 /**
  * Handle adding ELBS report columns
@@ -539,16 +601,13 @@ function makeColumnResizable(th, table) {
     const resizer = document.createElement("div");
     resizer.classList.add("resizer");
     th.appendChild(resizer);
-
     let startX, startWidth, colIndex;
-
     resizer.addEventListener("mousedown", function(e) {
         e.preventDefault();
         startX = e.pageX;
         const parentCell = e.target.parentElement;
         startWidth = parentCell.offsetWidth;
         colIndex = Array.from(parentCell.parentElement.children).indexOf(parentCell);
-
         document.addEventListener("mousemove", resizeColumn);
         document.addEventListener("mouseup", stopResize);
     });
@@ -566,3 +625,87 @@ function makeColumnResizable(th, table) {
         document.removeEventListener("mouseup", stopResize);
     }
 }
+
+
+
+// Commented section for ladder type that was removed from metadata table
+/**
+ ** Ladder options to show based on chosen gel electrophoresis device.
+ */
+/**
+const ladderOptions = {
+  "2100 Bioanalyzer Instrument, Agilent": [
+    "DNA 1000", "DNA 12000", "DNA 7500"
+  ],
+  "4150 TapeStation System, Agilent": [
+    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
+  ],
+  "4200 TapeStation System, Agilent": [
+    "gDNA", "HS gDNA", "D5000", "HS D5000", "D1000"
+  ],
+  "5200 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "5300 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "5400 Fragment Analyzer System, Agilent": [
+    "NGS Fragment Kit (1-6000bp)", "HS NGS Fragment Kit (1-6000bp)",
+    "Small Fragment Kit (50 to 1500 bp)", "HS Small Fragment Kit (50 to 1500 bp)",
+    "gDNA", "HS gDNA", "Large Fragment Kit", "HS Large Fragment 50 kb kit",
+    "Plasmid DNA Analysis Kit (2,000 to 10,000 bp)",
+    "dsDNA 905 Reagent Kit (1-500bp)", "dsDNA 910 Reagent Kit (35-1500bp)",
+    "dsDNA 915 Reagent Kit (35-5000bp)", "dsDNA 920 Reagent Kit (75-15000bp)",
+    "dsDNA 930 Reagent Kit (75-20000bp)", "dsDNA 935 Reagent Kit (1-1500bp)"
+  ],
+  "Qsep 1 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ],
+  "Qsep 100 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ],
+  "Qsep 400 Bio-Fragment Analyzer, Nippon": [
+    "10-50000 bp", "10-1500 bp", "10-5000 bp"
+  ]
+};
+*/
+/**
+ ** Update ladder options displayed to the user automatically when a device is chosen.
+ */
+/**
+document.addEventListener('change', function (e) {
+  if (e.target.matches('.device-select')) {
+    const row = e.target.closest('tr');
+    const ladderSelect = row.querySelector('.ladder-select');
+    // Load chosen device
+    const selectedDevice = e.target.value;
+    const ladders = ladderOptions[selectedDevice] || [];
+    // Set display ladder type to default Select
+    ladderSelect.innerHTML = '<option value="">Select</option>';
+    // Create ladder options based on device
+    ladders.forEach(ladder => {
+      const opt = document.createElement('option');
+      opt.textContent = ladder;
+      opt.value = ladder;
+      ladderSelect.appendChild(opt);
+    });
+    // Always enable also Custom option
+    const customOpt = document.createElement('option');
+    customOpt.textContent = 'Custom';
+    customOpt.value = 'custom';
+    ladderSelect.appendChild(customOpt);
+  }
+});
+*/
