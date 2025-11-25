@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const confirmMetadataBtn = document.getElementById("submit-metadata-table");
   let metadataConfirmed = false;
   let metadataEdited = false;
+  // Uncheck agree terms checkbox on page reload and disable submit button
+  if (agreeCheckbox) {
+    agreeCheckbox.checked = false;
+    submitBtn.disabled = true;
+  }
   // Detect edits in metadata table
   if (metadataTable) {
     metadataTable.addEventListener("input", (e) => {
@@ -36,9 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
       metadataEdited = false;
     });
   }
-  // Disable submit button initially until terms are accepted
+  // Listen to event: change in agree checkbox, if checked enable submit button
   if (agreeCheckbox) {
-    submitBtn.disabled = !agreeCheckbox.checked;
     agreeCheckbox.addEventListener("change", () => {
       submitBtn.disabled = !agreeCheckbox.checked;
     });

@@ -344,7 +344,7 @@ function getGroupByCheckBoxes() {
 
 /**
  * On event: change of metadata file input upload
- * Read the new CSV file and add any new columns found
+ * Read the new CSV file and add any new columns found to grouping checkboxes
  */
 document.addEventListener('DOMContentLoaded', () => {
     const metaInput = document.querySelector('input[name="meta_file"]');
