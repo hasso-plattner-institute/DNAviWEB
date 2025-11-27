@@ -32,12 +32,11 @@
     .hero-section {
       background: #ffffff;
       border-radius: 1rem;
-      padding: 5rem 3rem;
+      padding: 3rem 2rem;
       max-width: 900px;
       width: 100%;
       box-shadow: 0 1rem 2rem rgba(0,0,0,0.1);
       text-align: center;
-      animation: fadeInUp 1s ease forwards;
     }
     .hero-section h1 {
       font-size: 3rem;
@@ -61,39 +60,54 @@
     /* Feature list styles */
     .feature-list {
       padding: 0;
-      margin-top: 1rem;
-      margin-bottom: 2rem;
-      list-style: none;
       max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto 2rem auto;
+      list-style: none;
     }
+
     .feature-item {
-      position: relative;
       background: #ffffff;
-      border: 2px solid #007bff;
+      border: none; /* Removed border */
       border-radius: 0.75rem;
-      padding: 0.8rem 1rem;
-      margin-bottom: 0.8rem;
+      padding: 0.1rem 1rem;
+      margin-bottom: 0.1rem;
       font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #007bff;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: slideFadeIn 0.5s forwards;
+      color: #000000; /* Changed to black */
+      opacity: 1;
+      transform: none;
+      animation: none; /* Remove animation */
+      display: block; /* Ensure each item behaves as a block */
+      position: relative;
     }
+
+    /* Button sizing for uniformity */
+    .d-flex.flex-wrap .btn {
+      min-width: 150px; /* Ensure minimum width; adjust as needed */
+      width: calc(50% - 0.5rem); /* Buttons are same width and have small spacing */
+      max-width: 220px; /* Added max-width for consistency */
+    }
+
     @keyframes slideFadeIn {
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* CSS adjustments for buttons */
+    /* Ensure buttons are responsive and fill their container as expected */
     .btn-lg {
-      font-size: 1.1rem;
       padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      width: 100%; /* Ensures full width within columns */
     }
+
+    .d-flex.flex-wrap .col-12 {
+      padding: 0 0.5rem; /* Adds a gap equivalent on both sides */
+    }
+
+    .align-button {
+      width: calc(200% + 1rem); /* Adjusting for exact double width and gap */
+    }
+
     .btn-lg i {
       vertical-align: middle;
     }
@@ -165,35 +179,51 @@
 
           <!--  <img src="{{ url_for('static', filename='img/schematic_v2.png') }}" alt="DNAvi Logo" class="mb-4" style="height:20%;" /> -->
           <p class="lead">
-            DNAvi is a tool for fast cell-free DNA fragmentation analysis in liquid biopsy research. Upload your gel electrophoresis images or signal tables and metadata and receive:
+            DNAvi analyzes cell-free DNA fragmentation profiles from gel electrophoresis traces:
           </p>
 
-          <!-- Animated feature list -->
-          <p class="cute"><i class="bi bi-arrows-expand"></i> Height normalization
-          <i class="bi bi-graph-up-arrow"></i> Peak detection </p>
-           <p class="cute"><i class="bi bi-grid-1x2"></i> Metadata-based grouping
-          <i class="bi bi-download"></i> Reports for your research</p>
-          </ul>
-
+          <!-- Feature list -->
+            <ul class="feature-list">
+              <li class="feature-item">
+                <i class="bi bi-arrows-expand"></i> Height normalization
+              </li>
+              <li class="feature-item">
+                <i class="bi bi-graph-up-arrow"></i> Peak detection
+              </li>
+              <li class="feature-item">
+                <i class="bi bi-grid-1x2"></i> Metadata-based grouping
+              </li>
+              <li class="feature-item">
+                <i class="bi bi-download"></i> Reports for your research
+              </li>
+            </ul>
           <!-- <p class="lead">You can <strong>log in</strong> to view your previous submissions or <strong>register</strong> to save all your analyses in one place. Or simply <strong>use the tool without logging in</strong> by starting a new analysis below.</p>
              -->
-          <!-- Navigation buttons -->
-          <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{{ url_for('protect') }}" class="btn btn-success btn-lg">
-              <i class="bi bi-graph-up me-2"></i> Analyse your data
-            </a>
-              <p></p>
-              <br>
+        <!-- Navigation buttons -->
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-12 col-md-8">
+              <a href="{{ url_for('protect') }}" class="btn btn-success btn-lg w-100 mb-3">
+                <i class="bi bi-graph-up me-2"></i> Start using DNAvi
+              </a>
+            </div>
           </div>
-            <p></p>
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">
-              <i class="bi bi-box-arrow-in-right me-2"></i> Login (See previous anaylses)
-            </a>
-            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
-              <i class="bi bi-person-plus me-2"></i> Register
-            </a>
+          <div class="row justify-content-center">
+            <div class="col-6 col-md-4 d-flex justify-content-center">
+              <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Login
+              </a>
+            </div>
+            <div class="col-6 col-md-4 d-flex justify-content-center">
+              <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg w-100 mb-3">
+                <i class="bi bi-person-plus me-2"></i> Register
+              </a>
+            </div>
           </div>
+        </div>
+
+            <!-- End Navigation buttons -->
+
             <br>
             <p class="cute"> DNAvi is not a medical product. It is an exploratory tool for research use only. <p/>
             <p style="font-size: 0.8rem; color: #6c757d; text-align:center;">
@@ -220,7 +250,7 @@
   <footer class="app-footer text-center py-3 border-top mt-auto">
     <small>&copy; Anja Hess, Yara Matani, 2025. License: GPL-3.0. Design by
       <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
-        <p  class="cute"> Temporal session cookies are used to ensure smooth data handling, data is saved for the time of your visit only.</p>
+        <p  class="cute">This website uses session cookies which are deleted when you leave the site.</p>
 
     </small>
   </footer>

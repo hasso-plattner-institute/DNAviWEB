@@ -281,12 +281,6 @@
                     <div class="card-body">
                       <!--begin::metadata two options header-->
                       <p>You can skip this section if you do not have metadata, DNAvi will still perform the analysis.</p>
-                      
-                      <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
-                      <ul class="mb-3 ps-3">
-                        <li>Fill out the metadata table for all your samples directly on this page.</li>
-                        <li>Or, download our template metadata file, after filling it, upload it here. <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a></li>
-                      </ul>
                       <!--end::metadata two options header-->
 
                       <!--begin::Option 1 - Online Table-->
@@ -297,10 +291,9 @@
                           <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
                         </div>
                         <p class="mb-2">
-                          Fill out the table below for all your samples directly on this page, then click "Confirm Table".  
                           <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
                           <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
-                          <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
+                          <p> Autocompletion and standardization <strong>(OLS Ontology Lookup Service)</strong>. <a href="https://www.ebi.ac.uk/ols4/" style="color:#b5b9bd;"> Learn more </a>
                           <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
                           <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Hybrid Option</h6>
                           <p>You can also fill metadata for a few samples here, download the partially completed table, edit it locally, and upload it again when ready.</p>
@@ -328,21 +321,21 @@
                                 <tr>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Unique sample identifier">SAMPLE<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Unique identifier for the sample donor.">Subject ID<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Disease that the subject was diagnosed with at the time the sample was collected.">Disease<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe a cell type: a distinct morphological or functional form of cell.">Cell Type<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="MONDO ID for disease that the subject was diagnosed with at the time the sample was collected.">Disease<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="CLO ontology term to describe a cell type: a distinct morphological or functional form of cell.">Cell Type<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="The material entity (e.g. DNA) that is this sample. Use this property as tags that befit your sample, picking as many as needed. Choose the specific terms if possible (e.g. if the assayed molecule is cDNA, add 'cDNA' instead of just 'DNA').">Sample Type<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Property to describe any unexpected (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Feature<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="The part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell type.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="HPO term to describe any unexpected (i.e. deviation from normal or average) phenotype (i.e. detectable outward manifestations of a specific genotype).">Phenotypic Feature<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="UBERON ID for the part of organism's anatomy or substance arising from an organism from which the biomaterial was derived, excluding cell type.">Material Anatomical Entity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="An organismal quality inherent in a bearer by virtue of the bearer's physical expression of sexual characteristics.">Biological Sex<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Precise age of the individual at the time the sample was collected.">Age<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="This property describes the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="NCBITaxon ID describing the material entity the sample consists in. That is, an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment.">Organism<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="when the sample was taken from the individual.">Sample Collection Date<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Specifies whether the sample is affected (case) or unaffected (control).">Case vs Control<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Describes the specific condition, treatment, or situation being investigated for the sample. The sample may or may not be affected by this condition under study, belonging to the case or control groups respectively.">Condition Under Study<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="XCO term describing the specific condition, treatment, or situation being investigated for the sample. The sample may or may not be affected by this condition under study, belonging to the case or control groups respectively.">Condition Under Study<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">Is Deceased?</th>
                                   <th class="optional-col">Is Pregnant?</th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Indicates whether sepsis or a bacterial infection is suspected. If Yes, specify the strain involved.">Is Infection Suspected?<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Name of the suspected infection strain.">Infection Strain<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="NCBITaxon ID for the suspected infection strain.">Infection Strain<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Specifies the hospital setting of the individual at the time of sample collection.">Hospitalization Status<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Extraction kit used.">Extraction Kit (DNA Isolation Method)<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Sample DNA amount.">DNA Mass<i class="bi bi-info-circle text-muted"></i></th>
@@ -351,8 +344,8 @@
                                   <th class="optional-col">Carrying Liquid Volume Unit</th>
                                   <th class="optional-col">In vitro / In vivo</th>
                                   <th class="optional-col">Gel Electrophoresis Device</th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Medications the patient used.">Treatment<i class="bi bi-info-circle text-muted"></i></th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Ethnicity of the subject.">Ethnicity<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="DRON ID for medications the patient used.">Treatment<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="HANCESTRO ID describing ethnicity of the subject.">Ethnicity<i class="bi bi-info-circle text-muted"></i></th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
@@ -575,9 +568,9 @@
                           <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 2: Upload Metadata File</h6>
                         </div>
                         <p class="mb-2">  
-                          If you prefer, download our template file, fill it out, and upload it here.
+                          <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a>, fill it out, and upload it here.
                         </p>
-                        <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
+                        <p class="text-muted mb-2">Accepted formats: CSV.</p>
                         <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
                       </div>
                       <!--end::Option 2-->
@@ -849,35 +842,11 @@
                           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <p class="mb-3">
-                            Your analysis is ready to be submitted. Please choose how you would like DNAvi to handle your uploaded files and results:
-                          </p>
-                            <div class="list-group mb-3">
-                              {% if user_logged_in %}
-                                <div class="list-group-item">
-                                  <span class="badge bg-success me-2">Analyze & Save</span>
-                                  Your data will be securely stored in the DNAvi database. You can revisit and download your results anytime from your <em>Submissions Dashboard</em>.
-                                </div>
-                                <div class="list-group-item">
-                                  <span class="badge bg-secondary me-2">Analyze Only</span>
-                                  Your data will be processed now, but deleted after this session ends.
-                                </div>
-                                <div class="list-group-item text-muted">
-                                  All saved data helps advance ongoing cell-free DNA research.
-                                </div>
-                              {% else %}
-                                <div class="list-group-item">
-                                  <span class="badge bg-success me-2">Analyze & Save</span>
-                                  Your data will be securely stored in the DNAvi database to support future research.
-                                </div>
-                                <div class="list-group-item">
-                                  <span class="badge bg-secondary me-2">Analyze Only</span>
-                                  Your data will be processed once, then deleted after the session ends.
-                                </div>
-                              {% endif %}
-                            </div>
                           <p class="text-muted small mb-0">
                             By choosing “Analyze & Save” you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                          </p>
+                          <p class="text-muted small mb-0">
+                            Otherwise, your data will be processed now, but deleted after this session ends.
                           </p>
                         </div>
                         <div class="modal-footer d-flex justify-content-between">
