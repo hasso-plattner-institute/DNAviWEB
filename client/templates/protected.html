@@ -849,35 +849,11 @@
                           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                          <p class="mb-3">
-                            Your analysis is ready to be submitted. Please choose how you would like DNAvi to handle your uploaded files and results:
-                          </p>
-                            <div class="list-group mb-3">
-                              {% if user_logged_in %}
-                                <div class="list-group-item">
-                                  <span class="badge bg-success me-2">Analyze & Save</span>
-                                  Your data will be securely stored in the DNAvi database. You can revisit and download your results anytime from your <em>Submissions Dashboard</em>.
-                                </div>
-                                <div class="list-group-item">
-                                  <span class="badge bg-secondary me-2">Analyze Only</span>
-                                  Your data will be processed now, but deleted after this session ends.
-                                </div>
-                                <div class="list-group-item text-muted">
-                                  All saved data helps advance ongoing cell-free DNA research.
-                                </div>
-                              {% else %}
-                                <div class="list-group-item">
-                                  <span class="badge bg-success me-2">Analyze & Save</span>
-                                  Your data will be securely stored in the DNAvi database to support future research.
-                                </div>
-                                <div class="list-group-item">
-                                  <span class="badge bg-secondary me-2">Analyze Only</span>
-                                  Your data will be processed once, then deleted after the session ends.
-                                </div>
-                              {% endif %}
-                            </div>
                           <p class="text-muted small mb-0">
                             By choosing “Analyze & Save” you consent to securely store your data on the servers of the Hasso Plattner Institute in Potsdam, Germany.
+                          </p>
+                          <p>
+                            Otherwise, your data will be processed now, but deleted after this session ends.
                           </p>
                         </div>
                         <div class="modal-footer d-flex justify-content-between">
