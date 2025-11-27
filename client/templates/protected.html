@@ -281,12 +281,6 @@
                     <div class="card-body">
                       <!--begin::metadata two options header-->
                       <p>You can skip this section if you do not have metadata, DNAvi will still perform the analysis.</p>
-                      
-                      <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Two Ways to Add Metadata</h6>
-                      <ul class="mb-3 ps-3">
-                        <li>Fill out the metadata table for all your samples directly on this page.</li>
-                        <li>Or, download our template metadata file, after filling it, upload it here. <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a></li>
-                      </ul>
                       <!--end::metadata two options header-->
 
                       <!--begin::Option 1 - Online Table-->
@@ -297,10 +291,9 @@
                           <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 1: Fill Out Metadata Online</h6>
                         </div>
                         <p class="mb-2">
-                          Fill out the table below for all your samples directly on this page, then click "Confirm Table".  
                           <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
                           <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Why Use the Online Table?</h6>
-                          <p>Filling out the table on the website gives you access to our <strong>ontology autocomplete</strong> feature, connected to the <em>OLS Ontology Lookup Service</em> for accurate and standardized ontology terms.</p>
+                          <p> Autocompletion and standardization <strong>(OLS Ontology Lookup Service)</strong>. <a href="https://www.ebi.ac.uk/ols4/" style="color:#b5b9bd;"> Learn more </a>
                           <hr class="my-3" style="border-top: 1px dashed #D6EAF8;">
                           <h6 class="fw-semibold text-primary mb-2" style="color: #357ABD;">Hybrid Option</h6>
                           <p>You can also fill metadata for a few samples here, download the partially completed table, edit it locally, and upload it again when ready.</p>
@@ -575,9 +568,9 @@
                           <h6 class="fw-semibold mb-0" style="color: #2C5282;">Option 2: Upload Metadata File</h6>
                         </div>
                         <p class="mb-2">  
-                          If you prefer, download our template file, fill it out, and upload it here.
+                          <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a>, fill it out, and upload it here.
                         </p>
-                        <p class="text-muted mb-2">Accepted formats: CSV, TSV, TXT.</p>
+                        <p class="text-muted mb-2">Accepted formats: CSV.</p>
                         <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
                       </div>
                       <!--end::Option 2-->
