@@ -79,11 +79,6 @@
       <nav class="app-header navbar navbar-expand bg-body">
         <div class="container-fluid">
           <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-                <i class="bi bi-list"></i>
-              </a>
-            </li>
             <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
@@ -133,9 +128,6 @@
             <!--begin::Row-->
             <div class="row">
               <div class="row align-items-center">
-                <div class="col-sm-6">
-                  <h3 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h3>
-                </div>
               </div>
             </div>
             <!--end::Row-->
@@ -149,74 +141,73 @@
               <div class="container">
                 <style>IMG{float: right;}</style>
 
+                <h1 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h1>
+
+
                 <!--start: Video tutorial -->
-                <h3>1. Video tutorial</h3>
+                <h2>Video tutorial</h2>
 
-                  A demo for a clinical analysis of diagnosed vs. relapsed neuroblastoma patients based on <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
+                  <p>A demo for a clinical analysis of diagnosed vs. relapsed neuroblastoma patients based on <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.</p>
+                  <video width="320" height="240" autoplay>
                   <source src="./static/video/dnavi_demo_trinidad_2x.mp4" type="video/mp4" />
+                  </video>
 
-                  Alternatively, see how we analyse different cell types:
+                  <p>Alternatively, see how we analyse different cell types:</p>
+                  <video width="320" height="240" autoplay>
                   <source src="./static/video/demo_cells.mp4" type="video/mp4" />
-
+                  </video>
                  <!--end: Video tutorial -->
 
                 <!--start: Screenshot tutorial -->
-                <h3>2. Step-by-Step Screenshot guide</h3>
-                  <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:100%; height:auto;">
+                <h2>Step-by-Step Screenshot guide</h2>
+                      <p>On DNAvi's start page, click the green button to directly start an analysis.</p>
+                      <img src="./static/img/tutorial/login.png" alt="Login" style="width:50%; height:auto;">
 
-                  <img src="./static/img/tutorial/login.png" alt="Login" style="width:100%; height:auto;">
-                  On DNAvi's start page, click the green button to directly start an analysis.
+                  <h3>Step 1: upload gel electrophoresis image or signal table.</h3>
+                      <img src="./static/img/tutorial/0_upload.png" alt="Upload" style="width:50%; height:auto;">
 
-                  <p>Step 1: upload gel electrophoresis image or signal table.</p>
-                  <img src="./static/img/tutorial/0_upload.png" alt="Upload" style="width:100%; height:auto;">
+                      <p>Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.</p>
+                      <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a>
+                      <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" style="width:50%; height:auto;">
 
-                  Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
-                  <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a>
-                  <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" style="width:100%; height:auto;">
+                  <h3>Step 2: choose your DNA size standard</h3>
+                      <p>The authors used a D1000 size standard, so we will select this option in the menu.</p>
+                      <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:50%; height:auto;">
 
-                  <p>Step 2: choose your DNA size standard</p>
-                  The authors used a D1000 size standard, so we will select this option in the menu.
-                  <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:100%; height:auto;">
+                  <h3>Step 3: (optional) Add sample metadata</h3>
+                      <p>Add a row for each sample in your gel:</p>
+                      <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:50%; height:auto;">
 
-                  <p>Step 3: (optional) Add sample metadata</p>
+                      <p>We will add metadata on disease and relapse status based on the original publication for our four selected samples.</p>
+                      <img src="./static/img/tutorial/sample.png" alt="add info" style="width:50%; height:auto;">
 
-                  Add a row for each sample in your gel:
-                  <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:100%; height:auto;">
+                      <p>Also add the information on relapse status:</p>
+                      <img src="./static/img/tutorial/status.png" alt="Staus" style="width:50%; height:auto;">
 
-                  We will add metadata on disease and relapse status based on the original publication for our four selected samples.
-                  <img src="./static/img/tutorial/sample.png" alt="add info" style="width:100%; height:auto;">
+                      <p>.. and confirm the table.</p>
+                      <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:50%; height:auto;">
 
-                  Also add the information on relapse status:
-                  <img src="./static/img/tutorial/status.png" alt="Staus" style="width:100%; height:auto;">
+                  <h3>Step 4: Submit for Analysis</h3>
+                      <p>Great, we will select the disease status as our group information of interest for statistical comparison.</p>
+                      <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:50%; height:auto;">
 
-                  .. and confirm the table.
-                  <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:100%; height:auto;">
+                      <p>Finally, confirm and submit:</p>
+                      <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:50%; height:auto;">
 
-                  <p>Step 4: Submit for Analysis</p>
-                  Great, we will select the disease status as our group information of interest for statistical comparison.
-                  <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:100%; height:auto;">
+                      <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:50%; height:auto;">
+                      <p>Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions dashboard.</p>
 
-                  Finally, confirm and submit:
-                  <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:100%; height:auto;">
-
-                  <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:100%; height:auto;">
-                  Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions dashboard.</p
-
-                  <p> Step 5: Explore Analysis Results & Download</p>
-
-                  <p>View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.
-                      Please cite DNAvi when using it for your work.</p>
-                  <img src="./static/img/tutorial/results.png" alt="Results" style="width:100%; height:auto;">
-                   <img src="./static/img/download.svg" alt="Explore Results" style="width:100%; height:auto;">
-                  <p>Need help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
+                  <h3> Step 5: Explore Analysis Results & Download</h3>
+                      <p>View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.</p>
+                      <img src="./static/img/tutorial/results.png" alt="Results" style="width:50%; height:auto;">
 
 
+                  <p>Done! Please cite DNAvi when using it for your work.</p>
+                  <p>Need more help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
                 <div class="row">
-
                   </div>
                   <!--end::3. Results -->
                 </div>
-
                 <!--end: Screenshot tutorial -->
 
                 <!--begin::Start button -->
