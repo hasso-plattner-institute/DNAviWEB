@@ -238,7 +238,7 @@
               <div id="sec-bar" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
                 <div class="accordion-body">
                   {% for f in other_files %}
-                    {% if "peak_statistics_sample" in f.lower() %}
+                    {% if "peak_statistics_sample" in f %}
                       <div class="text-center mb-4">
                         <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
                             style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
@@ -261,7 +261,7 @@
               <div id="sec-violin" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
                 <div class="accordion-body">
                   {% for f in other_files %}
-                    {% if "peak_statistics" in f.lower() and "peak_statistics_sample" not in f.lower() %}
+                    {% if "peak_statistics" in f.lower() and "peak_statistics_sample" not in f %}
                       <div class="text-center mb-4">
                         <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
                             style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
