@@ -13,6 +13,7 @@ import os
 from csv import Sniffer
 import pandas as pd
 from werkzeug.utils import secure_filename
+import logging
 
 def check_marker_lane(input_nr):
     """
@@ -22,7 +23,8 @@ def check_marker_lane(input_nr):
     """
     try:
         int(input_nr)
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print(f'Marker lane number must be an integer (full number) not ({input_nr})')
         exit()
 
@@ -100,13 +102,15 @@ def check_file(filename):
     ######################################################################
     try:
         delim = detect_delim(filename, num_rows=4)
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print(f"--- {filename} seems to have less than 4 rows. "
               f"Not plausible. Please check your input file.")
         exit()
     try:
         df = pd.read_csv(filename, header=0, delimiter=delim)
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print("--- Error reading your (generated) CSV file,"
               "please check your input file.")
         exit()
@@ -163,13 +167,15 @@ def check_ladder(filename):
     ######################################################################
     try:
         delim = detect_delim(filename, num_rows=3)
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print(f"--- {filename} seems to have less than 4 rows. "
               f"Not plausible. Please check your input file.")
         exit()
     try:
         df = pd.read_csv(filename, header=0, delimiter=delim)
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print("--- Error reading your ladder file,"
               "please check it and try again.")
         exit()
@@ -207,7 +213,6 @@ def check_ladder(filename):
     ######################################################################
     for ladder in df["Name"].unique():
         sub_df = df[df["Name"] == ladder].reset_index(drop=True)
-        sub_df["Basepairs"].astype(int).values.tolist()[::-1]
         peak_annos = sub_df["Basepairs"].astype(int).values.tolist()[::-1]
 
         if not sorted(peak_annos) == peak_annos:
@@ -247,8 +252,7 @@ def check_meta(filename):
     """
 
     Check if the metadata file is formatted correctly
-    remove any column (except SAMPLE) with null/empty values
-    
+
     :param filename: str, path to metadata file
 
     :return: raise error if file does not have correct format
@@ -271,12 +275,27 @@ def check_meta(filename):
     ######################################################################
     # 3. Check nomenclature, NANs and duplicates in the index
     ######################################################################
-    df = pd.read_csv(filename, header=0)
+    try:
+        delim = detect_delim(filename, num_rows=4)
+    except Exception as exception:
+        logging.exception(exception)
+        print(f"--- {filename} seems to have less than 4 rows. "
+              f"Not plausible. Please check your input file.")
+        exit()
+    try:
+        df = pd.read_csv(filename, delimiter=delim, header=0)
+    except Exception as e:
+        logging.exception(e)
+        print("Metafile misformatted. Make sure your fields do not contain commata.")
+        exit()
+
     try:
         df["ID"] = df["SAMPLE"]
-    except:
+    except Exception as exception:
+        logging.exception(exception)
         print("Metafile misformatted. Make sure first column is 'SAMPLE'")
         exit()
+
     if df["SAMPLE"].isnull().values.any():
         print("--- Meta table contains NaNs in SAMPLE column,"
               "Make sure every sample has a name and try again.")
@@ -286,20 +305,231 @@ def check_meta(filename):
         print("--- Duplicate sample names in metadata. Please give each "
               "sample a unique ID and try again.")
         exit()
-        
+
+    return filename
+
+
+def check_config(filename):
+    """
+
+    Check if the config file is formatted correctly
+
+    :param filename: str, path to config file
+
+    :return: raise error if file does not have correct format
+
+    """
+    print("--- Performing custom config file check")
     ######################################################################
-    # 4. Remove any column (except SAMPLE) with null/empty values
+    # 1. Make sure all arguments exist
     ######################################################################
-    cols_to_check = [col for col in df.columns if col != "SAMPLE"]
-    for col in cols_to_check:
-        if df[col].isnull().any() or (df[col] == "").any():
-            print(f"--- Column '{col}' contains null/empty values and will be removed")
-            df.drop(columns=[col], inplace=True)
+    if not(os.path.exists(filename)):
+        print(f"{filename} doesn't exist")
+        exit()
+    ######################################################################
+    # 2. Detect delimiter
+    ######################################################################
+    try:
+        delim = detect_delim(filename, num_rows=2)
+    except Exception as exception:
+        logging.exception(exception)
+        print(f"--- {filename} seems to have less than 2 rows. "
+              f"Not plausible. Please check your input file.")
+        exit()
+    try:
+        df = pd.read_csv(filename, header=0, delimiter=delim)
+    except Exception as exception:
+        logging.exception(exception)
+        print("--- Error reading your ladder file,"
+              "please check it and try again.")
+        exit()
+    ######################################################################
+    # 3. Check nomenclature in names column
+    ######################################################################
+    try:
+        print(df)
+    except Exception as exception:
+        logging.exception(exception)
+        print("Metafile misformatted. Make sure first column is called"
+              "'name', the second is 'start', and the third is 'end'")
+        exit()
+    if df["name"].isnull().values.any():
+        print("--- Config file table contains NaNs in 'name' column."
+              "Make sure every range has a name, and try again.")
+        exit()
 
     ######################################################################
-    # 5. Save the cleaned CSV
+    # 4. Replace NaN with 0 for int check, check dups
     ######################################################################
-    df.to_csv(filename, index=False)
-    print("--- Metadata check complete. Cleaned file saved.")
-    return filename
+    df["start"].fillna( 0, inplace=True)
+    df["end"].fillna( 0, inplace=True)
+    try:
+        df["start"] = df["start"].astype(int)
+        df["end"] = df["end"].astype(int)
+    except Exception as exception:
+        logging.exception(exception)
+        print("--- Non-integers in start/end. Make sure only integers are there.")
+        exit()
+    if df.duplicated(subset=["name"]).any():
+        print("--- Duplicate sample names in config. Please give each "
+              "sample a unique ID and try again.")
+        exit()
+
+    ######################################################################
+    # 5. Check for common errors
+    ######################################################################
+
+    # Convert back
+    df["end"].replace(0, None, inplace=True)
+    df["start"].replace(0, None, inplace=True)
+    ######################################################################
+    # 5. Check for common errors
+    ######################################################################
+    # Start > End
+    len_too_small = len(df[df["end"] < df["start"]])
+    if len_too_small > 0:
+        print("--- Positions in end are < start, please correct the config file:",
+              df[df["end"] < df["start"]]
+              )
+        exit()
+    # Interval <2bp
+    len_too_narrow = len(df[(df["end"] - df["start"]) < 2])
+    if len_too_narrow > 0:
+        print("--- The interval is < 2bp. Please make it larger.",
+              df[(df["end"] - df["start"]) < 2]
+              )
+        exit()
+    isnull_len = df.isnull().sum(axis=1).max()
+    # Two NaNs
+    if isnull_len > 1:
+        print("--- Two Empty interval detected, please change or remove it.")
+        exit()
+    ######################################################################
+    # 6. Finally parse to the normal nuc dict format and return
+    ######################################################################
+    nuc_dict = {row[0]: (row[1], row[2]) for row in df.values}
+    return nuc_dict
+
+
+
+
+def compute_nuc_intervals(start, step=200, total_steps=10,
+                          prefixes=["Mono", "Di", "Tri", "Tetra", "Penta", "Hexa",
+                                    "Hepta", "Octa", "Nona", "Deca"]):
+    """
+
+    Compute interpretable nucleosomaal intervals in format them
+    into a common DNAvi nuc dict.
+
+    :param start:
+    :param step:
+    :param total_steps:
+    :param prefixes:
+    :return: new nuc_dict (pyhton dictionary)
+    """
+
+    #####################################################################
+    # 1. Define list range and add the name for each
+    #####################################################################
+    max_list = (total_steps * step)
+    nuc_dict = {}
+    for i, size in enumerate(range(start, max_list, step)):
+        interval_name = prefixes[i]
+        start_1based = size + 1
+        end = size + step
+        print(interval_name, start_1based, end)
+        nuc_dict[f"{interval_name}({start_1based}-{end}bp)"] = (start_1based, end)
+
+    #####################################################################
+    # Everything larger goes up
+    #####################################################################
+    nuc_dict[f"Deca({start_1based}-{end}bp)"] = \
+        (nuc_dict[f"Deca({start_1based}-{end}bp)"][1]+1, None)
+
+    return nuc_dict
+    # END OF FUNCTION
+
+
+def check_interval(interval_string, max_val=100000):
+    """
+
+    Check if the config file is formatted correctly
+
+    :param filename: str, path to config file
+
+    :return: raise error if file does not have correct format
+
+    """
+    print("--- Performing interval check")
+
+    ######################################################################
+    # 1. Detect delimiter
+    ######################################################################
+    if "," not in interval_string:
+        print("Missing interval delimiter. Please provide interval "
+              "as Start,Step (e.g. 100,200 for starting at 100bp and increasing "
+              "in 200 bp steps).")
+        exit(1)
+    if interval_string.count(",") > 1:
+        print("Too many delimiters. Please provide interval "
+              "as Start,Step (e.g. 100,200 for starting at 100bp and increasing "
+              "in 200 bp steps).")
+        exit(1)
+    ######################################################################
+    # 2. Split and convert to int
+    ######################################################################
+    start, step = interval_string.replace(" ","").split(",")
+    try:
+        start = int(start)
+    except ValueError:
+        print(f"--- Invalid start value for interval: {start}. Please provide integer.")
+        exit(1)
+    try:
+        step = int(step)
+    except ValueError:
+        print(f"--- Invalid start value for interval: {step}. Please provide integer.")
+        exit(1)
+    print(f"--- Computing nucleosomal intervals from {start} bp in steps of {step} bp.")
+
+    if step < 5 or start < 5:
+        print(f"--- Start/Step too small. Please increase value.")
+        exit(1)
+    if start > max_val or step > max_val:
+        print(f"--- Start or step value too large. Please lower value.")
+        exit(1)
+    ######################################################################
+    # 3. Convert to nucleosomal dict
+    ######################################################################
+    nuc_dict = compute_nuc_intervals(start=start, step=step)
+    return nuc_dict
+
+
+def generate_meta_dict(meta_path, files=[]):
+    """
+    A function to conveniently parse metadata for multiple files
+    when handling multi-file inputs
+
+    :param meta_path: path to metadata file
+    :param files: list
+    :return: dictionary parsing the new split metadata file for each input file
+    """
+
+    meta_df = pd.read_csv(meta_path)
+    meta_dict = {}
+    toplevel_dir = f"{os.path.dirname(meta_path)}/"
+
+    for file in files:
+        file_name = file.split("/")[-1]
+        print(f"--- Getting metadata for {file_name} ---")
+        meta_df_file = meta_df[meta_df["FILE"] == file_name]
+        if meta_df_file.empty:
+            meta_dict[file] = False
+        else:
+            file_meta = file.rsplit('.',1)[0]+"_meta.csv"
+            file_id = file_meta.rsplit('/',1)[1]
+            file_meta_name = f"{toplevel_dir}{file_id}"
+            meta_df_file.to_csv(file_meta_name, index=False)
+            meta_dict[file] = file_meta_name
+    return meta_dict
+    # END OF FUNCTION
 # END OF SCRIPT
