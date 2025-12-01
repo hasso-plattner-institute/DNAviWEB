@@ -139,21 +139,22 @@
           <main id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
               <div class="container">
-                <style>IMG{float: right;}</style>
+                <!--<style>IMG{float: right;}</style> -->
 
                 <h1 class="mb-0">DNAvi - Cell-free DNA visualization and analysis</h1>
+                <br>
 
 
                 <!--start: Video tutorial -->
                 <h2>Video tutorial</h2>
 
                   <p>A demo for a clinical analysis of diagnosed vs. relapsed neuroblastoma patients based on <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.</p>
-                  <video width="320" height="240" autoplay>
+                  <video>
                   <source src="./static/video/dnavi_demo_trinidad_2x.mp4" type="video/mp4" />
                   </video>
 
                   <p>Alternatively, see how we analyse different cell types:</p>
-                  <video width="320" height="240" autoplay>
+                  <video>
                   <source src="./static/video/demo_cells.mp4" type="video/mp4" />
                   </video>
                  <!--end: Video tutorial -->
@@ -162,47 +163,57 @@
                 <h2>Step-by-Step Screenshot guide</h2>
                       <p>On DNAvi's start page, click the green button to directly start an analysis.</p>
                       <img src="./static/img/tutorial/login.png" alt="Login" style="width:50%; height:auto;">
+                      <br>
 
                   <h3>Step 1: upload gel electrophoresis image or signal table.</h3>
                       <img src="./static/img/tutorial/0_upload.png" alt="Upload" style="width:50%; height:auto;">
 
-                      <p>Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.</p>
-                      <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a>
+                      <p>Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>. <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a></p>
                       <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" style="width:50%; height:auto;">
+                      <br>
 
                   <h3>Step 2: choose your DNA size standard</h3>
                       <p>The authors used a D1000 size standard, so we will select this option in the menu.</p>
                       <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:50%; height:auto;">
+                      <br>
 
                   <h3>Step 3: (optional) Add sample metadata</h3>
                       <p>Add a row for each sample in your gel:</p>
                       <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:50%; height:auto;">
+                      <br>
 
                       <p>We will add metadata on disease and relapse status based on the original publication for our four selected samples.</p>
                       <img src="./static/img/tutorial/sample.png" alt="add info" style="width:50%; height:auto;">
+                      <br>
 
                       <p>Also add the information on relapse status:</p>
                       <img src="./static/img/tutorial/status.png" alt="Staus" style="width:50%; height:auto;">
+                      <br>
 
                       <p>.. and confirm the table.</p>
                       <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:50%; height:auto;">
+                      <br>
 
                   <h3>Step 4: Submit for Analysis</h3>
                       <p>Great, we will select the disease status as our group information of interest for statistical comparison.</p>
                       <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:50%; height:auto;">
+                      <br>
 
                       <p>Finally, confirm and submit:</p>
                       <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:50%; height:auto;">
+                      <br>
 
                       <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:50%; height:auto;">
                       <p>Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions dashboard.</p>
+                      <br>
 
                   <h3> Step 5: Explore Analysis Results & Download</h3>
                       <p>View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.</p>
                       <img src="./static/img/tutorial/results.png" alt="Results" style="width:50%; height:auto;">
-
+                      <br>
 
                   <p>Done! Please cite DNAvi when using it for your work.</p>
+                  <br>
                   <p>Need more help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
                 <div class="row">
                   </div>
