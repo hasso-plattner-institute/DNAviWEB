@@ -9,6 +9,7 @@ Author: Anja Hess
 Date: 2025-AUG-06
 
 """
+import logging
 import os
 import numpy as np
 import pandas as pd
@@ -18,8 +19,6 @@ from matplotlib.ticker import ScalarFormatter
 from src.constants import PALETTE
 from matplotlib.patches import Patch
 import warnings; warnings.filterwarnings("ignore")
-from plotly.tools import mpl_to_plotly
-import plotly.io as pio
 
 def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
              cols_not_to_plot=["bp_pos", "normalized_fluorescent_units"],
@@ -49,10 +48,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
 
     # Log scale
     plt.xscale('log')
-    # Create pdf (for results purposes)
     plt.savefig(f"{save_dir}{title}_summary.pdf", bbox_inches='tight')
-    # Create png (for viewing in browser)
-    plt.savefig(f"{save_dir}{title}_summary.png", dpi=150, bbox_inches='tight')
     plt.close()
 
     #####################################################################
@@ -80,7 +76,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         required_colors = round(int(len(wide_df[col].unique())/5))
         if required_colors <= 5:
             required_colors = 2
-        lut = dict(zip(wide_df[col].unique(), sns.color_palette(palette='colorblind')*required_colors))
+        lut = dict(zip(wide_df[col].unique(), PALETTE)) #sns.color_palette(palette='colorblind')*required_colors
         row_colors = wide_df[col].map(lut)
 
         sns.clustermap(wide_df.drop(columns=["sample", col]),
@@ -91,10 +87,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         plt.legend(handles, lut, title=col,
                    bbox_to_anchor=(1, 1),
                    bbox_transform=plt.gcf().transFigure, loc='upper right')
-        # Create pdf (for download)
         plt.savefig(f"{save_dir}cluster_by_{col}.pdf", bbox_inches="tight")
-        # Create png (for viewing in browser)
-        plt.savefig(f"{save_dir}cluster_by_{col}.png", dpi=150, bbox_inches='tight')
         plt.close()
 
         #################################################################
@@ -106,15 +99,14 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                      palette=PALETTE[:len(df[hue].unique())],
                      hue=hue)
         # Add labels
+        #plt.axvline(x=100)
+        #plt.axvline(x=50000)
         plt.ylabel(y_label)
         plt.xlabel(x_label)
         plt.title(f"{title} by {col}")
         plt.xscale('log')
-        # Create pdf (for download)
         plt.savefig(f"{save_dir}{title}_by_{col}.pdf",
                     bbox_inches='tight')
-        # Create png (for viewing in browser)
-        plt.savefig(f"{save_dir}{title}_by_{col}.png", dpi=150, bbox_inches='tight')
         plt.close()
 
 
@@ -132,10 +124,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.xlabel(x_label)
     plt.suptitle(f"{title}")
     plt.xscale('log')
-    # Create pdf (for download)
     plt.savefig(f"{save_dir}{title}.pdf")
-    # Create png (for viewing in browser)
-    plt.savefig(f"{save_dir}{title}.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
 
@@ -157,8 +146,8 @@ def p2stars(p):
     # END OF FUNCTION
 
 
-def stats_plot(path_to_df, cols_not_to_plot=None, peak_id="peak_id",
-               y="bp_or_frac"):
+def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
+               y="value", cut=False):
     """
     Plot statistical results
     :param path_to_df: str
@@ -167,15 +156,15 @@ def stats_plot(path_to_df, cols_not_to_plot=None, peak_id="peak_id",
     """
     df = pd.read_csv(path_to_df, index_col=0)
     sns.set_context("paper")
-
     #####################################################################
     # Remove peaks where all values are 0
     #####################################################################
-    cat_counts = df.groupby([peak_id])[y].sum()
-    peaks_without_vals = cat_counts[cat_counts == 0].index.tolist()
-    print(f"--- Not plotting {peaks_without_vals} (bp/frac = 0 for all samples)")
-    df = df[~df[peak_id].isin(peaks_without_vals)]
+    cat_counts = df.groupby([region_id])[y].sum()
 
+    peaks_without_vals = cat_counts[cat_counts == 0].index.tolist()
+    if peaks_without_vals:
+        logging.info(f"--- Not plotting {peaks_without_vals}")
+    df = df[~df[region_id].isin(peaks_without_vals)]
     #####################################################################
     # 1. Plot grid based on every available metric in peak_id
     #####################################################################
@@ -194,30 +183,46 @@ def stats_plot(path_to_df, cols_not_to_plot=None, peak_id="peak_id",
                                      ).round({'p_value': 3})
             stats_dict = pd.Series(stats_info.p_value.values,
                                    index=stats_info.peak_name).to_dict()
-            plot_df["p_val"] = plot_df[peak_id].map(stats_dict)
+            plot_df["p_val"] = plot_df[region_id].map(stats_dict)
             plot_df["stars"] = plot_df["p_val"].apply(p2stars)
-            #df.dropna(subset=["p_val"], inplace=True)
-            plot_df[peak_id] = (plot_df[peak_id].astype(str) + " \n p=" +
+            plot_df[region_id] = (plot_df[region_id].astype(str) + " \n p=" +
                              plot_df["p_val"].astype(str)) + " (" + plot_df["stars"] + ")"
+        # Check all peaks are there
+        peak_ids = plot_df[region_id].value_counts().index.tolist()
+        if not peak_ids:
+            print(f"No peaks {categorical_var}")
+            continue
         #################################################################
         # Create the grid plot
         #################################################################
-        g = sns.FacetGrid(plot_df, col=peak_id, col_wrap=4, hue=categorical_var,
+        g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
                           sharex=True, sharey=False, palette=PALETTE)
-        if categorical_var == "sample":
-            g.map(sns.barplot, categorical_var, y, palette=PALETTE)
-        g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
-              edgecolor="black", alpha=.7)
-        g.map(sns.stripplot, categorical_var, y, color="white", linewidth=1, edgecolor="black")
-        # Create pdf (for download)
-        plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"),
-                    bbox_inches='tight')
-        # Create png (for viewing in browser)
-        plt.savefig(f"{path_to_df.replace('.csv', f'_{categorical_var}.png')}", dpi=150, bbox_inches='tight')
-        plt.close()
-        # END OF FUNCTION
 
-def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",
+        if categorical_var == "sample":
+            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
+                              sharex=True, sharey=False, palette=PALETTE,
+                              aspect=1.5)
+            g.map(sns.barplot, categorical_var, y, palette=PALETTE,
+                  )
+
+        if cut:
+            g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
+                  edgecolor="black", alpha=.7, cut=0)
+        else:
+            g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
+                  edgecolor="black", alpha=.7)
+        g.map(sns.stripplot, categorical_var, y, color="white", linewidth=1, edgecolor="black")
+
+        # Rotate x-axis labels
+        [plt.setp(ax.get_xticklabels(), rotation=90) for ax in g.axes.flat]
+        plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
+        plt.close()
+    # END OF FUNCTION
+
+
+
+
+def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",x_label="",
              size_values=""):
     """
 
@@ -230,8 +235,10 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",
     :param i: int, index of the ladder (potentially multiple)
     :param qc_save_dir: str, path to folder to save the figure to
     :param y_label: str, y label name
+    :param x_label: str, x label name
     :return: plots are generated and saved to disk.
     """
+
 
     plt.plot(array)
     plt.plot(peaks, array[peaks], "x")
@@ -240,19 +247,22 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",
     max_x = len(array) # relative val for label
     center_factor = max_x * 0.035 # labels look prettier when up
     if size_values:
-        for x, y in zip(peaks, array[peaks]):
-            real_pos = round(size_values[x])
-            plt.annotate(f"{real_pos} bp", xy=(x-center_factor, y+0.02))
+        for i, (x, y) in enumerate(zip(peaks, array[peaks])):
+            if type(x) != np.int64:
+                print(x, type(x))
+                real_pos = round(size_values[x])
+            else:
+                real_pos = size_values[i]
+            plt.annotate(f"{real_pos} bp", xy=(x-center_factor, y+0.04),
+                         size=7)
     plt.plot(np.zeros_like(array), "--", color="gray")
-    plt.title(ladder_id + f" {ref}")
+    plt.title(ladder_id)
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
-    plt.xlabel("Relative position in gel (arbitrary units)")
-    # Create pdf (for download)
+    plt.xlabel(x_label)
     plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf")
-    # Create png (for viewing in browser)
-    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.png", dpi=150, bbox_inches='tight')
     plt.close()
+
     # END OF FUNCTION
 
 
@@ -316,10 +326,7 @@ def lineplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.xlim(lower_xlim, None)
     if window:
         plt.xlim(window[0], window[1])
-    # Create pdf (for download)
     plt.savefig(f"{save_dir}{title}.pdf")
-    # Create png (for viewing in browser)
-    plt.savefig(f"{save_dir}{title}.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION
 
@@ -350,9 +357,6 @@ def ladderplot(df, ladder2type, qc_save_dir, y_label="", x_label=""):
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
-    # Create pdf (for download)
     plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf")
-    # Create png (for viewing in browser)
-    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.png", dpi=150, bbox_inches='tight')
     plt.close()
     # END OF FUNCTION

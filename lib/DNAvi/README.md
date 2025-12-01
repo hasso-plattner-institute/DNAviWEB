@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1025068693.svg)](https://doi.org/10.5281/zenodo.17642352)
+
 DNAvi: integration, analysis, and visualization of cell-free DNA fragment traces
 ===========
 
@@ -6,12 +8,20 @@ DNAvi: integration, analysis, and visualization of cell-free DNA fragment traces
 
 
 ## 1. Description
-DNAvi is an open-access software to integrate, analyze and visualize multiple cell-free DNA fragmentation profiles from liquid biopsies. It uses either gel images
-or automated gel electrophoresis device output tables (electropherograms). The tool was tested on a 32 GB memory local PC on Ubuntu 24.04.2 LTS, as well as on Windows 10 and MAC-OS.
+DNAvi is an open-source software to integrate, analyze and visualize multiple cell-free DNA fragmentation profiles from liquid biopsies. It uses either gel images
+or automated gel electrophoresis device output tables (electropherograms). The tool was tested on a 32 GB memory local PC on Ubuntu 24.04.2 LTS, as well as on Windows 10 and macOS.
 
 ## 2. Installation
 
-Please make sure you have installed **python => 3.12**. Next, download the required packages:
+### With pip (recommended)
+
+    pip install dnavi
+
+Done! You can move to Quick start.
+
+### From github (alternative)
+
+Please make sure you have installed **python ≥ 3.12**. Next, download the required packages:
 
 Python packages:
 
@@ -35,18 +45,17 @@ Through *github CLI*:
 
 Or through *zip download*:
 
-    Go to <Code> (top right), then click 'Download ZIP'. 
-    
+    Go to <Code> (top right), then click 'Download ZIP'.
 
 Unpack or move the DNAvi folder to your location of choice and you're ready to start.
-
+        
 
 ## 3. Quick start
 
 ### 3.1 Open the termial
 
 Linux: **Ctrl+Alt+T** \
-MAC: **Launchpad -> Search Terminal -> Click on Terminal** \
+macOS: **Launchpad -> Search Terminal -> Click on Terminal** \
 Windows: **Windows Symbol -> search cmd.exe -> Click cmd.exe** 
 
 
@@ -54,8 +63,18 @@ Windows: **Windows Symbol -> search cmd.exe -> Click cmd.exe**
 
 In this example we will run DNAvi on a test electropherogram signal table provided in this package:
 
-    cd DNAvi/
+    cd path/to/DNAvi/
+
+Hint: to find where DNAvi is installed type "pip show dnavi".
+    
+    dnavi -i tests/electropherogram.csv -l tests/ladder.csv -m tests/metadata.csv
+
+Or, if you installed from github:
+
+    
+
     python3 DNAvi.py -i tests/electropherogram.csv -l tests/ladder.csv -m tests/metadata.csv
+
 
 
 This will result in the following output:
@@ -115,7 +134,7 @@ two experiments, and we can see the integrated profile plot for each expeirment 
 If you have multiple gel images or csv files to process, just put them into a folder and point DNAvi to that folder: \
 **! Attention:** Run together only files that have the **same DNA ladder**.
 
-    python3 DNAvi.py -i /path/to/folder -l ladder.csv
+    dnavi -i /path/to/folder -l ladder.csv
 
 
 ## 5. Help and documentation
@@ -123,7 +142,8 @@ If you have multiple gel images or csv files to process, just put them into a fo
 
 If you need help, simply run
 
-    python3 DNAvi.py --help
+    dnavi --help
+
 
 Which will result in a display of command line arguments with additional explanaitons:
 
@@ -133,32 +153,44 @@ Which will result in a display of command line arguments with additional explana
      |  _ |  \ | |  / \__   _(_)
      | | | |  \| | / _ \ \ / / |
      | |_| | |\  |/ ___ \ V /| |
-     |____/|_| \_/_/   \_\_/ |_|
-
-    usage: DNAvi.py [-h] [-i [<input-file-or-folder>]] -l [<ladder-file>] [-m [<metadata-file>]] [-n [<run-name>]] [-incl]
-                    [-ml <int>] [--verbose] [-v]
-
+     |____/|_| \_/_/   \_\_/ |_| 
+     
+    usage: DNAvi.py [-h] [-i [<input-file-or-folder>]] -l [<ladder-file>] [-m [<metadata-file>]] [-n [<run-name>]] [-c [<config-file>]] [-iv [<(start,step)>]]
+                    [-p] [-un] [-nt [<sample_name>]] [-ml <int>] [-incl] [-cor] [--verbose] [-v]
+    
     Analyse Electropherogram data e.g. for cell-free DNA from liquid biopsies
-
+    
     options:
       -h, --help            show this help message and exit
       -i [<input-file-or-folder>], --input [<input-file-or-folder>]
-                            Path to electropherogram table file or image file OR directory containing those files. Accepted formats:
-                            .csv/.png/.jpeg/.jpg or directory containing those.
+                            Path to electropherogram table file or image file OR directory containing those files. Accepted formats: .csv/.png/.jpeg/.jpg or
+                            directory containing those.
       -l [<ladder-file>], --ladder [<ladder-file>]
                             Path to ladder table file. Accepted format: .csv
       -m [<metadata-file>], --meta [<metadata-file>]
-                            Path to metadata table file containing grouping information for input file (e.g. age, sex, disease).
-                            Accepted format: .csv
+                            Path to metadata table file containing grouping information for input file (e.g. age, sex, disease). Accepted format: .csv
       -n [<run-name>], --name [<run-name>]
                             Name of your run/experiment. Will define output folder name
-      -incl, --include      Include marker bands into analysis and plotting.
+      -c [<config-file>], --config [<config-file>]
+                            Define nucleosomal fractions with this path to a configuration file containing custom (nucleosome) intervals for statistics.
+                            Accepted format: tab-separated text files (.txt)
+      -iv [<(start,step)>], --interval [<(start,step)>]
+                            Auto-generate nucleosomal size intervals by providing (start,step), e.g. start at 100 and increase by 200 bp
+      -p, --paired          Perform paired statistical testing
+      -un, --unnormalized   Do not perform min/max normalization. ATTENTION: will be DNA-concentration sensitive.
+      -nt [<sample_name>], --normalize_to [<sample_name>]
+                            Name of the sample to normalize all values to. ATTENTION: will be DNA-concentration sensitive.
       -ml <int>, --marker_lane <int>
-                            Change the lane selected as the DNA marker/ladder, default is first lane (1)
+                            Change the lane selected as the DNA marker/ladder, default is first lane (1). Using this will force to use the specified column
+                            even if other columns are called Ladder already.
+      -incl, --include      Include marker bands into analysis and plotting.
+      -cor, --correct       Perform advanced automatic marker lane detection in samples with highly variant concentrations (e.g., dilution series), so that
+                            the marker borders will be determined for each sample individually
       --verbose             increase output verbosity
       -v, --version         show program's version number and exit
+    
+    Version: 0.2, created by Anja Hess <github.com/anjahess>.
 
-      Version: 0.1, created by Anja Hess <anja.hess@mail.de>, MPIMG
 
 
 ## 6. Acknowledgements
@@ -169,7 +201,7 @@ Special thanks to [Yara Matani](https://github.com/yaramt) and [Philine Guckelbe
 
 **Anja Hess<sup>1,2,3</sup>, Dominik Seelow<sup>1</sup>, and Helene Kretzmer<sup>2,4</sup>: 
 DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces (2025).**
-1. Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany 
-2. Max Planck Institute for Molecular Genetics, Berlin, Germany
-3. Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany
-4. Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany
+1. [Center of Genomic Medicine](https://www.bihealth.org/de/forschung/sektionen/exploratory-diagnostic-sciences-eds/center-of-genomic-medicine), Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany
+2. [Max Planck Institute for Molecular Genetics](https://www.molgen.mpg.de/), Berlin, Germany
+3. [Department of Biology, Chemistry and Pharmacy](https://www.bcp.fu-berlin.de/), Freie Universität Berlin, Berlin, Germany
+4. [Digital Health Cluster](https://hpi.de/forschung/cluster/digital-health/), Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany
