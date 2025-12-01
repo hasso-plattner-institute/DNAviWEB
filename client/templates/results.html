@@ -103,109 +103,252 @@
               </div>
             </div>
           </div>
-          <!-- Peaks Files Carousel -->
-          {% if peaks_files %}
-          <section class="mb-5">
-            <div class="card card-outline card-primary">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="card-title mb-0">Peaks Samples</h4>
-              </div>
-              <div class="card-body d-flex justify-content-center align-items-center p-3" style="height:90vh; position:relative;">
-                {% for f in peaks_files %}
-                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f.replace('.png', '.pdf')) }}" target="_blank">
-                    <img class="peak-frame" src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
-                        style="max-width:100%; max-height:100%; display: {% if loop.first %}block{% else %}none{% endif %}; object-fit: contain;">
-                  </a>
-                {% endfor %}
-                <button id="prevPeak" class="btn btn-sm btn-primary position-absolute top-50 start-0 translate-middle-y ms-2">
-                  &laquo; Previous
-                </button>
-                <button id="nextPeak" class="btn btn-sm btn-primary position-absolute top-50 end-0 translate-middle-y me-2">
-                  Next &raquo;
-                </button>
-              </div>
-            </div>
-          </section>
-          {% endif %}
-          <!-- PDF -->
-          {% for f in pdf_files %}
-          <section class="mb-5">
-            <div class="card card-outline card-primary">
-              <div class="card-header">
-                <h4 class="card-title mb-0">{{ f }}</h4>
-              </div>
-              <div class="card-body p-3" style="overflow:auto; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-                {% if f.lower().endswith('.pdf') %}
-                  <embed src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
-                        type="application/pdf" 
-                        style="width:80%; height:600px; margin-bottom:0.5rem; border:1px solid #ccc;">
-                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" target="_blank" class="btn btn-primary mt-2">
-                    <i class="bi bi-file-earmark-pdf me-2"></i> View full report {{ f }}
-                  </a>
-                {% endif %}
-              </div>
-            </div>
-          </section>
-          {% endfor %}
-          <!-- Other files -->
-          {% for f in other_files %}
-          <section class="mb-5">
-            <div class="card card-outline card-primary">
-              <div class="card-header">
-                <h4 class="card-title mb-0">{{ f }}</h4>
-              </div>
-              <div class="card-body p-3" style="overflow:auto; max-height:90vh; display:flex; justify-content:center; align-items:center; flex-direction:column;">
-                {% if f.lower().endswith('.png') %}
-                  <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f.replace('.png', '.pdf')) }}" target="_blank">
-                    <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
-                        style="max-width:100%; max-height:90vh; object-fit:contain; display:block; margin-bottom:0.5rem;">
-                  </a>
-                  <small>Click image to view full PDF</small>
-                {% else %}
-                  <div>
-                    <a href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}" 
-                      target="_blank" class="btn btn-primary">
-                      Download {{ f }}
-                    </a>
+
+          <!-- begin:: overview -->
+          <h3 class="mb-3">Overview</h3>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <div class="col">
+              <a href="#sec-elbs" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-file-earmark-text me-3 fs-3 text-primary"></i>
+                    <span class="fw-semibold">ELBS Report</span>
                   </div>
-                {% endif %}
-              </div>
+                </div>
+              </a>
             </div>
-          </section>
-          {% endfor %}
-          <!-- Statistics tables -->
-          {% for t in statistics_files %}
-          <section class="mb-5">
-            <div class="card card-outline card-primary">
-              <div class="card-header">
-                <h4 class="card-title mb-0">{{ t.name }}</h4>
-              </div>
-              <div class="card-body table-responsive p-0">
-                <table class="table table-striped table-hover">
-                  <thead class="table-primary">
-                    <tr>
-                      {% for col in t.columns %}
-                      <th>{{ col }}</th>
-                      {% endfor %}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in t.preview %}
-                    <tr>
-                      {% for col in t.columns %}
-                      <td>{{ row[col] }}</td>
-                      {% endfor %}
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-                <div class="p-2 text-end">
-                  <small>This is a preview <a href="{{ url_for('serve_result_file', output_id=output_id, filename=t.name) }}" target="_blank">download full CSV here</a></small>
+            <div class="col">
+              <a href="#sec-line" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-graph-up me-3 fs-3 text-success"></i>
+                    <span class="fw-semibold">Line Plots</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#sec-bar" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-bar-chart me-3 fs-3 text-warning"></i>
+                    <span class="fw-semibold">Bar Plots</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#sec-violin" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-ui-checks-grid me-3 fs-3 text-info"></i>
+                    <span class="fw-semibold">Violin Plots</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#sec-cluster" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-diagram-3 me-3 fs-3 text-secondary"></i>
+                    <span class="fw-semibold">Cluster Maps</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col">
+              <a href="#sec-statistics" class="text-decoration-none overview-link">
+                <div class="card shadow-sm h-100 hover-scale">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="bi bi-table me-3 fs-3 text-dark"></i>
+                    <span class="fw-semibold">Statistics</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <!-- end:: overview -->
+
+          <!-- begin: results -->
+          <div class="accordion mt-4" id="resultsAccordion">
+
+            <!--begin:: ELBS report -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-elbs">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-elbs">
+                  ELBS Report
+                </button>
+              </h2>
+              <div id="sec-elbs" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body text-center">
+                  {% for f in pdf_files %}
+                    {% if "dnavireport" in f.lower() %}
+                      <embed src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                            type="application/pdf"
+                            style="width:90%; height:600px;">
+                      <a class="btn btn-primary mt-3" target="_blank"
+                        href="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}">
+                        Open PDF
+                      </a>
+                    {% endif %}
+                  {% endfor %}
                 </div>
               </div>
             </div>
-          </section>
-          {% endfor %}
+            <!--end:: ELBS report -->
+
+            <!--begin:: line plots -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-line">
+                <button class="accordion-button collapsed" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#sec-line">
+                  Line Plots
+                </button>
+              </h2>
+              <div id="sec-line" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body">
+                  {% set line_patterns = ["peaks_", "0_interpolated", "all_samples", "all_samples_summary", "all_samples_by"] %}
+                  {% for f in peaks_files + other_files %}
+                    {% set fname = f.lower() %}
+                    {% if line_patterns | select('in', fname) | list | length > 0 %}
+                      <div class="text-center mb-4">
+                        <a href="{{ url_for('serve_result_file', output_id=output_id,
+                                            filename=f.replace('.png','.pdf')) }}"
+                          target="_blank">
+                          <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                              style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        </a>
+                        <div class="text-muted small mt-1">{{ f }}</div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <!--end:: line plots -->
+
+            <!--begin:: bar plots -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-bar">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-bar">
+                  Bar Plots
+                </button>
+              </h2>
+              <div id="sec-bar" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body">
+                  {% for f in other_files %}
+                    {% if "peak_statistics_sample" in f.lower() %}
+                      <div class="text-center mb-4">
+                        <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        <div class="text-muted small mt-1">{{ f }}</div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <!--end:: bar plots -->
+
+            <!--begin:: violin plots -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-violin">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-violin">
+                  Violin Plots
+                </button>
+              </h2>
+              <div id="sec-violin" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body">
+                  {% for f in other_files %}
+                    {% if "peak_statistics" in f.lower() and "peak_statistics_sample" not in f.lower() %}
+                      <div class="text-center mb-4">
+                        <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        <div class="text-muted small mt-1">{{ f }}</div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <!--end:: violin plots -->
+
+            <!--begin:: cluster maps -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-cluster">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-cluster">
+                  Cluster Maps
+                </button>
+              </h2>
+              <div id="sec-cluster" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body">
+                  {% for f in other_files %}
+                    {% if "cluster" in f.lower() %}
+                      <div class="text-center mb-4">
+                        <img src="{{ url_for('serve_result_file', output_id=output_id, filename=f) }}"
+                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        <div class="text-muted small mt-1">{{ f }}</div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+            <!--begin:: statistics-->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading-stat">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-statistics">
+                  Statistics
+                </button>
+              </h2>
+              <div id="sec-statistics" class="accordion-collapse collapse" data-bs-parent="#resultsAccordion">
+                <div class="accordion-body">
+                  {% for t in statistics_files %}
+                  <section class="mb-4">
+                    <div class="card card-outline card-primary shadow-sm">
+                      <div class="card-header">
+                        <h5 class="card-title mb-0">{{ t.name }}</h5>
+                      </div>
+                      <div class="card-body table-responsive p-0">
+                        <table class="table table-striped table-hover mb-0">
+                          <thead class="table-primary">
+                            <tr>
+                              {% for col in t.columns %}
+                              <th>{{ col }}</th>
+                              {% endfor %}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for row in t.preview %}
+                            <tr>
+                              {% for col in t.columns %}
+                              <td>{{ row[col] }}</td>
+                              {% endfor %}
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        <div class="p-2 text-end">
+                          <small>
+                            This is a preview
+                            <a href="{{ url_for('serve_result_file', output_id=output_id, filename=t.name) }}" target="_blank">
+                              download full CSV here
+                            </a>
+                          </small>
+                        </div>
+
+                      </div>
+                    </div>
+                  </section>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+            <!--end:: statistics-->
+          </div>
+          <!--end:: results-->
         </div>
       </div>
     </div>
@@ -263,6 +406,24 @@ document.addEventListener('DOMContentLoaded', function(){
       showFrame(current);
     });
   });
+
+/*
+ * Handle overview clicks to expand the clicked section
+*/
+document.addEventListener('DOMContentLoaded', function() {
+  const overviewLinks = document.querySelectorAll('.overview-link');
+  overviewLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetCollapse = document.getElementById(targetId);
+      if (targetCollapse) {
+        const bsCollapse = new bootstrap.Collapse(targetCollapse, { toggle: true });
+        targetCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+});
 </script>
 
 </body>
