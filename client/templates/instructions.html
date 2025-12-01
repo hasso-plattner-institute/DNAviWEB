@@ -149,53 +149,76 @@
               <div class="container">
                 <style>IMG{float: right;}</style>
 
+                <!--start: Video tutorial -->
+                <h3>1. Video tutorial</h3>
+
+                  A demo for a clinical analysis of diagnosed vs. relapsed neuroblastoma patients based on <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
+                  <source src="./static/video/dnavi_demo_trinidad_2x.mp4" type="video/mp4" />
+
+                  Alternatively, see how we analyse different cell types:
+                  <source src="./static/video/demo_cells.mp4" type="video/mp4" />
+
+                 <!--end: Video tutorial -->
+
+                <!--start: Screenshot tutorial -->
+                <h3>2. Step-by-Step Screenshot guide</h3>
+                  <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:100%; height:auto;">
+
+                  <img src="./static/img/tutorial/login.png" alt="Login" style="width:100%; height:auto;">
+                  On DNAvi's start page, click the green button to directly start an analysis.
+
+                  <p>Step 1: upload gel electrophoresis image or signal table.</p>
+                  <img src="./static/img/tutorial/0_upload.png" alt="Upload" style="width:100%; height:auto;">
+
+                  Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
+                  <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a>
+                  <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" style="width:100%; height:auto;">
+
+                  <p>Step 2: choose your DNA size standard</p>
+                  The authors used a D1000 size standard, so we will select this option in the menu.
+                  <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:100%; height:auto;">
+
+                  <p>Step 3: (optional) Add sample metadata</p>
+
+                  Add a row for each sample in your gel:
+                  <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:100%; height:auto;">
+
+                  We will add metadata on disease and relapse status based on the original publication for our four selected samples.
+                  <img src="./static/img/tutorial/sample.png" alt="add info" style="width:100%; height:auto;">
+
+                  Also add the information on relapse status:
+                  <img src="./static/img/tutorial/status.png" alt="Staus" style="width:100%; height:auto;">
+
+                  .. and confirm the table.
+                  <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:100%; height:auto;">
+
+                  <p>Step 4: Submit for Analysis</p>
+                  Great, we will select the disease status as our group information of interest for statistical comparison.
+                  <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:100%; height:auto;">
+
+                  Finally, confirm and submit:
+                  <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:100%; height:auto;">
+
+                  <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:100%; height:auto;">
+                  Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions dashboard.</p
+
+                  <p> Step 5: Explore Analysis Results & Download</p>
+
+                  <p>View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.
+                      Please cite DNAvi when using it for your work.</p>
+                  <img src="./static/img/tutorial/results.png" alt="Results" style="width:100%; height:auto;">
+                   <img src="./static/img/download.svg" alt="Explore Results" style="width:100%; height:auto;">
+                  <p>Need help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
+
+
                 <div class="row">
-                  <!-- begin::1. Data Upload -->
-                  <div class="item col-md-4">
-                    <div class="effect-julia item">
-                      <img src="./static/img/all_input_descr.svg" alt="DNA Table or Gel" style="width:100%; height:auto;">
-                      <h3>1. How it works</h3>
-                      <!--begin::Image/Table Upload -->
-                      <p>Step 1: upload gel electrophoresis image or signal table.</p>
-                      <!--end::Image/Table Upload -->
-                      <!--begin::Size standard Annotation -->
-                      <p>Step 2: choose your DNA size standard</p>
-                      <!--end::Size standardAnnotation -->
-                      <!--begin::Metadata CSV -->
-                      <p>Step 3: (optional) Add sample metadata</p>
-                      <!--end::Metadata CSV -->
-                      <footer class="mt-4">
-                        <p>Need help? Use our <a href="{{ url_for('documentation') }}">documentation</a>.</p>
-                      </footer>
-                    </div>
-                  </div>
-                  <!-- end::1. Data Upload -->
-                  <!--begin::2. Submission -->
-                  <div class="item col-md-4">
-                    <div class="tm-work-item-inner">
-                      <img src="./static/img/submit.svg" alt="Submit Analysis" style="width:100%; height:auto;">
-                      <h3>2. Submit for Analysis</h3>
-                      <p>
-                        Your DNA file will be analysed for peaks, height normalized, and grouped if metadata is provided. 
-                        Be patient, this may take a while. 
-                        If logged in, you can also choose to save your analysis files for future use in the submissions dashboard</a>.
-                      </p>
-                    </div>
-                  </div>
-                  <!--end::2. Submission -->
-                  <!--begin::3. Results -->
-                  <div class="item col-md-4">
-                    <div class="tm-work-item-inner">
-                      <img src="./static/img/download.svg" alt="Explore Results" style="width:100%; height:auto;">
-                      <h3>3. Explore Analysis Results & Download</h3>
-                      <p>
-                        View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots. 
-                        You are allowed to use this for your work only if you cite DNAvi.
-                      </p>
-                    </div>
+
                   </div>
                   <!--end::3. Results -->
                 </div>
+
+                <!--end: Screenshot tutorial -->
+
                 <!--begin::Start button -->
                 <div class="d-flex justify-content-center my-5">
                   <a href="{{ url_for('protect') }}" 
