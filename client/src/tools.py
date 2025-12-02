@@ -306,10 +306,10 @@ def get_result_files(folder, prefix=''):
                                          'preview': preview,
                                          'columns': list(df.columns) if preview else []})
             # Peaks PNG
-            elif re.match(r"peaks_[A-Za-z0-9_]+_sample\.png$", fname):
+            elif re.match(r"peaks_[A-Za-z0-9_]+_sample\.svg$", fname):
                 peaks_files.append(relative_path)
             # Other PNGs in plots/qc/stats
-            elif fname.endswith(".png") and any(folder_name in rel_lower
+            elif fname.endswith(".svg") and any(folder_name in rel_lower
                                                 for folder_name in ["plots", "qc", "stats"]):
                 other_files.append(relative_path)
             # PDF files
