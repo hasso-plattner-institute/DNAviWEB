@@ -58,6 +58,9 @@ document.getElementById('load-example').addEventListener('click', async () => {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(fileObj);
           input.files = dataTransfer.files;
+          if (file.inputName === "meta_file") {
+            addCSVColumnsToAll(fileObj);
+          }
       }
   }
   // Automatically select HSD5000 ladder option
