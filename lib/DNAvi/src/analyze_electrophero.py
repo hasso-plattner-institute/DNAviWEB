@@ -889,16 +889,10 @@ def epg_analysis(path_to_file, path_to_ladder, path_to_meta, run_id=None,
     print("------------------------------------------------------------")
     print("""           DNA FRAGMENT SIZE ANALYSIS           """)
     print("------------------------------------------------------------")
-    print(f"""     
-        Image input: {image_input}
-        DNA file: {path_to_file}      
-        Ladder file: {path_to_ladder}
-        Meta file: {path_to_meta}
+    print(f"""     Image input: {image_input}
         Include marker: {include_marker}""")
     print("")
 
-    logging.info(f"DNA file: {path_to_file}, Ladder file: {path_to_ladder},"
-                 f"Meta file: {path_to_meta}")
     logging.info(f"Min-Max Normalization: {normalize}")
     logging.info(f"Include marker: {include_marker}")
     logging.info(f"Correct for concentration-variances: {correct}")
@@ -917,7 +911,6 @@ def epg_analysis(path_to_file, path_to_ladder, path_to_meta, run_id=None,
     stats_dir =  f"{save_dir}/stats/"
     basepair_translation_file = f"{qc_dir}bp_translation.csv"
     source_file = f"{plot_dir}sourcedata.csv"
-    logging.info(f"Saving results to: {save_dir}")
     print("         run_id:", run_id)
     print("         results to:", save_dir)
     print("------------------------------------------------------------")
