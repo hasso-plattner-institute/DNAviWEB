@@ -11,3 +11,6 @@ By clicking "Agree" and by using DNAvi (web or command line tool), you agree to 
 5. The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software of the use or other dealings in the software.
 
 6. By using DNAvi, you confirm to understand that DNAvi web provides results that are for exploratory research use only. No diagnostic decisions should be based on DNAvi's results. 
+
+7. If you decide to use DNAvi from a country outside of the European Union or a country without legal guarantees (Art. 49 DSGVO), you agree to use DNAvi on your own risk, and you are aware that the safety of your personal data cannot be guaranteed in this case.
+
