@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <!--begin::Head-->
   <head>
@@ -96,23 +96,23 @@
             <li class="nav-item">
               {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                  <span class="nav-link">Hello, {{ current_user.id }}</span>
+                  <span class="nav-link">Hello, {{current_user.id}}</span>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                  <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
                 </li>
                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+                  <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
                 </li>
               {% else %}
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                  <a class="nav-link" href="{{url_for('login')}}">Login</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                  <a class="nav-link" href="{{url_for('register')}}">Register</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('submissions_dashboard') }}">My submissions</a>
+                  <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
                 </li>
               {% endif %}
             </li>
@@ -150,7 +150,7 @@
                     {% if messages %}
                       <ul class="flashes">
                         {% for message in messages %}
-                        <li>{{ message }}</li>
+                        <li>{{message}}</li>
                         {% endfor %}
                       </ul>
                     {% endif %}
@@ -162,7 +162,7 @@
                 {% if missing_error %}
                   <div class="alert alert-danger rounded shadow-sm p-3">
                     <h5 class="mb-2" style="color:#721c24;">⚠️ Something is missing</h5>
-                    <p class="mb-0">{{ missing_error }}</p>
+                    <p class="mb-0">{{missing_error}}</p>
                   </div>
                 {% endif %}
                 <!-- ------------------------------------------------------------------------------ -->
@@ -173,11 +173,11 @@
                   {% set error_last_line = lines[-2:][0] if lines|length > 1 else "" %}
                   <div class="alert alert-warning rounded shadow-sm p-3 mt-3" style="background-color:#fff4e5; border-color:#ffc107;">
                     <h5 class="mb-2" style="color:#856404;">⚠️ Error message from DNAvi</h5>
-                    <p class="mb-2"><strong>Quick summary:</strong> {{ error_last_line }}</p>
+                    <p class="mb-2"><strong>Quick summary:</strong> {{error_last_line}}</p>
                     <p class="mb-2" style="font-size:0.9rem; color:#6c757d;">
                           Please read carefully. Check our 
-                          <a href="{{ url_for('instructions') }}">quickstart guide</a> or
-                          <a href="{{ url_for('documentation') }}">documentation</a>,
+                          <a href="{{url_for('instructions')}}">quickstart guide</a> or
+                          <a href="{{url_for('documentation')}}">documentation</a>,
                           and try again.
                         If this doesn't solve your issues, contact us via email: <a href="mailto:dnavi-info@hpi.de">dnavi-info@hpi.de</a> attach the full error message (download it below).
                           <br>
@@ -195,7 +195,7 @@
                   <div>
                   <br>
                   <form id="example-form" method="POST" enctype="multipart/form-data">
-                    <button type="button" id="load-example"  style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem; class="btn btn-success">
+                    <button type="button" id="load-example"  class="btn btn-success" style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem;">
                       Quick test: Run DNAvi with our example data
                     </button>
                       <br></br>
@@ -204,7 +204,7 @@
             <section class="work-section section" id="section-2">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
-                  <h3> Upload your own data </h3> <a href="{{ url_for('instructions') }}" style="color:#297022;">  Visit the step-by-step guide</a>
+                  <h3> Upload your own data </h3> <a href="{{url_for('instructions')}}" style="color:#297022;">  Visit the step-by-step guide</a>
                     <br></br>
                   <!-- ------------------------------------------------------------------------------ -->
                   <!--                                DNA GEL OR CSV                                  -->
@@ -217,7 +217,7 @@
                     <div class="card-body">
                       <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
                       <p class="text-muted mb-2">Max. 16 MB file size allowed. <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">↓ Download template</a></p>
-                      <input type="file" name="data_file" accept=".csv,.png,.jpg,.jpeg" class="form-control form-control border rounded" required>
+                      <input type="file" name="data_file" accept=".csv, .png, .jpg, .jpeg" class="form-control border rounded" required>
                     </div>
                   </div>
                   <br></br>
@@ -340,7 +340,7 @@
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Extraction kit used.">Extraction Kit (DNA Isolation Method)<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col" data-bs-toggle="tooltip" title="Sample DNA amount.">DNA Mass<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">DNA Mass Units</th>
-                                  <th class="optional-col" data-bs-toggle="tooltip" title="Volume of DNA carrying liquid (eg. 5mL urine)">Carrying Liquid Volume<i class="bi bi-info-circle text-muted"></i></th>
+                                  <th class="optional-col" data-bs-toggle="tooltip" title="Volume of DNA carrying liquid (e.g. 5mL urine)">Carrying Liquid Volume<i class="bi bi-info-circle text-muted"></i></th>
                                   <th class="optional-col">Carrying Liquid Volume Unit</th>
                                   <th class="optional-col">In vitro / In vivo</th>
                                   <th class="optional-col">Gel Electrophoresis Device</th>
@@ -483,7 +483,7 @@
                                       <option>µg</option>
                                     </select>
                                   </td>
-                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume" , step="0.01", min="0"></td>
+                                  <td><input type="number" name="carrying_liquid_volume[]" class="form-control form-control-sm" placeholder="Enter volume", step="0.01", min="0"></td>
                                   <td>
                                     <select name="carrying_liquid_volume_unit[]" class="form-select form-select-sm">
                                       <option value="">Select</option>
@@ -554,7 +554,7 @@
                           <a href="./static/tests/metadata.csv" style="color:#b5b9bd;">↓ Download template</a>, fill it out, and upload it here.
                         </p>
                         <p class="text-muted mb-2">Accepted formats: CSV.</p>
-                        <input type="file" name="meta_file" accept=".txt,.tsv,.csv" class="form-control form-control border rounded">
+                        <input type="file" name="meta_file" accept=".txt, .tsv, .csv" class="form-control border rounded">
                       </div>
                       <!--end::Option 2-->
 
@@ -661,7 +661,7 @@
                             const dst = dstFields[i];
                             if (!dst) return;
                             if (dst.name === 'sample_id[]') {
-                              dst.readOnly = true; // make it readonly so user cannot change
+                              dst.readOnly = true; // make it readonly, so user cannot change
                             } else if (dst.tagName.toLowerCase() === 'select') {
                               dst.selectedIndex = src.selectedIndex;
                             } else {
@@ -809,7 +809,7 @@
                     <input class="form-check-input" type="checkbox" value="" id="agree-terms">
                     <label class="form-check-label" for="agree-terms">
                       I have read and agree to the 
-                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>. In short: I will not upload identifiable information (e.g., birth dates, names). I have the full right and consent to provide the uploaded data. Research use only.
+                      <a href="{{ url_for('legal_notice') }}" target="_blank">DNAvi Terms and Conditions</a>. In short: I will not upload identifiable information (e.g., birthdates names). I have the full right and consent to provide the uploaded data. Research use only.
                     </label>
                   </div>
                   <button type="submit" class="btn btn-success" id="submit-analysis-btn" >Submit</button>
@@ -941,10 +941,10 @@
       });
     </script>
     <!--begin::Metdata from OLS Autocomplete script-->
-    <script src="{{ url_for('static', filename='./js/metadata_utils.js') }}"></script>
+    <script src="{{url_for('static', filename='./js/metadata_utils.js')}}"></script>
     <!--end::Metdata from OLS Autocomplete script-->
     <!--begin::database utils-->
-    <script src="{{ url_for('static', filename='./js/database_utils.js') }}"></script>
+    <script src="{{url_for('static', filename='./js/database_utils.js')}}"></script>
     <!--end::database-->
   </body>
   <!--end::Body-->
