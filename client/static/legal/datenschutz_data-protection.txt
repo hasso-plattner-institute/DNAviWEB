@@ -30,7 +30,7 @@ Sie bleiben damit beim reinen Besuch unserer Website für uns völlig anonym. Di
 
 2.1.2 Technisch notwendige Cookies
 Unsere Webseite verwendet technisch notwendige Cookies (Session-Cookies), die lediglich für die Dauer Ihres Besuches Daten für eine flüssige Nutzung des Tools
- einbehalten. Diese Daten werden beim Beenden des Besuches gelöscht. Die Nutzung technisch notwendiger Cookies geschieht auf Basis der Rechtsprechung des Europäischen Gerichtshofes zu C-673/17 („Planet49“).
+ einbehalten. Diese Daten werden beim Beenden des Besuches gelöscht. Die Nutzung technisch notwendiger Cookies geschieht auf Basis der Rechtsprechung des Europäischen Gerichtshofes zu C-673/17 („Planet49“) sowie des Digitale-Dienste-Datenschutz-Gesetz.
 
 2.1.3 Datenübermittlung in Drittstaaten
 Eine Übermittlung personenbezogener Daten in Staaten außerhalb der Europäischen Union findet derzeit nicht statt.
