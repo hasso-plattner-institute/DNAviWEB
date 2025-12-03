@@ -1,19 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>DNAvi | Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
 
   <!-- Fonts -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'">
 
   <!-- Icons & CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/adminlte.css')}}">
 
   <style>
     body {
@@ -153,16 +153,16 @@
   <!-- Header -->
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
-      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center" style="text-decoration: none;">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+      <a href="{{url_for('home')}}" class="navbar-brand d-flex align-items-center" style="text-decoration: none;">
+        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
       </ul>
     </div>
   </nav>
@@ -172,12 +172,11 @@
     <div class="app-content content">
       <div class="container py-5 d-flex justify-content-center">
         <div class="hero-section">
-          <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="mb-4" style="height:90px;" />
+          <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="mb-4" style="height:90px;" />
           <h1>Welcome to DNAvi</h1>
             <p class="cute">DNAvi-WEB is <strong>free</strong> and <strong>open to all users</strong>.</p>
-          </p>
 
-          <!--  <img src="{{ url_for('static', filename='img/schematic_v2.png') }}" alt="DNAvi Logo" class="mb-4" style="height:20%;" /> -->
+          <!--  <img src="{{url_for('static', filename='img/schematic_v2.png')}}" alt="DNAvi Logo" class="mb-4" style="height:20%;" /> -->
           <p class="lead">
             DNAvi analyzes cell-free DNA fragmentation profiles from gel electrophoresis traces:
           </p>
@@ -197,25 +196,24 @@
                 <i class="bi bi-download"></i> Reports for your research
               </li>
             </ul>
-          <!-- <p class="lead">You can <strong>log in</strong> to view your previous submissions or <strong>register</strong> to save all your analyses in one place. Or simply <strong>use the tool without logging in</strong> by starting a new analysis below.</p>
-             -->
+          <!-- <p class="lead">You can <strong>log in</strong> to view your previous submissions or <strong>register</strong> to save all your analyses in one place. Or simply <strong>use the tool without logging in</strong> by starting a new analysis below.</p> -->
         <!-- Navigation buttons -->
         <div class="container">
           <div class="row justify-content-center">
             <div class="col-12 col-md-8">
-              <a href="{{ url_for('protect') }}" class="btn btn-success btn-lg w-100 mb-3">
+              <a href="{{url_for('protect')}}" class="btn btn-success btn-lg w-100 mb-3">
                 <i class="bi bi-graph-up me-2"></i> Start using DNAvi
               </a>
             </div>
           </div>
           <div class="row justify-content-center">
             <div class="col-6 col-md-4 d-flex justify-content-center">
-              <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg w-100 mb-3">
+              <a href="{{url_for('login')}}" class="btn btn-outline-secondary btn-lg w-100 mb-3">
                 <i class="bi bi-box-arrow-in-right me-2"></i> Login
               </a>
             </div>
             <div class="col-6 col-md-4 d-flex justify-content-center">
-              <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg w-100 mb-3">
+              <a href="{{url_for('register')}}" class="btn btn-primary btn-lg w-100 mb-3">
                 <i class="bi bi-person-plus me-2"></i> Register
               </a>
             </div>
@@ -225,7 +223,7 @@
             <!-- End Navigation buttons -->
 
             <br>
-            <p class="cute"> DNAvi is not a medical product. It is an exploratory tool for research use only. <p/>
+            <p class="cute"> DNAvi is not a medical product. It is an exploratory tool for research use only. </p>
             <p style="font-size: 0.8rem; color: #6c757d; text-align:center;">
               Template for web services access 
               <a href="https://gitlab.hpi.de/dnavi/dnavi_webserver/-/blob/main/dnavi_template.py?ref_type=heads" 
@@ -237,10 +235,10 @@
       </div>
       <!-- Partner Logos Section -->
       <div class="d-flex justify-content-center flex-wrap gap-4 mt-4 partner-logos">
-        <img src="{{ url_for('static', filename='img/mpi_logo_long.png') }}" alt="Max Planck Institute" class="partner-logo fade-in-delayed" style="height:50px;" />
-        <img src="{{ url_for('static', filename='img/hpi_logo.png') }}" alt="HPI" class="partner-logo fade-in-delayed" style="height:50px;" />
-        <img src="{{ url_for('static', filename='img/fu_berlin_logo.png') }}" alt="Freie Universität Berlin" class="partner-logo fade-in-delayed" style="height:50px;" />
-        <img src="{{ url_for('static', filename='img/charite_logo.png') }}" alt="Charité" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{url_for('static', filename='img/mpi_logo_long.png')}}" alt="Max Planck Institute" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{url_for('static', filename='img/hpi_logo.png')}}" alt="HPI" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{url_for('static', filename='img/fu_berlin_logo.png')}}" alt="Freie Universität Berlin" class="partner-logo fade-in-delayed" style="height:50px;" />
+        <img src="{{url_for('static', filename='img/charite_logo.png')}}" alt="Charité" class="partner-logo fade-in-delayed" style="height:50px;" />
       </div>
 
     </div>
@@ -250,14 +248,13 @@
   <footer class="app-footer text-center py-3 border-top mt-auto">
     <small>&copy; Anja Hess, Yara Matani, 2025. License: GPL-3.0. Design by
       <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>.
-        <p  class="cute">This website uses session cookies which are deleted when you leave the site.</p>
-
     </small>
+    <p class="cute">This website uses session cookies which are deleted when you leave the site.</p>
   </footer>
 </div>
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
+<script src="{{url_for('static', filename='js/adminlte.js')}}"></script>
 </body>
 </html>

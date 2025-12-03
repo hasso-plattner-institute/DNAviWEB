@@ -1,20 +1,19 @@
-<!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
-      xmlns="http://www.w3.org/1999/html">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>DNAvi | Impressum | Legal Notice</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
 
   <!-- Fonts -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'">
 
   <!-- Icons & CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/adminlte.css')}}">
 
   <style>
     body {
@@ -90,16 +89,16 @@
   <!-- Header -->
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
-      <a href="{{ url_for('home') }}" class="navbar-brand d-flex align-items-center">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+      <a href="{{url_for('home')}}" class="navbar-brand d-flex align-items-center">
+        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;">
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('legal_notice') }}">Impressum | Legal notice</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
       </ul>
     </div>
   </nav>
@@ -113,10 +112,12 @@
             <p></p><br>
             <p> <strong> DNAviWEB  is a freely-accessible implementation of the DNAvi analysis tool for instant pre-sequencing screening of cell-free DNA fragmentomics from electrophoresis traces.</strong></p>
             <p></p><br>
-            <img src="{{ url_for('static', filename='img/DNAviWEB_graphical_abstract.png') }}" alt="DNAviWEB GA" class="mb-4" style="max-height:300px; max-width:90%; display:block; margin:auto;" />
-             <figcaption>Fig.1 - Graphical abstract of DNAviWEB's functionalities. (c) Hasso-Plattner-Institut, 2025</figcaption>
+            <figure>
+              <img src="{{url_for('static', filename='img/DNAviWEB_graphical_abstract.png')}}" alt="DNAviWEB GA" class="mb-4" style="max-height:300px; max-width:90%; display:block; margin:auto;">
+              <figcaption>Fig.1 - Graphical abstract of DNAviWEB's functionalities. (c) Hasso-Plattner-Institut, 2025</figcaption>
+            </figure>
             <p></p><br>
-            <p align="justify" >Non-invasive cell-free DNA (cfDNA) fragmentation profiles are gaining attention as diagnostic tools for various conditions that impact global health, including cancer. Although these profiles are diagnostically valuable, current fragmentomics depend on
+            <p style="text-align: justify;">Non-invasive cell-free DNA (cfDNA) fragmentation profiles are gaining attention as diagnostic tools for various conditions that impact global health, including cancer. Although these profiles are diagnostically valuable, current fragmentomics depend on
                 DNA sequencing, which is costly and time-consuming, hindering their routine clinical application. DNAviWEB is a free web-based version of the <a href="https://github.com/anjahess/DNAvi">DNAvi command-line tool</a>
                 that facilitates cfDNA fragmentomics analysis using only DNA electrophoresis.
                 This platform allows for immediate pre-sequencing cfDNA screening, seamlessly integrates into medical workflows,
@@ -125,8 +126,8 @@
                 The goal of our platform is to aid clinicians and researchers to explore, analyze, and archive liquid biopsy DNA profiles.
             <p></p><br>
             <p> DNAviWEB was developed at the <strong>Hasso-Plattner-Institute</strong> and the <strong>Max-Planck-Institute for Molecular Genetics</strong>.</p>
-            <p> For more information here check our <a href="{{ url_for('legal_notice') }}"> Impressum and Legal notice</a> and
-                <a href="{{ url_for('contact') }}">Contact information</a>.</p>
+            <p> For more information here check our <a href="{{url_for('legal_notice')}}"> Impressum and Legal notice</a> and
+                <a href="{{url_for('contact')}}">Contact information</a>.</p>
           <h1>Citation</h1>
             <p>Please cite DNAvi whenever you use it for your research:</p>
 
@@ -167,6 +168,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
+<script src="{{url_for('static', filename='js/adminlte.js')}}"></script>
 </body>
 </html>

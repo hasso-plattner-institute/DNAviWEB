@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -20,10 +20,10 @@
   </head>
   <body class="register-page bg-light">
       <div class="logo-header">
-        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="DNAvi logo">
+        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi logo">
       </div>
       <div class="register-logo">
-        <a href="{{ url_for('home') }}" style="color: #007bff;"><b>DNA</b>vi</a>
+        <a href="{{url_for('home')}}" style="color: #007bff;"><b>DNA</b>vi</a>
       </div>
 
       <div class="card card-outline card-primary">
@@ -32,11 +32,11 @@
           <!-- begin :: User already exists -->
           {% if error %}
             <div class="alert alert-danger">
-              {{ error }}
+              {{error}}
             </div>
           {% endif %}
           <!-- end :: User already exists -->
-          <form action="{{ url_for('register') }}" method="POST">
+          <form action="{{url_for('register')}}" method="POST">
             <div class="input-group mb-3">
               <input type="text" class="form-control" name="username" placeholder="Username" required />
               <div class="input-group-text"><span class="bi bi-person-circle"></span></div>
@@ -82,13 +82,13 @@
 
               </div>
               <div class="col-4">
-                <button type="submit" href="{{ url_for('login') }}" class="btn btn-primary btn-block" >Register</button>
+                <button type="submit" href="{{url_for('login')}}" class="btn btn-primary btn-block" >Register</button>
               </div>
             </div>
           </form>
 
           <p class="mb-1">
-            <a href="{{ url_for('login') }}" class="text-center">I already have a membership</a>
+            <a href="{{url_for('login')}}" class="text-center">I already have a membership</a>
           </p>
         </div>
       </div>
@@ -98,7 +98,7 @@
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
-    <script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
+    <script src="{{url_for('static', filename='js/adminlte.js')}}"></script>
     <!--begin::Footer -->
     <footer class="app-footer text-center py-3 border-top mt-auto"
         style="width: 100%; position: relative; left: 0; right: 0; background-color: #f8f9fa;">

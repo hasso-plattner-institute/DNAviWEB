@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}" type="text/css" />
     <link rel="stylesheet" href="fontawesome/css/all.min.css" type="text/css" /> 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/slick.css') }}" type="text/css" />   
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate-simply-amazed.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/slick.css')}}" type="text/css" />   
+    <link rel="stylesheet" href="{{url_for('static', filename='css/tooplate-simply-amazed.css')}}" type="text/css" />
 <!--
 
 Tooplate 2123 Simply Amazed
@@ -39,7 +39,7 @@ https://www.tooplate.com/view/2123-simply-amazed
                             <a class="nav-link" href="#section-4"><span class="icn"><i class="fab fa-2x fa-battle-net"></i></span>4. Grouped fragment size plot</a>
                         </li>
                         <li class ="nav-item" >
-                            <a class ="nav-link" href="{{ url_for('instructions') }}" > <span class ="icn" > <i class ="fab fa-2x fa-battle-net" > </i > </span> Back </a>
+                            <a class ="nav-link" href="{{url_for('instructions')}}" > <span class ="icn" > <i class ="fab fa-2x fa-battle-net" > </i > </span> Back </a>
                         </li >
                     </ul>
                 </div>
@@ -98,7 +98,7 @@ https://www.tooplate.com/view/2123-simply-amazed
                                   <img src="./static/img/documentation/lane_profile.png">
                                   <p > Finally, DNAvi will calculate a profile line for each lane. To allow you to understand if
                                       this process was correctly executed, DNAvi plots the gel lane, the central profile line, and the resulting profile
-                                      into a pdf plot. In this example, we can see that the lower and upper marker at y-positions 0 and ~410 have been correctly
+                                      into a PDF plot. In this example, we can see that the lower and upper marker at y-positions 0 and ~410 have been correctly
                                   inferred, and so has the broader DNA band at y-position ~300.</p>
                                   <br></br>
                             </div>
@@ -146,7 +146,7 @@ https://www.tooplate.com/view/2123-simply-amazed
                                         profile, showing a peak centered at around 150 bp, and a smaller second peak at ~250 bp.
                                         These are likely to be the mono- and di-nucleosomal cell-free DNA fraction. All exact position values
                                     are also provided as a source data table, so that plots can be edited and customized if needed.
-                                    The default plot format pdf, i.e. publication quality vector graphics.</p>
+                                    The default plot format PDF, i.e. publication quality vector graphics.</p>
                                     <br></br>
             </section>
 
