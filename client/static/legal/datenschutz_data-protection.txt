@@ -33,8 +33,11 @@ Unsere Webseite verwendet technisch notwendige Cookies (Session-Cookies), die le
  einbehalten. Diese Daten werden beim Beenden des Besuches gelöscht. Die Nutzung technisch notwendiger Cookies geschieht auf Basis der Rechtsprechung des Europäischen Gerichtshofes zu C-673/17 („Planet49“) sowie des Digitale-Dienste-Datenschutz-Gesetz.
 
 2.1.3 Datenübermittlung in Drittstaaten
-Eine Übermittlung personenbezogener Daten in Staaten außerhalb der Europäischen Union findet derzeit nicht statt.
+Eine Übermittlung personenbezogener Daten in Staaten außerhalb der Europäischen Union findet derzeit nicht regelhaft statt.
+Sollten Sie im Einzelfall Zugriff auf personenbezogene Daten aus einem Staat außerhalb der EU tätigen, erfolgt dies auf Grundlage geeigneter Garantien gemäß Art. 44 ff. DSGVO, insbesondere der EU-Standardvertragsklauseln.
 
+Für Ausnahmen, in denen Sie aus einem Drittstaat unter Fehlen eines Angemessenheitsbeschlusses oder geeigneter Garantien (Art. 49 DSGVO) auf unseren Web-Service zugreifen,
+erfordert dies Ihre ausdrückliche Zustimmung in unseren Terms & Conditions.
 
 2.2 Protokollierung und Auswertung bei Angriffen
 Fehlermeldungen – die in aller Regel auf Angriffsversuche zurückgehen – werden aus Sicherheitsgründen mit vollständiger IP-Adresse protokolliert und ausgewertet. Diese Daten werden nach sieben Tagen gelöscht, wenn sie nicht ausnahmsweise (etwa als Beweismittel) länger benötigt werden.
