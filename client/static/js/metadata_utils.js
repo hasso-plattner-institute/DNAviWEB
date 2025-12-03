@@ -1,4 +1,6 @@
 let ontologyMap = {};
+// True if example data load was clicked
+let EXAMPLE_CLICKED = false;
 
 async function loadOntologyMap() {
     try {
@@ -44,6 +46,7 @@ document.getElementById('addColumnBtn').addEventListener('click', function () {
   * Load example data into the form without immidiate submission
   */
 document.getElementById('load-example').addEventListener('click', async () => {
+  EXAMPLE_CLICKED = true;
   const files = [
       {url: './static/tests/electropherogram.csv', inputName: 'data_file'},
       {url: './static/tests/metadata.csv', inputName: 'meta_file'}
@@ -58,6 +61,9 @@ document.getElementById('load-example').addEventListener('click', async () => {
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(fileObj);
           input.files = dataTransfer.files;
+          if (file.inputName === "meta_file") {
+            addCSVColumnsToAll(fileObj);
+          }
       }
   }
   // Automatically select HSD5000 ladder option
@@ -369,11 +375,15 @@ function addCSVColumnsToAll(file) {
         const text = e.target.result;
         let headers = text.split('\n')[0].split(',').map(h => h.trim());
         const EXCLUDED_COLUMNS = ["actions", "sample"];
+        // Save all headers inside the example metadata file to auto select them later in grouping
+        // Exclude only EXCLUDED_COLUMNS
+        const newExampleHeadersToAddToGrouping = [];
         headers = headers.filter(h => !EXCLUDED_COLUMNS.includes(h.toLowerCase()));
         const table = document.getElementById('metadata-table');
         const headerRow = table.querySelector('thead tr');
         const rows = table.querySelectorAll('tbody tr');
         headers.forEach(header => {
+            newExampleHeadersToAddToGrouping.push(header);
             if (!ALL_METADATA_COLUMNS.includes(header)) {
                 ALL_METADATA_COLUMNS.push(header);
                 const newHeader = document.createElement('th');
@@ -394,10 +404,31 @@ function addCSVColumnsToAll(file) {
         });
         // Refresh grouping checkboxes display
         getGroupByCheckBoxes();
+        if (EXAMPLE_CLICKED) {
+            autoSelectNewGroupColumns(newExampleHeadersToAddToGrouping);
+            // reset flag so next uploads are not considered example uploads unless example data load clicked again
+            EXAMPLE_CLICKED = false;
+        }
     };
     reader.readAsText(file);
 }
 
+/**
+ * When example data load clicked: Auto select all columns in the grouping checkboxes
+ */
+function autoSelectNewGroupColumns(newHeaders) {
+    if (!Array.isArray(newHeaders) || newHeaders.length === 0) return;
+    const normalized = newHeaders.map(h => h.toLowerCase());
+    const checkboxes = document.querySelectorAll(
+        '#metadata-group-container input[type="checkbox"]'
+    );
+    checkboxes.forEach(cb => {
+        const colName = cb.value.trim().toLowerCase();
+        if (normalized.includes(colName)) {
+            cb.checked = true;
+        }
+    });
+}
 
 /**
  * Handle adding ELBS report columns
