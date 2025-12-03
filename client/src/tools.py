@@ -132,7 +132,7 @@ def file2pdf(file_dir, title="DNAvi Liquid Biopsy Report",
     template = env.get_template(template_html)
     template_vars = {"title": title,
                      "logo_filename": f"file://{static_dir}img/logo.svg",
-                     "style_filename":  f"file://{static_dir}img/logo.svg",
+                     "style_filename":  None,
                      "creation_date_time": datetime.datetime.now(
                      ).strftime("%Y-%m-%d %H:%M:%S"),
                      "Report_Detail": dfs_final}
