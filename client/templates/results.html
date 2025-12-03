@@ -19,70 +19,68 @@
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
 
-<div class="app-wrapper">
-  <!-- Header -->
-  <nav class="app-header navbar navbar-expand bg-body">
-    <div class="container-fluid">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
-        </li>
-        <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
-      </ul>
-      <ul class="navbar-nav ms-auto">
-        <!--begin::Navbar Login/logout-->
-        <li class="nav-item">
-          {% if current_user.is_authenticated %}
-            <li class="nav-item">
-              <span class="nav-link">Hello, {{current_user.id}}</span>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('login')}}">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{url_for('register')}}">Register</a>
-            </li>
-          {% endif %}
+  <div class="app-wrapper">
+    <!-- Header -->
+    <nav class="app-header navbar navbar-expand bg-body">
+      <div class="container-fluid">
+        <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
+            <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button"><i class="bi bi-list"></i></a>
           </li>
-        </li>
-        <!--end::Navbar Login/logout-->
-        <li class="nav-item">
-          <a class="nav-link" href="#" data-lte-toggle="fullscreen">
-            <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
-            <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+          <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <!--begin::Navbar Login/logout-->
+            {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                <span class="nav-link">Hello, {{current_user.id}}</span>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('login')}}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('register')}}">Register</a>
+              </li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
+            </li>
+          <!--end::Navbar Login/logout-->
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-lte-toggle="fullscreen">
+              <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
+              <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-    <!-- Main Content -->
-  <main class="app-main">
-    <div class="app-content content">
-      <div class="content-wrapper">
-        <!-- Content Header -->
-          <div class="app-content-header">
-            <!--begin::Row-->
-            <div class="row">
-              <div class="row align-items-center">
-                <div class="col-sm-6">
-                  <h3 class="mb-0">Results</h3>
+      <!-- Main Content -->
+    <main class="app-main">
+      <div class="app-content content">
+        <div class="content-wrapper">
+          <!-- Content Header -->
+            <div class="app-content-header">
+              <!--begin::Row-->
+              <div class="row">
+                <div class="row align-items-center">
+                  <div class="col-sm-6">
+                    <h3 class="mb-0">Results</h3>
+                  </div>
                 </div>
               </div>
+              <!--end::Row-->
             </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Container-->
+            <!--end::Container-->
         </div>
 
         <!-- Content Body -->
@@ -356,80 +354,79 @@
           <!--end:: results-->
         </div>
       </div>
-    </div>
-  </main>
+    </main>
 
-  <!-- Footer -->
-  <footer class="app-footer d-flex justify-content-between align-items-center px-3 py-2 border-top">
-    <div>&copy; Anja Hess, Yara Matani, 2025. License: GPL-3.0. </div>
-    <div>Design by &copy; <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>, 2014-2025.</div>
-  </footer>
+    <!-- Footer -->
+    <footer class="app-footer d-flex justify-content-between align-items-center px-3 py-2 border-top">
+      <div>&copy; Anja Hess, Yara Matani, 2025. License: GPL-3.0. </div>
+      <div>Design by &copy; <a href="https://adminlte.io" target="_blank" class="text-decoration-none">AdminLTE.io</a>, 2014-2025.</div>
+    </footer>
 
-</div>
+  </div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
-<script src="{{url_for('static', filename='js/adminlte.js')}}"></script>
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"></script>
-<script>
-const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-const Default = {scrollbarTheme:'os-theme-light', scrollbarAutoHide:'leave', scrollbarClickScroll:true};
-document.addEventListener('DOMContentLoaded', function(){
-  const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-  const isMobile = window.innerWidth <= 992;
-  if(sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined && !isMobile){
-    OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-      scrollbars:{
-        theme:Default.scrollbarTheme,
-        autoHide:Default.scrollbarAutoHide,
-        clickScroll:Default.scrollbarClickScroll
-      }
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
+  <script src="{{url_for('static', filename='js/adminlte.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"></script>
+  <script>
+  const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
+  const Default = {scrollbarTheme:'os-theme-light', scrollbarAutoHide:'leave', scrollbarClickScroll:true};
+  document.addEventListener('DOMContentLoaded', function(){
+    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+    const isMobile = window.innerWidth <= 992;
+    if(sidebarWrapper && OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined && !isMobile){
+      OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+        scrollbars:{
+          theme:Default.scrollbarTheme,
+          autoHide:Default.scrollbarAutoHide,
+          clickScroll:Default.scrollbarClickScroll
+        }
+      });
+    }
+  });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const frames = document.querySelectorAll('.peak-frame');
+      if (frames.length === 0) return;
+
+      let current = 0;
+
+      const showFrame = (index) => {
+        frames.forEach((f, i) => f.style.display = i === index ? 'block' : 'none');
+      };
+
+      document.getElementById('prevPeak').addEventListener('click', () => {
+        current = (current - 1 + frames.length) % frames.length;
+        showFrame(current);
+      });
+
+      document.getElementById('nextPeak').addEventListener('click', () => {
+        current = (current + 1) % frames.length;
+        showFrame(current);
+      });
     });
-  }
-});
-</script>
-<script>
+
+  /*
+  * Handle overview clicks to expand the clicked section
+  */
   document.addEventListener('DOMContentLoaded', function() {
-    const frames = document.querySelectorAll('.peak-frame');
-    if (frames.length === 0) return;
-
-    let current = 0;
-
-    const showFrame = (index) => {
-      frames.forEach((f, i) => f.style.display = i === index ? 'block' : 'none');
-    };
-
-    document.getElementById('prevPeak').addEventListener('click', () => {
-      current = (current - 1 + frames.length) % frames.length;
-      showFrame(current);
-    });
-
-    document.getElementById('nextPeak').addEventListener('click', () => {
-      current = (current + 1) % frames.length;
-      showFrame(current);
+    const overviewLinks = document.querySelectorAll('.overview-link');
+    overviewLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetCollapse = document.getElementById(targetId);
+        if (targetCollapse) {
+          const bsCollapse = new bootstrap.Collapse(targetCollapse, {toggle: true});
+          targetCollapse.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+      });
     });
   });
-
-/*
- * Handle overview clicks to expand the clicked section
-*/
-document.addEventListener('DOMContentLoaded', function() {
-  const overviewLinks = document.querySelectorAll('.overview-link');
-  overviewLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('href').substring(1);
-      const targetCollapse = document.getElementById(targetId);
-      if (targetCollapse) {
-        const bsCollapse = new bootstrap.Collapse(targetCollapse, {toggle: true});
-        targetCollapse.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-    });
-  });
-});
-</script>
+  </script>
 
 </body>
 </html>

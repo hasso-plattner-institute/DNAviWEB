@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="utf-8" />
+   <meta charset="UTF-8">
   <title>DNAvi | Impressum | Legal Notice</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)">
 
   <!-- Fonts -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" media="print" onload="this.media='all'">
 
   <!-- Icons & CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="{{url_for('static', filename='css/adminlte.css')}}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/adminlte.css')}}">
 
   <style>
     body {
@@ -90,7 +90,7 @@
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
       <a href="{{url_for('home')}}" class="navbar-brand d-flex align-items-center">
-        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;">
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
@@ -143,22 +143,32 @@
             <p></p><br></div>
             <h2>Terms & Conditions </h2>
             <div id="list">
-                <p><iframe src="static/legal/T&C.txt" frameborder="0" height="400" width="95%"></iframe></p>
+                <p>
+                  <iframe 
+                    src="static/legal/T&C.txt" 
+                    height="400" 
+                    style="width:95%; border:0;">
+                  </iframe>
+                </p>
             </div>
             <div>
             <h2> Data Protection / Datenschutzerklärung</h2>
             This web page is part of the web representation of the Hasso-Plattner-Institute (HPI) Potsdam. Data protection policies of the HPI apply
             and are presented below in German language.
-            <div id="list">
-                <p><iframe src="static/legal/datenschutz_data-protection.txt" frameborder="0" height="400" width="95%"></iframe></p>
+            <div id="list-1">
+                <p>
+                  <iframe src="static/legal/datenschutz_data-protection.txt" height="400" style="width:95%; border:0;"></iframe>
+                </p>
             </div>
 
             <h2> Liability for content / Haftung für Inhalte </h2>
             There is no liability for contents / Für Inhalte wird keine Haftung übernommen.<p></p>
 
             <h2>License: Gnu Gerneral Public License v.3 (GPL-3.0)</h2>
-            <div id="list">
-                <p><iframe src="static/legal/License.txt" frameborder="0" height="400" width="95%"></iframe></p>
+            <div id="list-2">
+                <p>
+                  <iframe src="static/legal/License.txt" height="400" style="width:95%; border:0;"></iframe>
+                </p>
             </div>
             <h2>Copyright</h2>
             Please note that this web page, created contents, works, summaries, and graphics are subject to the German copyright law.
@@ -167,6 +177,7 @@
             consent of the author or creator.
           <hr>
         </div>
+      </div>
       </div>
     </div>
   </main>
