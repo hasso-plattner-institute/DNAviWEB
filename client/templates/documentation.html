@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>DNAvi | Documentation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
@@ -185,7 +185,7 @@
   <nav class="app-header navbar navbar-expand bg-body">
     <div class="container-fluid">
       <a href="{{url_for('home')}}" class="navbar-brand d-flex align-items-center">
-        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;" />
+        <img src="{{url_for('static', filename='img/logo.svg')}}" alt="DNAvi Logo" class="me-2" style="height:40px;">
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
@@ -200,9 +200,9 @@
 
   <!-- Main Content -->
   <main class="app-main">
-    <!-- --------------------------------------------------------------------------------------------------- -->
+    <!-- ************************ -->
     <!-- 2: DOCUMENTATION SECTION -->
-    <!-- --------------------------------------------------------------------------------------------------- -->
+    <!-- ************************ -->
     <section class="documentation-section py-5 bg-light">
       <div class="container">
           <div class="text-center mb-5">
@@ -216,7 +216,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/docu.svg') }}" class="card-img-top" alt="Documentation">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Biological Interpretation</h5>
+                      <h5 class="card-title fw-bold text-primary">Biological Interpretation</h5>
                       <p class="card-text text-muted">View a guide on how to interpret DNAvi results.</p>
                       <a href="https://dnavi.readthedocs.io/en/latest/Biology.html" class="btn btn-outline-primary btn-sm"> View More <i class="bi bi-box-arrow-up-right ms-1"></i></a>
                   </div>
@@ -227,7 +227,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/docu.svg') }}" class="card-img-top" alt="Documentation">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Quickstart guide</h5>
+                      <h5 class="card-title fw-bold text-primary">Quickstart guide</h5>
                       <p class="card-text text-muted">View a guide with videos and step-by-step instructions.</p>
                       <a href="{{ url_for('instructions') }}" class="btn btn-outline-primary btn-sm"> View More <i class="bi bi-box-arrow-up-right ms-1"></i></a>
                   </div>
@@ -238,7 +238,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/docu.svg') }}" class="card-img-top" alt="Documentation">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Full Documentation</h5>
+                      <h5 class="card-title fw-bold text-primary">Full Documentation</h5>
                       <p class="card-text text-muted">View the full documentation of the DNAvi tool.</p>
                       <a href="https://dnavi.readthedocs.io/en/latest/" class="btn btn-outline-primary btn-sm"> View More <i class="bi bi-box-arrow-up-right ms-1"></i></a>
                   </div>
@@ -252,7 +252,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/input_example.svg') }}" class="card-img-top" alt="DNA Table">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Example DNA Table</h5>
+                      <h5 class="card-title fw-bold text-primary">Example DNA Table</h5>
                       <p class="card-text text-muted">Download a ready-to-use DNA signal table.</p>
                       <a href="{{ url_for('static', filename='tables/electropherogram.csv') }}" class="btn btn-outline-primary btn-sm">
                       View More <i class="bi bi-download ms-1"></i>
@@ -266,7 +266,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/img_example.svg') }}" class="card-img-top" alt="Gel Image">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Example Gel</h5>
+                      <h5 class="card-title fw-bold text-primary">Example Gel</h5>
                       <p class="card-text text-muted">View an example gel image fulfilling our quality criteria.</p>
                       <a href="{{ url_for('static', filename='img/documentation/gel.png') }}" class="btn btn-outline-primary btn-sm">
                       View More <i class="bi bi-box-arrow-up-right ms-1"></i>
@@ -280,7 +280,7 @@
                 <div class="card h-100 shadow-sm hover-shadow">
                   <img src="{{ url_for('static', filename='img/meta_example.svg') }}" class="card-img-top" alt="Metadata">
                   <div class="card-body">
-                      <h7 class="card-title fw-bold text-primary">Metadata File</h5>
+                      <h5 class="card-title fw-bold text-primary">Metadata File</h5>
                       <p class="card-text text-muted">Download a meta file to annotate the DNA ladder or define groups.</p>
                       <a href="{{ url_for('static', filename='tables/metadata.csv') }}" class="btn btn-outline-primary btn-sm">
                       View More <i class="bi bi-download ms-1"></i>
@@ -294,7 +294,7 @@
               <div class="card h-100 shadow-sm hover-shadow">
               <img src="{{ url_for('static', filename='img/gallery.svg') }}" class="card-img-top" alt="Gallery">
               <div class="card-body">
-                  <h7 class="card-title fw-bold text-primary">Output Plots</h5>
+                  <h5 class="card-title fw-bold text-primary">Output Plots</h5>
                   <p class="card-text text-muted">View examples of output plots and interpretation aid.</p>
                   <a href="{{ url_for('gallery') }}" class="btn btn-outline-primary btn-sm">
                   View More <i class="bi bi-arrow-right ms-1"></i>
