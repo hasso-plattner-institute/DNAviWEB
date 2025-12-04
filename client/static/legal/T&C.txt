@@ -12,5 +12,4 @@ By clicking "Agree" and by using DNAvi (web or command line tool), you agree to 
 
 6. By using DNAvi, you confirm to understand that DNAvi web provides results that are for exploratory research use only. No diagnostic decisions should be based on DNAvi's results. 
 
-7. If you decide to use DNAvi from a country outside of the European Union or a country without legal guarantees (Art. 49 DSGVO), you agree to use DNAvi on your own risk, and you are aware that the safety of your personal data cannot be guaranteed in this case.
-
+7. If you access DNAvi from a country outside the European Union or from a country for which no adequacy decision of the European Commission exists, you acknowledge that the level of data protection in this country may be lower than in the EU and that local authorities may have broader access rights to your data. The processing of your personal data by us continues to take place exclusively on servers within the European Union.
