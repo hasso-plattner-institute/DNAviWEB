@@ -33,11 +33,7 @@ Unsere Webseite verwendet technisch notwendige Cookies (Session-Cookies), die le
  einbehalten. Diese Daten werden beim Beenden des Besuches gelöscht. Die Nutzung technisch notwendiger Cookies geschieht auf Basis der Rechtsprechung des Europäischen Gerichtshofes zu C-673/17 („Planet49“) sowie des Digitale-Dienste-Datenschutz-Gesetz.
 
 2.1.3 Datenübermittlung in Drittstaaten
-Eine Übermittlung personenbezogener Daten in Staaten außerhalb der Europäischen Union findet derzeit nicht regelhaft statt.
-Sollten Sie im Einzelfall Zugriff auf personenbezogene Daten aus einem Staat außerhalb der EU tätigen, erfolgt dies auf Grundlage geeigneter Garantien gemäß Art. 44 ff. DSGVO, insbesondere der EU-Standardvertragsklauseln.
-
-Für Ausnahmen, in denen Sie aus einem Drittstaat unter Fehlen eines Angemessenheitsbeschlusses oder geeigneter Garantien (Art. 49 DSGVO) auf unseren Web-Service zugreifen,
-erfordert dies Ihre ausdrückliche Zustimmung in unseren Terms & Conditions.
+Wir verarbeiten Ihre personenbezogenen Daten ausschließlich auf Servern innerhalb der Europäischen Union. Eine Weitergabe personenbezogener Daten an Empfänger in Staaten außerhalb der Europäischen Union bzw. des Europäischen Wirtschaftsraums (EWR) findet derzeit nicht statt. Der Zugriff auf unseren Web-Service ist grundsätzlich weltweit möglich. Wenn Sie von einem Staat außerhalb der EU/des EWR auf Ihr Nutzerkonto zugreifen, erfolgt die Datenübermittlung technisch bedingt über die von Ihnen genutzte Internetverbindung. Bitte beachten Sie, dass in einigen Staaten kein mit der EU vergleichbares Datenschutzniveau besteht und dortige Behörden ggf. weitergehende Zugriffsrechte auf Ihre Daten haben können. Die Verarbeitung Ihrer Daten durch uns erfolgt weiterhin ausschließlich auf Servern in der EU.
 
 2.2 Protokollierung und Auswertung bei Angriffen
 Fehlermeldungen – die in aller Regel auf Angriffsversuche zurückgehen – werden aus Sicherheitsgründen mit vollständiger IP-Adresse protokolliert und ausgewertet. Diese Daten werden nach sieben Tagen gelöscht, wenn sie nicht ausnahmsweise (etwa als Beweismittel) länger benötigt werden.
