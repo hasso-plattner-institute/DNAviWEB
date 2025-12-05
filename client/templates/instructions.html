@@ -129,138 +129,142 @@
           <div id="content-box" class="order-first">
             <section class="work-section section" id="section-2">
               <div class="container">
-                <br>
                 <!--start: Video tutorial -->
-                <h3 class="card-title fw-bold fs-4 mb-3" style="display: block !important; color: black !important;">DNAvi - Video Tutorial</h3>
-                <br>
-                <br>
-                <p class="mb-3" style="display:block;">
-                  A demo for a clinical analysis of cell-free DNA fragmentation profiles of diagnosed vs. relapsed neuroblastoma patients based on 
-                  <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
-                </p>
-                <video autoplay controls class="img-fluid mb-3" style="max-width:100%; display:block !important;">
-                  <source src="./static/video/dnavi_demo_trinidad_2x.webm" type="video/webm">
-                  Your browser does not support the video tag.
-                </video>
+                <div class="card mb-5 shadow-sm">
+                  <div class="card-body">
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h3 class="card-title fw-bold fs-4 mb-3 fw-normal text-dark" style="color: black !important;">DNAvi - Video Tutorial</h3>
+                    </div>
+                    <p class="mt-2" style="display:block;">
+                      A demo for a clinical analysis of cell-free DNA fragmentation profiles of diagnosed vs. relapsed neuroblastoma patients based on 
+                      <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>.
+                    </p>
+                    <video controls class="img-fluid w-100">
+                      <source src="./static/video/dnavi_demo_trinidad_2x.webm" type="video/webm">
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
                 <!--end: Video tutorial -->
 
-                <!--start: Screenshot tutorial -->
-                <br>
-                <h3 class="card-title fw-bold fs-4 mb-3" style="color: black !important;">DNAvi - Step-by-Step tutorial </h3>
-                <br>
-                <br>
-                <p>This demo part will guide you through differential fragmentation analysis for cell-free DNA in screenshots. </p>
-                <p>To start, on DNAvi's start page, click the green button to directly start an analysis.</p>
-                <br>
-                <img src="./static/img/tutorial/login.png" alt="Login" style="width:70%; height:auto;">
-                <br>
-                <br>
-                <!-- Step 1 card -->
-                <div class="card mb-4">
+                <!--begin: Screenshot tutorial -->
+                <div class="card mb-5 shadow-sm">
                   <div class="card-body">
-                    <div class="mb-3">
-                      <h5 class="card-title text-primary fw-bold fs-4">Step 1: Upload gel electrophoresis image or signal table.</h5>
+                    <div class="card-header d-flex align-items-center" style="background-color: #eff6f8;">
+                      <h3 class="card-title fw-bold fs-4 mb-3" style="color: black !important;">DNAvi - Step-by-Step tutorial </h3>
                     </div>
-                    <br>
-                    <p class="mb-3">
-                      On DNAvi's analysis page, the first section allows you to upload files:
-                      <br>
-                      <img src="./static/img/tutorial/0_upload.png" alt="Upload" class="img-fluid mb-3" style="max-width:80%; display:block;">
-                    </p>
-                    <p class="mb-3">Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>. <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a></p>
-                    <p class="mb-3">We just double-click the image to select and upload it:</p>
-                    <br>
-                    <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" class="img-fluid mb-3" style="max-width:80%; display:block;">
-                  </div>
-                </div>
-                <!-- Step 2 card -->
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <h5 class="card-title text-primary fw-bold fs-4">Step 2: choose your DNA size standard</h5>
+                    <p>This demo part will guide you through differential fragmentation analysis for cell-free DNA in screenshots. </p>
+                    <p>To start, on DNAvi's start page, click the green button to directly start an analysis.</p>
+                    <img src="./static/img/tutorial/login.png" alt="Login" style="width:80%; height:auto;">
+
+                    <!-- Step 1 card -->
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <h5 class="card-title text-primary fw-bold fs-4">Step 1: Upload gel electrophoresis image or signal table.</h5>
+                        </div>
+                        <br>
+                        <p class="mb-3">
+                          On DNAvi's analysis page, the first section allows you to upload files:
+                          <br>
+                          <img src="./static/img/tutorial/0_upload.png" alt="Upload" class="img-fluid mb-3" style="max-width:80%; display:block;">
+                        </p>
+                        <p class="mb-3">Here, we will look at four samples from diagnosed vs. relapsed neuroblastoma patients in <a href="https://www.frontiersin.org/journals/oncology/articles/10.3389/fonc.2023.1037342/full" style="color:#b5b9bd;">Trinidad et al. 2023</a>. <a href="./static/tables/trinidad2023.csv" style="color:#b5b9bd;">↓ Download data</a></p>
+                        <p class="mb-3">We just double-click the image to select and upload it:</p>
+                        <br>
+                        <img src="./static/img/tutorial/1_gel.png" alt="DNA Table or Gel" class="img-fluid mb-3" style="max-width:80%; display:block;">
+                      </div>
                     </div>
-                    <br>
-                    <p class="mb-3">
-                      The authors used a D1000 size standard, so we will select this option in the menu.
-                      <br>
-                      <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:80%; height:auto;">
-                    </p>
-                  </div>
-                </div>
-                <!-- Step 3 card -->
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <h5 class="card-title text-primary fw-bold fs-4">Step 3: (optional) Add sample metadata</h5>
+                    <!-- Step 2 card -->
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <h5 class="card-title text-primary fw-bold fs-4">Step 2: choose your DNA size standard</h5>
+                        </div>
+                        <br>
+                        <p class="mb-3">
+                          The authors used a D1000 size standard, so we will select this option in the menu.
+                          <br>
+                          <img src="./static/img/tutorial/2_size_standard.png" alt="Size Standard" style="width:80%; height:auto;">
+                        </p>
+                      </div>
                     </div>
-                    <br>
-                    <p class="mb-3">
-                      Add a row for each sample in your gel (in our case here that's four samples/gel lanes):
-                      <br>
-                      <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:80%; height:auto;">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      We will add the information on disease and relapse status based on the original publication for our four selected samples.
-                      <br>
-                      <img src="./static/img/tutorial/sample.png" alt="add info" style="width:80%; height:auto;">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      Also add the information on relapse status in the table (select ELBS criteria columns for this feature):
-                      <br>
-                      <img src="./static/img/tutorial/status.png" alt="Status">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      and confirm the table:
-                      <br>
-                      <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:80%; height:auto;">
-                    </p>
-                  </div>
-                </div>
-                <!-- Step 4 card -->
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <h5 class="card-title text-primary fw-bold fs-4">Step 4: Submit for Analysis</h5>
+                    <!-- Step 3 card -->
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <h5 class="card-title text-primary fw-bold fs-4">Step 3: (optional) Add sample metadata</h5>
+                        </div>
+                        <br>
+                        <p class="mb-3">
+                          Add a row for each sample in your gel (in our case here that's four samples/gel lanes):
+                          <br>
+                          <img src="./static/img/tutorial/meta_samples.png" alt="Add sample" style="width:80%; height:auto;">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          We will add the information on disease and relapse status based on the original publication for our four selected samples.
+                          <br>
+                          <img src="./static/img/tutorial/sample.png" alt="add info" style="width:80%; height:auto;">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          Also add the information on relapse status in the table (select ELBS criteria columns for this feature):
+                          <br>
+                          <img src="./static/img/tutorial/status.png" alt="Status">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          and confirm the table:
+                          <br>
+                          <img src="./static/img/tutorial/confirm.png" alt="Confirm" style="width:80%; height:auto;">
+                        </p>
+                      </div>
                     </div>
-                    <br>
-                    <p class="mb-3">
-                      Great, we will select the disease status as our group information of interest for statistical comparison:
-                      <br>
-                      <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:80%; height:auto;">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      Finally, we confirm that we've read the T&C and submit. You will be asked whether to save the data on the server. This is recommended, as it will allow you to retrieve results later on in the submission dashboard.
-                      <br>
-                      <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:80%; height:auto;">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions' dashboard.
-                      <br>
-                      <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:50%; height:auto;">
-                    </p>
-                  </div>
-                </div>
-                <!-- Step 5 card -->
-                <div class="card mb-4">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <h5 class="card-title text-primary fw-bold fs-4">Step 5: Explore Analysis Results & Download</h5>
+                    <!-- Step 4 card -->
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <h5 class="card-title text-primary fw-bold fs-4">Step 4: Submit for Analysis</h5>
+                        </div>
+                        <br>
+                        <p class="mb-3">
+                          Great, we will select the disease status as our group information of interest for statistical comparison:
+                          <br>
+                          <img src="./static/img/tutorial/selection.png" alt="Select category" style="width:80%; height:auto;">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          Finally, we confirm that we've read the T&C and submit. You will be asked whether to save the data on the server. This is recommended, as it will allow you to retrieve results later on in the submission dashboard.
+                          <br>
+                          <img src="./static/img/tutorial/submit.png" alt="Submit" style="width:80%; height:auto;">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          Be patient, this may take a while. If logged in, you can also choose to save your analysis files for future use in the submissions' dashboard.
+                          <br>
+                          <img src="./static/img/tutorial/wait.png" alt="Wait" style="width:50%; height:auto;">
+                        </p>
+                      </div>
                     </div>
-                    <br>
-                    <p class="mb-3">
-                      View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.
-                      <br>
-                      <img src="./static/img/tutorial/results.png" alt="Results" style="width:80%; height:auto;">
-                    </p>
-                    <br>
-                    <p class="mb-3">
-                      Done! Now you're ready to go ahead with your own data. Please don't forget to cite DNAvi and feel free to contact us if you have any feedback.
-                    </p>
+                    <!-- Step 5 card -->
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="mb-3">
+                          <h5 class="card-title text-primary fw-bold fs-4">Step 5: Explore Analysis Results & Download</h5>
+                        </div>
+                        <br>
+                        <p class="mb-3">
+                          View your analysis results interactively in the web interface, or download a ZIP folder containing all results and plots.
+                          <br>
+                          <img src="./static/img/tutorial/results.png" alt="Results" style="width:80%; height:auto;">
+                        </p>
+                        <br>
+                        <p class="mb-3">
+                          Done! Now you're ready to go ahead with your own data. Please don't forget to cite DNAvi and feel free to contact us if you have any feedback.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <!--end: Screenshot tutorial -->
