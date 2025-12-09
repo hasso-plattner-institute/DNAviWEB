@@ -21,7 +21,10 @@ DATABASE_URL = (
 
 # The engine handles database communication and connection details.
 # engine uses the database driver under the hood to connect to the database.
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL,
+                       pool_pre_ping=True,
+                       pool_recycle=300,
+                       pool_timeout=30)
 # Session handles work with python objects and when/how to send those changes to the database.
 # Keeps track of all the ORM objects
 SessionLocal = sessionmaker(bind=engine)
