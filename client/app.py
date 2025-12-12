@@ -379,8 +379,10 @@ def protect():
                 valid_group_columns = [e for e in group_columns if e in meta_df.columns]
                 print("--- Valid group columns", valid_group_columns)
                 selected_columns += valid_group_columns
-            meta_df = meta_df[selected_columns]
             # Remove all not selected columns
+            meta_df = meta_df[selected_columns]
+            # To allow "None"/free fields in columns of interest:
+            meta_df.fillna("None", inplace=True)
             meta_df.to_csv(m, index=False)
             print("Metadata columns selected for grouping:", selected_columns)
         ######################################################################
@@ -411,6 +413,7 @@ def protect():
                 f'protected.html',
                 error=secure_error(error),
                 user_logged_in = current_user.is_authenticated)
+
         ######################################################################
         #                        SAVE DATA TO DATABASE                       #
         ######################################################################
