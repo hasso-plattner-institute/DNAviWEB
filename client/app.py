@@ -373,16 +373,20 @@ def protect():
             # List of metadata columns (values) chosen by user to group by
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
+
             meta_df = pd.read_csv(m)
             #! Important validate of these cols even exist
             if group_columns:
                 valid_group_columns = [e for e in group_columns if e in meta_df.columns]
                 print("--- Valid group columns", valid_group_columns)
                 selected_columns += valid_group_columns
+
+            # To allow "None"/free fields in columns of interest:
+            [meta_df[col].fillna("None", inplace=True) for col in selected_columns]
+            meta_df.to_csv(m_all, index=False)
+
             # Remove all not selected columns
             meta_df = meta_df[selected_columns]
-            # To allow "None"/free fields in columns of interest:
-            meta_df.fillna("None", inplace=True)
             meta_df.to_csv(m, index=False)
             print("Metadata columns selected for grouping:", selected_columns)
         ######################################################################
