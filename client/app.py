@@ -369,7 +369,7 @@ def protect():
             # Make a all copy first to save all metadata in db even if some empty
             m_all = m.replace(".csv", "_all.csv")
             shutil.copy(m, m_all)
-            print(f"all of metadata saved as: {m_all}")
+            print(f"--- Full metadata saved as: {m_all}")
             # List of metadata columns (values) chosen by user to group by
             group_columns = request.form.getlist('metadata_group_columns_checkbox')
             selected_columns = ['SAMPLE'] # Always keep SAMPLE
@@ -382,7 +382,7 @@ def protect():
                 selected_columns += valid_group_columns
 
             # To allow "None"/free fields in columns of interest:
-            [meta_df[col].fillna("None", inplace=True) for col in selected_columns]
+            meta_df[selected_columns] = meta_df[selected_columns].fillna("Not_assigned")
             meta_df.to_csv(m_all, index=False)
 
             # Remove all not selected columns
