@@ -399,6 +399,8 @@ class Sample(Base):
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     ladder: Mapped["Ladder"] = relationship(back_populates="samples")
     sample_pixels: Mapped[List["SamplePixel"]] = relationship(back_populates="sample")
+    submission: Mapped["Submission"] = relationship("Submission", back_populates="samples")
 
 from database.schema.ladder import Ladder
 from database.schema.sample_pixel import SamplePixel
+from database.schema.submission import Submission

@@ -60,6 +60,8 @@ class Submission(Base):
     # https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html
     user: Mapped["UserDetails"] = relationship(back_populates="submissions")
     files: Mapped["File"] = relationship(back_populates="submission")
+    samples: Mapped["Sample"] = relationship(back_populates="submission")
 
 from database.schema.file import File
+from database.schema.sample import Sample
 from database.schema.user_details import UserDetails
