@@ -34,7 +34,7 @@ from database.schema.file import File
 from database.schema.submission import Submission, DeleteStatus
 from database.schema.user_details import UserDetails
 from .src.client_constants import UPLOAD_FOLDER, DOWNLOAD_FOLDER, MAX_CONT_LEN, EXAMPLE_TABLE, EXAMPLE_LADDER, \
-    EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS, VM1_API_URL
+    EXAMPLE_META, LADDER_DICT, STATIC_DIR, REPORT_COLUMNS, VM1_API_URL, VM1_CERT_PATH
 from .src.errors import secure_error
 from .src.tools import allowed_file, file2pdf, input2dnavi, get_result_files, move_dnavi_files
 from .src.users_saving import get_username, save_user
@@ -503,7 +503,7 @@ def results(output_id):
         if not files:
             return jsonify({'error': 'No files found in database associated with this submission'}), 404
         try:
-            # Send request to vm1
+            # Send HTTPS request to vm1
             download_url = f"{VM1_API_URL}/send_files"
             logging.info("Requesting submission files from VM1: %s", download_url)
             response = requests.post(
@@ -513,7 +513,8 @@ def results(output_id):
                     "submission_id": output_id
                 },
                 stream=True,
-                timeout=(10, 300)
+                timeout=(10, 300),
+                verify=VM1_CERT_PATH
             )
             response.raise_for_status()
             os.makedirs(user_dir, exist_ok=True)

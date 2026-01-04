@@ -31,7 +31,7 @@ from database.schema.sample_pixel import SamplePixel
 from database.schema.subject import Subject
 from database.schema.submission import Submission
 from database.schema.user_details import UserDetails
-from .src.client_constants import VM1_API_URL
+from .src.client_constants import VM1_API_URL, VM1_CERT_PATH
 from .src.tools import get_all_files_except_saved_in_db
 
 def get_clean_value(row, column_name):
@@ -203,9 +203,9 @@ def save_file_system(submission_folder, username, submission_id):
     }
     try:
         logging.info("Sending files to VM1...")
-        # Send files via HTTP request to VM1, 10 sec connect timeout, 300 sec time to upload and process file transfer
+        # Send files via HTTPS request to VM1, 10 sec connect timeout, 300 sec time to upload and process file transfer
         VM1_API_URL_UPLOAD = f"{VM1_API_URL}/upload"
-        response = requests.post(VM1_API_URL_UPLOAD, files=files_to_send, data=data, timeout=(10, 300))
+        response = requests.post(VM1_API_URL_UPLOAD, files=files_to_send, data=data, timeout=(10, 300), verify=VM1_CERT_PATH)
         response.raise_for_status()
         vm1_data = response.json()
         saved_files_paths = vm1_data.get("saved_files", [])
@@ -233,7 +233,7 @@ def delete_file_system(username, submission_id):
     try:
         delete_url = f"{VM1_API_URL}/delete"
         data = {"username": username, "submission_id": str(submission_id)}
-        requests.delete(delete_url, json=data, timeout=(10, 50))
+        requests.delete(delete_url, json=data, timeout=(10, 50), verify=VM1_CERT_PATH)
         logging.info("Files deleted successfully on VM1 after DB failure.")
     except Exception as e:
         logging.error("Failed to delete files from VM1: %s", e)
