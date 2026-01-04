@@ -14,3 +14,4 @@ exchange/uploads/*
 !exchange/uploads/README.md
 
 protected_table_only.html
+certs/
