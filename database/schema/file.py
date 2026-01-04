@@ -44,13 +44,15 @@ class File(Base):
         nullable=False
     )
 
-    submission: Mapped["Submission"] = relationship(
-        "Submission",
-        back_populates="files"
-    )
-
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.now(),
         nullable=False
     )
+    
+    submission: Mapped["Submission"] = relationship(
+        "Submission",
+        back_populates="files"
+    )
+
+from database.schema.submission import Submission
