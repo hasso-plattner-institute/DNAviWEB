@@ -2,9 +2,8 @@
 One time script to create the database tables.
 """
 # Run script using: python -m database.create_db
-from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
-from database.config import engine
+from database.config import SessionLocal, engine
 from database.schema.base import Base
 # Pylint should not report about unused imports here as they are necessary for table
 # creation in SQLAlchemy syntax.
@@ -103,7 +102,7 @@ def seed_default_values():
         }
     ]
 
-    with Session(engine) as session:
+    with SessionLocal() as session:
         # Seed sex in ontology terms table
         for row in ontology_term_rows:
             stmt = (
