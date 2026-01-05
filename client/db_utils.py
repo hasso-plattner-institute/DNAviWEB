@@ -184,7 +184,7 @@ def save_submission(session, username, submission_id):
 ##############################################################################
 def save_file_system(submission_folder, username, submission_id):
     """
-    Save result files via http request from submission number: submission_id 
+    Save result files via HTTPS request from submission number: submission_id 
     of the user: username, to the file system on vm1. 
     Save all except already saved in DB.
     """
