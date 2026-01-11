@@ -23,17 +23,15 @@ from database.schema import (
     subject,
     submission
     )
-
-print("Creating DNAvi database tables.")
+# Create all tables
 Base.metadata.create_all(engine)
-print("DNAvi database tables created successfully!")
 
 ###############################################################################
 #                    INSERT DEFAULT METADATA                                  #
 ###############################################################################
 def seed_default_values():
     """
-    Seeds the database tables from the beginning with default values.
+    This method initializes the database with default values including, onotology term and gel devices.
     """
     ontology_term_rows = [
         {
@@ -63,7 +61,6 @@ def seed_default_values():
         }
     ]
     
-    # BiologicalSexInfo initalize (Constant table)
     sex_info_rows = [
         {"biological_sex": "male", "biological_sex_term_id": "PATO:0000384"},
         {"biological_sex": "female", "biological_sex_term_id": "PATO:0000383"},
@@ -128,7 +125,6 @@ def seed_default_values():
             )
             session.execute(stmt)
         session.commit()
-    print("Default ontology terms (biological sex) and gel electrophoresis devices seeded successfully!")
 
 seed_default_values()
 print("Database setup completed successfully!")

@@ -1,3 +1,4 @@
+# pip install -r requirements.txt
 numpy
 pandas
 seaborn
@@ -19,3 +20,6 @@ chardet
 jinja2
 weasyprint
 datetime
+pytest
+python-dotenv
+pytest-html
