@@ -121,6 +121,7 @@ document.getElementById('load-jpg').addEventListener('click', async () => {
       {url: './static/tests/cfDNA_human_2.jpeg', inputName: 'data_file'},
       {url: './static/tests/metadata_cf_human_2.csv', inputName: 'meta_file'}
   ];
+
   // Load electropherogram and metadata
   for (const file of files) {
       const response = await fetch(file.url);
