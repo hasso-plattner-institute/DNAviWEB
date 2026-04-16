@@ -48,6 +48,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
 
     # Log scale
     plt.xscale('log')
+    plt.tight_layout()
     plt.savefig(f"{save_dir}{title}_summary.pdf", bbox_inches='tight')
     plt.savefig(f"{save_dir}{title}_summary.{ALTERNATE_FORMAT}", bbox_inches='tight')
     plt.close()
@@ -57,7 +58,6 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     #####################################################################
     cat_vars = [c for c in df.columns if c not in cols_not_to_plot]
     for col in cat_vars:
-
         #################################################################
         # Clustermap
         #################################################################
@@ -88,6 +88,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         plt.legend(handles, lut, title=col,
                    bbox_to_anchor=(1, 1),
                    bbox_transform=plt.gcf().transFigure, loc='upper right')
+        plt.tight_layout()
         plt.savefig(f"{save_dir}cluster_by_{col}.pdf", bbox_inches="tight")
         plt.savefig(f"{save_dir}cluster_by_{col}.{ALTERNATE_FORMAT}", bbox_inches="tight")
         plt.close()
@@ -107,12 +108,11 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         plt.xlabel(x_label)
         plt.title(f"{title} by {col}")
         plt.xscale('log')
-        plt.savefig(f"{save_dir}{title}_by_{col}.pdf",
-                    bbox_inches='tight')
+        plt.tight_layout()
+        plt.savefig(f"{save_dir}{title}_by_{col}.pdf", bbox_inches='tight')
         plt.savefig(f"{save_dir}{title}_by_{col}.{ALTERNATE_FORMAT}",
                     bbox_inches='tight')
         plt.close()
-
 
     #####################################################################
     # 2. Plot
@@ -121,15 +121,15 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     hue="sample"
     g = sns.FacetGrid(df, col=hue, hue=hue, col_wrap=3, palette=PALETTE)
     g.map(sns.lineplot, x, y, alpha=.7)
-    g.add_legend()
-
+    g.add_legend(loc='center left', bbox_to_anchor=(1, 0.5))
     # Add labels
     plt.ylabel(y_label)
     plt.xlabel(x_label)
     plt.suptitle(f"{title}")
     plt.xscale('log')
-    plt.savefig(f"{save_dir}{title}.pdf")
-    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
+    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
     # END OF FUNCTION
 
@@ -220,6 +220,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
 
         # Rotate x-axis labels
         [plt.setp(ax.get_xticklabels(), rotation=90) for ax in g.axes.flat]
+        plt.tight_layout()
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
@@ -246,10 +247,11 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",x_label=""
     :return: plots are generated and saved to disk.
     """
 
-
+    # Remove upper / right spine to improve aesthetics
+    plt.rcParams['axes.spines.right'] = False
+    plt.rcParams['axes.spines.top'] = False
     plt.plot(array)
     plt.plot(peaks, array[peaks], "x")
-
     # Add the annotated base-pair values if possible
     max_x = len(array) # relative val for label
     center_factor = max_x * 0.035 # labels look prettier when up
@@ -266,8 +268,9 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",x_label=""
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
-    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf")
-    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf", bbox_inches="tight")
+    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
 
     # END OF FUNCTION
@@ -333,8 +336,9 @@ def lineplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.xlim(lower_xlim, None)
     if window:
         plt.xlim(window[0], window[1])
-    plt.savefig(f"{save_dir}{title}.pdf")
-    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
+    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
     # END OF FUNCTION
 
@@ -365,7 +369,8 @@ def ladderplot(df, ladder2type, qc_save_dir, y_label="", x_label=""):
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
-    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf")
-    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf", bbox_inches="tight")
+    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
     # END OF FUNCTION
