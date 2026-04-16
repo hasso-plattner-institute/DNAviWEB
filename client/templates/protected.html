@@ -2,6 +2,7 @@
 <html lang="en">
   <!--begin::Head-->
   <head>
+    <link rel="icon" type="image/png" href="./static/img/logo.svg"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>DNAvi | New Analysis</title>
 
@@ -185,15 +186,32 @@
                   <!-- ************ -->
                   <!-- EXAMPLE FORM -->
                   <!-- ************ -->
-                  <div>
-                  <br>
-                  <form id="example-form" method="POST" enctype="multipart/form-data">
-                    <button type="button" id="load-example"  class="btn btn-success" style="background-color: #218838; color: white; border-radius: 0.25rem; padding: 0.75rem 1.5rem; border: none; font-size: 1rem;">
-                      Quick test: Run DNAvi with our example data
-                    </button>
-                      <br>
-                  </form>
-              </div>
+                  <div class="container">
+                    <br>
+
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                      <form id="example-form-csv" method="POST" enctype="multipart/form-data" style="margin: 0;">
+                        <button type="button" id="load-example" class="btn btn-success"
+                          style="background-color:#218838; color:white; border-radius:0.25rem; padding:0.75rem 1.5rem; border:none; font-size:1rem;">
+                          CSV example
+                        </button>
+                      </form>
+
+                      <form id="example-form-png" method="POST" enctype="multipart/form-data" style="margin: 0;">
+                        <button type="button" id="load-png" class="btn btn-success"
+                          style="background-color:#bfcfcd; color:white; border-radius:0.25rem; padding:0.75rem 1.5rem; border:none; font-size:1rem;">
+                          PNG example
+                        </button>
+                      </form>
+
+                      <form id="example-form-jpg" method="POST" enctype="multipart/form-data" style="margin: 0;">
+                        <button type="button" id="load-jpg" class="btn btn-success"
+                          style="background-color:#d56763; color:white; border-radius:0.25rem; padding:0.75rem 1.5rem; border:none; font-size:1rem;">
+                          JPEG example
+                        </button>
+                      </form>
+                    </div>
+                  </div>
             <section class="work-section section" id="section-2-upload">
               <form id="upload-form" method="POST" enctype="multipart/form-data">
                 <div class="container">
@@ -211,7 +229,7 @@
                     </div>
                     <div class="card-body">
                       <p class="text-muted mb-2">Accepted formats: CSV, PNG, JPG, JPEG.</p>
-                      <p class="text-muted mb-2">Max. 16 MB file size allowed. <a href="./static/tests/electropherogram.csv" style="color:#b5b9bd;">↓ Download template</a></p>
+                      <p class="text-muted mb-2">Max. 16 MB file size allowed. <a href="./static/tests/all_examples.zip" style="color:#218838;">↓ Download all examples</a></p>
                       <input type="file" name="data_file" accept=".csv, .png, .jpg, .jpeg" class="form-control border rounded" required>
                     </div>
                   </div>
@@ -852,7 +870,10 @@
           <!--begin: Loading results -->
           <div id="loading-overlay">
             <div class="spinner"></div>
-            <p>Preparing your results… please wait.</p>
+            <p>Preparing your results… please wait and don't close the window.</p>
+            <p></p>
+            <p>Here's how long DNAvi takes for... 24 samples: 2 min. 48 samples: 3 min. 96 samples: 7 min.</p>
+            <p>... increasing with every additional metadata category added.</p>
           </div>
         <!--end::Loading results-->
         <!--end::App Content-->
