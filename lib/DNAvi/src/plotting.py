@@ -217,10 +217,10 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
                 g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
                       edgecolor="black", alpha=.7)
             g.map(sns.stripplot, categorical_var, y, color="white", linewidth=1, edgecolor="black")
-
+        plt.subplots_adjust(hspace=0.25, wspace=1.5)
         # Rotate x-axis labels
         [plt.setp(ax.get_xticklabels(), rotation=90) for ax in g.axes.flat]
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
