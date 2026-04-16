@@ -19,6 +19,8 @@ from matplotlib.ticker import ScalarFormatter
 from src.constants import PALETTE, ALTERNATE_FORMAT
 from matplotlib.patches import Patch
 import warnings; warnings.filterwarnings("ignore")
+import plotly
+import plotly.express as px
 
 def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
              cols_not_to_plot=["bp_pos", "normalized_fluorescent_units"],
@@ -52,7 +54,6 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.savefig(f"{save_dir}{title}_summary.pdf", bbox_inches='tight')
     plt.savefig(f"{save_dir}{title}_summary.{ALTERNATE_FORMAT}", bbox_inches='tight')
     plt.close()
-
     #####################################################################
     # By category
     #####################################################################
@@ -102,8 +103,6 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                      palette=PALETTE[:len(df[hue].unique())],
                      hue=hue)
         # Add labels
-        #plt.axvline(x=100)
-        #plt.axvline(x=50000)
         plt.ylabel(y_label)
         plt.xlabel(x_label)
         plt.title(f"{title} by {col}")
@@ -114,6 +113,18 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                     bbox_inches='tight')
         plt.close()
 
+        ###################################################################
+        # Interactive version
+        ###################################################################
+        if col == "sample":
+            fig = px.line(df, x=x, y=y, color=col, title=f"{title} by {col}",
+                          line_group=col,
+                          color_discrete_sequence=PALETTE[:df[hue].nunique()])
+            fig.update_traces(opacity=0.7, connectgaps=True)
+            fig.update_layout(xaxis_title=x_label, yaxis_title=y_label)
+            fig.update_xaxes(type="log")
+            fig.write_html(f"{save_dir}{title}_by_{col}.html")
+            del fig
     #####################################################################
     # 2. Plot
     #####################################################################
@@ -220,10 +231,29 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         plt.subplots_adjust(hspace=0.25, wspace=1.5)
         # Rotate x-axis labels
         [plt.setp(ax.get_xticklabels(), rotation=90) for ax in g.axes.flat]
-        #plt.tight_layout()
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
+
+        #################################################################
+        # Interactive version
+        #################################################################
+        if categorical_var == "sample":
+            fig = px.bar(plot_df, x=categorical_var, y=y,
+                color=categorical_var, facet_col=region_id,
+                facet_col_wrap=4, color_discrete_sequence=PALETTE, barmode="group")
+        else:
+            violin_span = "hard" if cut else None
+            fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
+                facet_col=region_id, facet_col_wrap=4, color_discrete_sequence=PALETTE,
+                points=False,  box=True, violinmode="group")
+
+            if violin_span is not None:
+                fig.update_traces(spanmode=violin_span)
+        fig.update_xaxes(tickangle=90)
+        # Force unmatching:
+        fig.for_each_yaxis(lambda ax: ax.update(matches=None))
+        fig.write_html(path_to_df.replace(".csv", f"_{categorical_var}.html"))
     plt.close()
     # END OF FUNCTION
 
