@@ -182,7 +182,7 @@
           <div class="accordion mt-4" id="resultsAccordion">
             {% macro plot_pair(f, alt_text, show_svg=True) %}
               {% set html_f = f[:-4] ~ '.html' %}
-              {% set iframe_height = '1150px' if alt_text == 'violin plot' else ('760px' if alt_text == 'bar plot' else '520px') %}
+              {% set iframe_height = '1150px' if alt_text == 'violin plot' else ('1800px' if alt_text == 'bar plot' else '520px') %}
               <div class="mb-4">
                 {% if show_svg %}
                   <div class="text-center">
