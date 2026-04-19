@@ -130,12 +130,45 @@ def peak2basepairs(df, qc_save_dir, y_label=YLABEL, x_label=XLABEL,
             error = (f"Inconsistent number of peaks between "
                      f"ladder file ({len(peak_dict[i][0])} bands) "
                      f"and the actual data in gel image/table ladder "
-                     f"({len(peak_list)} bands). "
-                     f"Please check {qc_save_dir} to see what peaks are "
-                     f"missing or whether your ladder is in the "
-                     f"wrong position or if this is NOT a gel image.")
+                     f"({len(peak_list)} bands).")
             print(error)
-            exit()
+            #################################################################
+            # 1.3 Plot intermed results (for troubleshooting)
+            #################################################################
+            peakplot(array, peaks, parsed_ladders[i], i, i, qc_save_dir,
+                     y_label=y_label, x_label=f"{XLABEL_PRIOR_SIZE} (before annotation)",
+                     size_values=peak_annos)
+            
+            #################################################################
+            # 1.1 Get values and find maxima (require at least 50% of max)
+            #################################################################
+            print(f"This ran with "
+                  f"Distance: {DISTANCE}, \n"
+                  f"PEAK_PROMINENCE: {PEAK_PROMINENCE}, \n"
+                  f"min_peak_height: {round(min_peak_height,2)}, \n"
+                  f"max_peak_width: {max_peak_width}.")
+            print("Attempting to find with increased sensitivity...")
+            peaks, _ = find_peaks(array, distance=DISTANCE/2,
+                                  prominence=(PEAK_PROMINENCE[0]/2,None),
+                                  height=min_peak_height/3,
+                                  width=(None, max_peak_width)
+                                  )
+            peak_list = peaks.tolist()
+            peakplot(array, peaks, f"{parsed_ladders[i]}_corrected", i, i, qc_save_dir,
+                     y_label=y_label, x_label=f"{XLABEL_PRIOR_SIZE} (before annotation)",
+                     size_values=peak_annos)
+            print(f"--- Ladder #{i}: {len(peak_list)} peaks detected.")
+
+            if len(peak_dict[i][0]) != len(peak_list):
+                error = (f"Still inconsistent number of peaks between "
+                         f"ladder file ({len(peak_dict[i][0])} bands) "
+                         f"and the actual data in gel image/table ladder "
+                         f"({len(peak_list)} bands). "
+                         f"Please check {qc_save_dir} to see what peaks are "
+                         f"missing or whether your ladder is in the "
+                         f"wrong position or if this is NOT a gel image.")
+                print(error)
+                exit()
 
         #################################################################
         # 1.3 Plot intermed results

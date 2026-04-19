@@ -275,6 +275,7 @@ def get_result_files(folder, prefix=''):
     peaks_files = []
     other_files = []
     pdf_files = []
+    html_files = []
 
     for f in os.listdir(folder):
         full_path = os.path.join(folder, f)
@@ -282,11 +283,12 @@ def get_result_files(folder, prefix=''):
 
         if os.path.isdir(full_path):
             # Recursively extend lists
-            stats, peaks, other, pdfs = get_result_files(full_path, relative_path)
+            stats, peaks, other, pdfs, htmls = get_result_files(full_path, relative_path)
             statistics_files.extend(stats)
             peaks_files.extend(peaks)
             other_files.extend(other)
             pdf_files.extend(pdfs)
+            html_files.extend(htmls)
         else:
             fname = f.lower()
             rel_lower = relative_path.lower()
@@ -315,8 +317,11 @@ def get_result_files(folder, prefix=''):
             # PDF files
             elif os.path.basename(f).lower() == "dnavireport.pdf":
                 pdf_files.append(relative_path)
+            # HTML files
+            elif fname.endswith(".html"):
+                html_files.append(relative_path)
 
-    return statistics_files, peaks_files, other_files, pdf_files
+    return statistics_files, peaks_files, other_files, pdf_files, html_files
     # END OF FUNCTION
 
 def get_all_files_except_saved_in_db(folder, prefix=''):

@@ -15,10 +15,131 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from matplotlib.ticker import ScalarFormatter
+from matplotlib.colors import to_rgba
+from matplotlib.ticker import LogLocator, NullFormatter, ScalarFormatter
 from src.constants import PALETTE, ALTERNATE_FORMAT
 from matplotlib.patches import Patch
 import warnings; warnings.filterwarnings("ignore")
+import plotly.express as px
+import plotly.graph_objects as go
+
+
+def _write_html(fig, path):
+    fig.update_layout(template="plotly_white")
+    fig.write_html(path, include_plotlyjs="cdn")
+    del fig
+
+
+def _format_log_xaxis(ax):
+    ax.xaxis.set_major_locator(LogLocator(base=10, subs=(1.0,)))
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+    ax.xaxis.set_minor_formatter(NullFormatter())
+
+
+def _color_with_alpha(color, alpha):
+    r, g, b, _ = to_rgba(color)
+    return f"rgba({int(r * 255)}, {int(g * 255)}, {int(b * 255)}, {alpha})"
+
+
+def _apply_line_layout(fig, title, x_label, y_label, lower_xlim=None,
+                       upper_xlim=None, window=None):
+    fig.update_traces(opacity=0.7, connectgaps=True)
+    if not x_label:
+        x_label = "Size [bp]"
+    if not y_label:
+        y_label = "Normalized fluorescent units"
+    fig.update_layout(title=title, xaxis_title=x_label, yaxis_title=y_label,
+                      autosize=True,
+                      margin=dict(t=90, r=360, b=75, l=80),
+                      showlegend=True,
+                      legend=dict(orientation="v", x=1.02, y=1,
+                                  xanchor="left", yanchor="top",
+                                  bgcolor="rgba(255,255,255,0.9)",
+                                  bordercolor="#d0d0d0", borderwidth=1))
+    fig.update_xaxes(type="log", dtick=1, tick0=1)
+    if window:
+        fig.update_xaxes(range=[np.log10(window[0]), np.log10(window[1])])
+    elif lower_xlim and upper_xlim:
+        fig.update_xaxes(range=[np.log10(lower_xlim), np.log10(upper_xlim)])
+    return fig
+
+
+def _aggregate_for_lineplot(df, x, y, hue=None, style=None, estimator="mean"):
+    if estimator is None:
+        return df.copy()
+    group_cols = [x]
+    if hue is not None:
+        group_cols.append(hue)
+    if style is not None and style not in group_cols:
+        group_cols.append(style)
+    if estimator == "mean":
+        return df.groupby(group_cols, as_index=False)[y].mean()
+    if estimator == "median":
+        return df.groupby(group_cols, as_index=False)[y].median()
+    return df.groupby(group_cols, as_index=False)[y].mean()
+
+
+def _plotly_line(df, x, y, title, x_label, y_label, output_path, hue=None,
+                 units=None, style=None, estimator="mean", lower_xlim=None,
+                 window=None):
+    if estimator == "mean" and units is None and style is None:
+        fig = go.Figure()
+        group_cols = [x] if hue is None else [hue, x]
+        stats = (
+            df.groupby(group_cols, dropna=False)[y]
+            .agg(mean="mean", std="std", count="count")
+            .reset_index()
+            .sort_values(group_cols)
+        )
+        stats["sem"] = stats["std"].fillna(0) / np.sqrt(stats["count"].clip(lower=1))
+        stats["ci"] = 1.96 * stats["sem"]
+        stats["lower"] = stats["mean"] - stats["ci"]
+        stats["upper"] = stats["mean"] + stats["ci"]
+
+        if hue is None:
+            grouped_stats = [("Mean", stats, PALETTE[0])]
+        else:
+            grouped_stats = [
+                (str(group_name), group_stats, PALETTE[i % len(PALETTE)])
+                for i, (group_name, group_stats) in enumerate(stats.groupby(hue, dropna=False))
+            ]
+
+        for group_name, group_stats, color in grouped_stats:
+            fig.add_trace(go.Scatter(
+                x=group_stats[x], y=group_stats["upper"],
+                mode="lines", line=dict(width=0),
+                hoverinfo="skip", showlegend=False
+            ))
+            fig.add_trace(go.Scatter(
+                x=group_stats[x], y=group_stats["lower"],
+                mode="lines", line=dict(width=0),
+                fill="tonexty", fillcolor=_color_with_alpha(color, 0.22),
+                hoverinfo="skip", showlegend=False
+            ))
+            fig.add_trace(go.Scatter(
+                x=group_stats[x], y=group_stats["mean"],
+                mode="lines", line=dict(color=color, width=2),
+                name=group_name
+            ))
+
+        upper_xlim = stats[x].max() if x in stats else None
+        fig = _apply_line_layout(fig, title, x_label, y_label, lower_xlim,
+                                 upper_xlim, window)
+        _write_html(fig, output_path)
+        return
+
+    plot_df = _aggregate_for_lineplot(df, x, y, hue=hue, style=style,
+                                      estimator=estimator)
+    line_group = units
+    if line_group is None and hue is not None:
+        line_group = hue
+    fig = px.line(plot_df, x=x, y=y, color=hue, line_dash=style,
+                  line_group=line_group, title=title,
+                  color_discrete_sequence=PALETTE)
+    upper_xlim = plot_df[x].max() if x in plot_df else None
+    fig = _apply_line_layout(fig, title, x_label, y_label, lower_xlim,
+                             upper_xlim, window)
+    _write_html(fig, output_path)
 
 def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
              cols_not_to_plot=["bp_pos", "normalized_fluorescent_units"],
@@ -48,16 +169,18 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
 
     # Log scale
     plt.xscale('log')
+    _format_log_xaxis(plt.gca())
+    plt.tight_layout()
     plt.savefig(f"{save_dir}{title}_summary.pdf", bbox_inches='tight')
     plt.savefig(f"{save_dir}{title}_summary.{ALTERNATE_FORMAT}", bbox_inches='tight')
     plt.close()
-
+    _plotly_line(df, x, y, title=f"{title}", x_label=x_label,
+                 y_label=y_label, output_path=f"{save_dir}{title}_summary.html")
     #####################################################################
     # By category
     #####################################################################
     cat_vars = [c for c in df.columns if c not in cols_not_to_plot]
     for col in cat_vars:
-
         #################################################################
         # Clustermap
         #################################################################
@@ -88,10 +211,10 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         plt.legend(handles, lut, title=col,
                    bbox_to_anchor=(1, 1),
                    bbox_transform=plt.gcf().transFigure, loc='upper right')
+        plt.tight_layout()
         plt.savefig(f"{save_dir}cluster_by_{col}.pdf", bbox_inches="tight")
         plt.savefig(f"{save_dir}cluster_by_{col}.{ALTERNATE_FORMAT}", bbox_inches="tight")
         plt.close()
-
         #################################################################
         # Overview by condition
         #################################################################
@@ -101,19 +224,23 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                      palette=PALETTE[:len(df[hue].unique())],
                      hue=hue)
         # Add labels
-        #plt.axvline(x=100)
-        #plt.axvline(x=50000)
         plt.ylabel(y_label)
         plt.xlabel(x_label)
         plt.title(f"{title} by {col}")
         plt.xscale('log')
-        plt.savefig(f"{save_dir}{title}_by_{col}.pdf",
-                    bbox_inches='tight')
+        _format_log_xaxis(plt.gca())
+        plt.tight_layout()
+        plt.savefig(f"{save_dir}{title}_by_{col}.pdf", bbox_inches='tight')
         plt.savefig(f"{save_dir}{title}_by_{col}.{ALTERNATE_FORMAT}",
                     bbox_inches='tight')
         plt.close()
 
-
+        ###################################################################
+        # Interactive version
+        ###################################################################
+        _plotly_line(df, x, y, hue=col, title=f"{title} by {col}",
+                     x_label=x_label, y_label=y_label,
+                     output_path=f"{save_dir}{title}_by_{col}.html")
     #####################################################################
     # 2. Plot
     #####################################################################
@@ -121,16 +248,29 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     hue="sample"
     g = sns.FacetGrid(df, col=hue, hue=hue, col_wrap=3, palette=PALETTE)
     g.map(sns.lineplot, x, y, alpha=.7)
-    g.add_legend()
-
+    g.add_legend(loc='center left', bbox_to_anchor=(1, 0.5))
     # Add labels
     plt.ylabel(y_label)
     plt.xlabel(x_label)
     plt.suptitle(f"{title}")
     plt.xscale('log')
-    plt.savefig(f"{save_dir}{title}.pdf")
-    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}")
+    for ax in g.axes.flat:
+        _format_log_xaxis(ax)
+    plt.tight_layout()
+    plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
+    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
+    fig = px.line(df, x=x, y=y, color=hue, facet_col=hue, facet_col_wrap=3,
+                  title=f"{title}", color_discrete_sequence=PALETTE,
+                  facet_row_spacing=0.16)
+    n_facets = df[hue].nunique()
+    n_rows = int(np.ceil(n_facets / 3))
+    fig.update_layout(height=max(650, n_rows * 360))
+    fig = _apply_line_layout(fig, f"{title}", x_label, y_label,
+                             upper_xlim=df[x].max())
+    fig.update_xaxes(title_text=x_label or "Size [bp]")
+    fig.update_yaxes(title_text=y_label or "Normalized fluorescent units")
+    _write_html(fig, f"{save_dir}{title}.html")
     # END OF FUNCTION
 
 
@@ -200,16 +340,16 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         #################################################################
         # Create the grid plot
         #################################################################
-        g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
-                          sharex=True, sharey=False, palette=PALETTE)
-
         if categorical_var == "sample":
             g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
-                              aspect=1.5)
+                              height=4.8, aspect=1.45)
             g.map(sns.barplot, categorical_var, y, palette=PALETTE,
                   )
         else:
+            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=3, hue=categorical_var,
+                              sharex=True, sharey=False, palette=PALETTE,
+                              height=6.5, aspect=1.05)
             if cut:
                 g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
                       edgecolor="black", alpha=.7, cut=0)
@@ -217,12 +357,64 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
                 g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
                       edgecolor="black", alpha=.7)
             g.map(sns.stripplot, categorical_var, y, color="white", linewidth=1, edgecolor="black")
-
+        if categorical_var == "sample":
+            plt.subplots_adjust(hspace=0.6, wspace=1.1)
+        else:
+            plt.subplots_adjust(hspace=0.25, wspace=1.5)
         # Rotate x-axis labels
-        [plt.setp(ax.get_xticklabels(), rotation=90) for ax in g.axes.flat]
+        for ax in g.axes.flat:
+            plt.setp(ax.get_xticklabels(), rotation=90, visible=True)
+            plt.setp(ax.get_yticklabels(), visible=True)
+            ax.tick_params(axis="both", which="both",
+                           labelbottom=True, labelleft=True)
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
+
+        #################################################################
+        # Interactive version
+        #################################################################
+        if categorical_var == "sample":
+            fig = px.bar(plot_df, x=categorical_var, y=y,
+                color=categorical_var, facet_col=region_id,
+                facet_col_wrap=4, color_discrete_sequence=PALETTE,
+                barmode="group", facet_row_spacing=0.08,
+                facet_col_spacing=0.04)
+            fig.update_traces(width=0.8)
+            n_facets = plot_df[region_id].nunique()
+            n_rows = int(np.ceil(n_facets / 4))
+            fig.update_layout(height=max(650, n_rows * 390),
+                              margin=dict(t=80, r=360, b=130, l=70))
+            fig.for_each_annotation(lambda annotation: annotation.update(yshift=10))
+        else:
+            violin_span = "hard" if cut else None
+            fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
+                facet_col=region_id, facet_col_wrap=3, color_discrete_sequence=PALETTE,
+                points="all", box=True, violinmode="group",
+                facet_row_spacing=0.025, facet_col_spacing=0.045)
+
+            if violin_span is not None:
+                fig.update_traces(spanmode=violin_span)
+            fig.update_traces(jitter=0.15, pointpos=0)
+            n_facets = plot_df[region_id].nunique()
+            n_rows = int(np.ceil(n_facets / 3))
+            fig.update_layout(height=max(1050, n_rows * 700), width=1300,
+                              margin=dict(t=80, r=40, b=80, l=70),
+                              showlegend=False)
+            fig.for_each_annotation(lambda annotation: annotation.update(yshift=14))
+        fig.update_xaxes(tickangle=90)
+        fig.update_xaxes(showticklabels=True, showline=True, linecolor="black",
+                         linewidth=2, ticks="outside", tickcolor="black",
+                         mirror=True)
+        fig.update_yaxes(showticklabels=True, showline=True, linecolor="black",
+                         linewidth=2, ticks="outside", tickcolor="black",
+                         mirror=True, gridcolor="#d0d0d0", nticks=14,
+                         zeroline=True, zerolinecolor="black",
+                         zerolinewidth=1)
+        # Force unmatching:
+        fig.for_each_yaxis(lambda ax: ax.update(matches=None,
+                                                autorange=True))
+        _write_html(fig, path_to_df.replace(".csv", f"_{categorical_var}.html"))
     plt.close()
     # END OF FUNCTION
 
@@ -246,10 +438,11 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",x_label=""
     :return: plots are generated and saved to disk.
     """
 
-
+    # Remove upper / right spine to improve aesthetics
+    plt.rcParams['axes.spines.right'] = False
+    plt.rcParams['axes.spines.top'] = False
     plt.plot(array)
     plt.plot(peaks, array[peaks], "x")
-
     # Add the annotated base-pair values if possible
     max_x = len(array) # relative val for label
     center_factor = max_x * 0.035 # labels look prettier when up
@@ -266,9 +459,34 @@ def peakplot(array, peaks, ladder_id, ref, i, qc_save_dir, y_label="",x_label=""
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
-    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf")
-    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.pdf", bbox_inches="tight")
+    plt.savefig(f"{qc_save_dir}peaks_{i}_{ref}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(y=array, mode="lines", name=str(ladder_id)))
+    fig.add_trace(go.Scatter(x=peaks, y=array[peaks], mode="markers",
+                             marker_symbol="x", marker_size=9,
+                             name="Peaks"))
+    fig.add_trace(go.Scatter(y=np.zeros_like(array), mode="lines",
+                             line=dict(color="gray", dash="dash"),
+                             name="Baseline"))
+    if size_values:
+        annotations = []
+        for peak_index, (x_pos, y_pos) in enumerate(zip(peaks, array[peaks])):
+            if type(x_pos) != np.int64:
+                real_pos = round(size_values[x_pos])
+            else:
+                real_pos = size_values[peak_index]
+            annotations.append(dict(x=x_pos, y=y_pos + 0.04,
+                                    text=f"{round(real_pos, 1)} bp",
+                                    showarrow=False, font=dict(size=10)))
+        fig.update_layout(annotations=annotations)
+    fig.update_layout(title=str(ladder_id), xaxis_title=x_label,
+                      yaxis_title=y_label)
+    fig.update_xaxes(range=[1, len(array)])
+    _write_html(fig, f"{qc_save_dir}peaks_{i}_{ref}.html")
 
     # END OF FUNCTION
 
@@ -326,16 +544,21 @@ def lineplot(df, x, y, save_dir="", title="", y_label="", x_label="",
                      style=style)
     plt.title(f"{title}")
     plt.xscale('log')
-    for axis in [ax.xaxis, ax.yaxis]:
-        axis.set_major_formatter(ScalarFormatter())
+    _format_log_xaxis(ax)
+    ax.yaxis.set_major_formatter(ScalarFormatter())
     plt.ylabel(y_label)
     plt.xlabel(x_label)
     plt.xlim(lower_xlim, None)
     if window:
         plt.xlim(window[0], window[1])
-    plt.savefig(f"{save_dir}{title}.pdf")
-    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
+    plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
+    _plotly_line(df, x, y, hue=hue, units=units, style=style,
+                 estimator=estimator, title=f"{title}", x_label=x_label,
+                 y_label=y_label, output_path=f"{save_dir}{title}.html",
+                 lower_xlim=lower_xlim, window=window)
     # END OF FUNCTION
 
 
@@ -360,12 +583,26 @@ def ladderplot(df, ladder2type, qc_save_dir, y_label="", x_label=""):
                      color=PALETTE[i], label=ladder2type[ladder])
         plt.title(f"All ladders, interpolated")
         plt.xscale('log')
-        for axis in [ax.xaxis, ax.yaxis]:
-            axis.set_major_formatter(ScalarFormatter())
+        _format_log_xaxis(ax)
+        ax.yaxis.set_major_formatter(ScalarFormatter())
     plt.xlim(10 ^ 0, None)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
-    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf")
-    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.{ALTERNATE_FORMAT}")
+    plt.tight_layout()
+    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.pdf", bbox_inches="tight")
+    plt.savefig(f"{qc_save_dir}peaks_all_interpolated.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
+
+    fig = go.Figure()
+    for i, ladder in enumerate([e for e in df.columns if "Ladder" in e and
+                                                         "interpol" not in e]):
+        fig.add_trace(go.Scatter(x=df[f"{ladder}_interpol"], y=df[ladder],
+                                 mode="lines", name=ladder2type[ladder],
+                                 line=dict(color=PALETTE[i % len(PALETTE)])))
+    max_bp = max([df[f"{ladder}_interpol"].max() for ladder in
+                  [e for e in df.columns if "Ladder" in e and
+                   "interpol" not in e]])
+    fig = _apply_line_layout(fig, "All ladders, interpolated", x_label,
+                             y_label, lower_xlim=10, upper_xlim=max_bp)
+    _write_html(fig, f"{qc_save_dir}peaks_all_interpolated.html")
     # END OF FUNCTION

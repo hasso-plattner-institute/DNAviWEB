@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>DNAvi | Results</title>
+  <link rel="icon" type="image/png" href="./static/img/logo.svg"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
@@ -16,6 +17,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css">
+  <style>
+    .interactive-plot-wrap {
+      width: min(1800px, calc(100vw - 2rem));
+      max-width: none;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
 
@@ -171,6 +180,41 @@
 
           <!-- begin: results -->
           <div class="accordion mt-4" id="resultsAccordion">
+            {% macro plot_pair(f, alt_text, show_svg=True) %}
+              {% set html_f = f[:-4] ~ '.html' %}
+              {% set iframe_height = '1150px' if alt_text == 'violin plot' else ('760px' if alt_text == 'bar plot' else '520px') %}
+              <div class="mb-4">
+                {% if show_svg %}
+                  <div class="text-center">
+                    <a href="{{url_for('serve_result_file', output_id=output_id,
+                                        filename=f[:-4] ~ '.pdf')}}"
+                      target="_blank">
+                      <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
+                          alt="{{alt_text}}"
+                          style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                    </a>
+                    <div class="text-muted small mt-1">{{f}}</div>
+                  </div>
+                {% endif %}
+                {% if html_f in html_files %}
+                  <div class="{% if show_svg %}mt-3{% endif %} interactive-plot-wrap">
+                    <iframe src="about:blank"
+                            data-src="{{url_for('serve_result_file', output_id=output_id, filename=html_f)}}"
+                            class="interactive-plot-frame"
+                            title="{{html_f}}"
+                            style="width:100%; height:{{iframe_height}}; border:1px solid #ccc; border-radius:4px;">
+                    </iframe>
+                    <div class="text-muted small mt-1 text-center">{{html_f}}</div>
+                    <div class="text-center mt-2">
+                      <a class="btn btn-outline-primary btn-sm" target="_blank"
+                         href="{{url_for('serve_result_file', output_id=output_id, filename=html_f)}}">
+                        Open interactive plot
+                      </a>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            {% endmacro %}
 
             <!--begin:: ELBS report -->
             <div class="accordion-item">
@@ -211,16 +255,7 @@
                   {% for f in peaks_files + other_files %}
                     {% set fname = f.lower() %}
                     {% if line_patterns | select('in', fname) | list | length > 0 %}
-                      <div class="text-center mb-4">
-                        <a href="{{url_for('serve_result_file', output_id=output_id,
-                                            filename=f.replace('.png','.pdf'))}}"
-                          target="_blank">
-                          <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
-                              alt="line plot"
-                              style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
-                        </a>
-                        <div class="text-muted small mt-1">{{f}}</div>
-                      </div>
+                      {{ plot_pair(f, "line plot", false) }}
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -239,12 +274,7 @@
                 <div class="accordion-body">
                   {% for f in other_files %}
                     {% if "peak_statistics_sample" in f %}
-                      <div class="text-center mb-4">
-                        <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
-                            alt="bar plot"
-                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
-                        <div class="text-muted small mt-1">{{f}}</div>
-                      </div>
+                      {{ plot_pair(f, "bar plot", false) }}
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -263,12 +293,7 @@
                 <div class="accordion-body">
                   {% for f in other_files %}
                     {% if "peak_statistics" in f.lower() and "peak_statistics_sample" not in f %}
-                      <div class="text-center mb-4">
-                        <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
-                            alt="violin plot"
-                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
-                        <div class="text-muted small mt-1">{{f}}</div>
-                      </div>
+                      {{ plot_pair(f, "violin plot", false) }}
                     {% endif %}
                   {% endfor %}
                 </div>
@@ -288,9 +313,13 @@
                   {% for f in other_files %}
                     {% if "cluster" in f.lower() %}
                       <div class="text-center mb-4">
-                        <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
-                            alt="cluster map"
-                            style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        <a href="{{url_for('serve_result_file', output_id=output_id,
+                                            filename=f[:-4] ~ '.pdf')}}"
+                          target="_blank">
+                          <img src="{{url_for('serve_result_file', output_id=output_id, filename=f)}}"
+                              alt="cluster map"
+                              style="max-width:100%; border:1px solid #ccc; border-radius:4px; padding:4px;">
+                        </a>
                         <div class="text-muted small mt-1">{{f}}</div>
                       </div>
                     {% endif %}
@@ -424,6 +453,49 @@
           targetCollapse.scrollIntoView({behavior: 'smooth', block: 'start'});
         }
       });
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const resizePlotlyFrame = (frame) => {
+      try {
+        const frameWindow = frame.contentWindow;
+        const frameDocument = frame.contentDocument || frameWindow.document;
+        const plot = frameDocument.querySelector('.js-plotly-plot');
+        if (!plot || !frameWindow.Plotly) return;
+
+        frameWindow.Plotly.relayout(plot, {
+          autosize: true,
+          width: frame.clientWidth,
+          margin: {r: 360}
+        });
+        frameWindow.Plotly.Plots.resize(plot);
+      } catch (error) {
+        // Same-origin result iframes are resizable; if not, the full plot link still works.
+      }
+    };
+
+    const loadVisibleFrames = (container) => {
+      container.querySelectorAll('.interactive-plot-frame').forEach(frame => {
+        const targetSrc = frame.dataset.src;
+        if (!targetSrc) return;
+
+        if (frame.src === 'about:blank') {
+          frame.addEventListener('load', () => {
+            setTimeout(() => resizePlotlyFrame(frame), 150);
+          }, {once: true});
+          frame.src = targetSrc;
+        } else {
+          setTimeout(() => resizePlotlyFrame(frame), 150);
+        }
+      });
+    };
+
+    document.querySelectorAll('.accordion-collapse').forEach(section => {
+      section.addEventListener('shown.bs.collapse', () => loadVisibleFrames(section));
+      if (section.classList.contains('show')) {
+        loadVisibleFrames(section);
+      }
     });
   });
   </script>

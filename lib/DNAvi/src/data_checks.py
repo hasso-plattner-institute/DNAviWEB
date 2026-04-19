@@ -109,11 +109,20 @@ def check_file(filename):
         exit()
     try:
         df = pd.read_csv(filename, header=0, delimiter=delim)
-    except Exception as exception:
-        logging.exception(exception)
-        print("--- Error reading your (generated) CSV file,"
-              "please check your input file.")
-        exit()
+    except:
+        try:
+            # Sometimes dfs come as semicolon and comma decimals
+            # Give it a try with semicolon / comma
+            df = pd.read_csv(filename, header=0, delimiter=";")
+            df.replace(regex={',': '.'}, inplace=True)
+            for col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+
+        except Exception as exception:
+            logging.exception(exception)
+            print("--- Error reading your (generated) CSV file, "
+                  f"please make sure your input columns are COMMA-SEPARATED (col1,col2,col3)."
+                  f"Decimal values should be separated by POINT (0.0001).")
     print(df.head(3))
 
     #####################################################################

@@ -43,7 +43,7 @@ document.getElementById('addColumnBtn').addEventListener('click', function () {
 });
 
 /**
-  * Load example data into the form without immidiate submission
+  * Load example data into the form without immediate submission
   */
 document.getElementById('load-example').addEventListener('click', async () => {
   EXAMPLE_CLICKED = true;
@@ -51,6 +51,77 @@ document.getElementById('load-example').addEventListener('click', async () => {
       {url: './static/tests/electropherogram.csv', inputName: 'data_file'},
       {url: './static/tests/metadata.csv', inputName: 'meta_file'}
   ];
+  // Load electropherogram and metadata
+  for (const file of files) {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      const fileObj = new File([blob], file.url.split('/').pop(), {type: blob.type});
+      const input = document.querySelector(`input[name="${file.inputName}"]`);
+      if (input) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(fileObj);
+          input.files = dataTransfer.files;
+          if (file.inputName === "meta_file") {
+            addCSVColumnsToAll(fileObj);
+          }
+      }
+  }
+  // Automatically select HSD5000 ladder option
+  const ladderOption = document.querySelector('input[name="ladder_file"][value="HSD5000"]');
+  if (ladderOption) {
+      ladderOption.checked = true;
+      const fileContainer = document.getElementById('fileUploadContainer');
+      if (fileContainer) fileContainer.style.display = 'none';
+  }
+  alert("Example data loaded! You can review or edit before submitting.");
+});
+
+
+
+/**
+  * Load example data into - PNG example
+  */
+document.getElementById('load-png').addEventListener('click', async () => {
+  EXAMPLE_CLICKED = true;
+  const files = [
+      {url: './static/tests/cfDNA_human.png', inputName: 'data_file'},
+      {url: './static/tests/metadata_cf_human.csv', inputName: 'meta_file'}
+  ];
+  // Load electropherogram and metadata
+  for (const file of files) {
+      const response = await fetch(file.url);
+      const blob = await response.blob();
+      const fileObj = new File([blob], file.url.split('/').pop(), {type: blob.type});
+      const input = document.querySelector(`input[name="${file.inputName}"]`);
+      if (input) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(fileObj);
+          input.files = dataTransfer.files;
+          if (file.inputName === "meta_file") {
+            addCSVColumnsToAll(fileObj);
+          }
+      }
+  }
+  // Automatically select HSD5000 ladder option
+  const ladderOption = document.querySelector('input[name="ladder_file"][value="HSD5000"]');
+  if (ladderOption) {
+      ladderOption.checked = true;
+      const fileContainer = document.getElementById('fileUploadContainer');
+      if (fileContainer) fileContainer.style.display = 'none';
+  }
+  alert("Example data loaded! You can review or edit before submitting.");
+});
+
+/**
+  * Load example data into - JPEG example
+  */
+document.getElementById('load-jpg').addEventListener('click', async () => {
+  EXAMPLE_CLICKED = true;
+  const files = [
+      {url: './static/tests/cfDNA_human_2.jpeg', inputName: 'data_file'},
+      {url: './static/tests/metadata_cf_human_2.csv', inputName: 'meta_file'}
+  ];
+
   // Load electropherogram and metadata
   for (const file of files) {
       const response = await fetch(file.url);
