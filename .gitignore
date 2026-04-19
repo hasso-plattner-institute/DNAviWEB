@@ -15,3 +15,5 @@ exchange/uploads/*
 
 protected_table_only.html
 certs/
+lib/DNAvi/client/static/tests/*
+dnavi.log
