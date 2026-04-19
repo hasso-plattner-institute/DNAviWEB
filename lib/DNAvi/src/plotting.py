@@ -347,7 +347,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             g.map(sns.barplot, categorical_var, y, palette=PALETTE,
                   )
         else:
-            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=3, hue=categorical_var,
+            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=2, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
                               height=6.5, aspect=1.05)
             if cut:
@@ -360,7 +360,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         if categorical_var == "sample":
             plt.subplots_adjust(hspace=0.6, wspace=1.1)
         else:
-            plt.subplots_adjust(hspace=0.25, wspace=1.5)
+            plt.subplots_adjust(hspace=0.3, wspace=1.8)
         # Rotate x-axis labels
         for ax in g.axes.flat:
             plt.setp(ax.get_xticklabels(), rotation=90, visible=True)
@@ -375,30 +375,36 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         # Interactive version
         #################################################################
         if categorical_var == "sample":
-            fig = px.bar(plot_df, x=categorical_var, y=y,
-                color=categorical_var, facet_col=region_id,
-                facet_col_wrap=4, color_discrete_sequence=PALETTE,
-                barmode="group", facet_row_spacing=0.08,
-                facet_col_spacing=0.04)
-            fig.update_traces(width=0.8)
             n_facets = plot_df[region_id].nunique()
-            n_rows = int(np.ceil(n_facets / 4))
-            fig.update_layout(height=max(650, n_rows * 390),
-                              margin=dict(t=80, r=360, b=130, l=70))
+            n_rows = int(np.ceil(n_facets / 2))
+            row_spacing = 0.08 if n_rows <= 2 else min(0.03, 0.22 / (n_rows - 1))
+            plot_df[categorical_var] = plot_df[categorical_var].astype(str)
+            sample_labels = plot_df[categorical_var].drop_duplicates().tolist()
+            fig = px.bar(plot_df, x=categorical_var, y=y,
+                facet_col=region_id, facet_col_wrap=2,
+                barmode="group", facet_row_spacing=row_spacing,
+                facet_col_spacing=0.12)
+            fig.update_traces(width=0.8, marker_color="#006400",
+                              marker_line_color="black", marker_line_width=1)
+            fig.update_layout(height=max(850, n_rows * 560), width=1800,
+                              margin=dict(t=80, r=60, b=130, l=70),
+                              showlegend=False)
+            fig.update_xaxes(tickmode="array", tickvals=sample_labels,
+                             ticktext=sample_labels)
             fig.for_each_annotation(lambda annotation: annotation.update(yshift=10))
         else:
             violin_span = "hard" if cut else None
             fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
-                facet_col=region_id, facet_col_wrap=3, color_discrete_sequence=PALETTE,
+                facet_col=region_id, facet_col_wrap=2, color_discrete_sequence=PALETTE,
                 points="all", box=True, violinmode="group",
-                facet_row_spacing=0.025, facet_col_spacing=0.045)
+                facet_row_spacing=0.04, facet_col_spacing=0.16)
 
             if violin_span is not None:
                 fig.update_traces(spanmode=violin_span)
             fig.update_traces(jitter=0.15, pointpos=0)
             n_facets = plot_df[region_id].nunique()
-            n_rows = int(np.ceil(n_facets / 3))
-            fig.update_layout(height=max(1050, n_rows * 700), width=1300,
+            n_rows = int(np.ceil(n_facets / 2))
+            fig.update_layout(height=max(1050, n_rows * 700), width=1400,
                               margin=dict(t=80, r=40, b=80, l=70),
                               showlegend=False)
             fig.for_each_annotation(lambda annotation: annotation.update(yshift=14))
