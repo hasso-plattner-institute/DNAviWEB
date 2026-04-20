@@ -202,10 +202,9 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
             required_colors = 2
         lut = dict(zip(wide_df[col].unique(), PALETTE)) #sns.color_palette(palette='colorblind')*required_colors
         row_colors = wide_df[col].map(lut)
-
         sns.clustermap(wide_df.drop(columns=["sample", col]),
                        rasterized=True, row_cluster=True,
-                       cmap="YlGnBu",yticklabels=False,xticklabels=False,
+                       cmap="YlGnBu",yticklabels=False, xticklabels=False,
                        col_cluster=False, row_colors=row_colors)
         handles = [Patch(facecolor=lut[name]) for name in lut]
         plt.legend(handles, lut, title=col,
@@ -337,6 +336,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         if not peak_ids:
             print(f"No peaks {categorical_var}")
             continue
+
         #################################################################
         # Create the grid plot
         #################################################################
@@ -344,19 +344,24 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
                               height=4.8, aspect=1.45)
-            g.map(sns.barplot, categorical_var, y, palette=PALETTE,
-                  )
+            g.map(sns.barplot, categorical_var, y, palette=PALETTE)
         else:
             g = sns.FacetGrid(plot_df, col=region_id, col_wrap=2, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
                               height=6.5, aspect=1.05)
             if cut:
-                g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
+                g.map(sns.violinplot, categorical_var, y,
+                      inner_kws=dict(box_width=5, whis_width=2, color="black"),
                       edgecolor="black", alpha=.7, cut=0)
             else:
-                g.map(sns.violinplot, categorical_var, y, inner_kws=dict(box_width=5, whis_width=2, color="black"),
+                g.map(sns.violinplot, categorical_var, y,
+                      inner_kws=dict(box_width=5, whis_width=2, color="black"),
                       edgecolor="black", alpha=.7)
             g.map(sns.stripplot, categorical_var, y, color="white", linewidth=1, edgecolor="black")
+
+        # Remove category from title
+        g.set_titles(template="{col_name}")
+
         if categorical_var == "sample":
             plt.subplots_adjust(hspace=0.6, wspace=1.1)
         else:
@@ -392,6 +397,8 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             fig.update_xaxes(tickmode="array", tickvals=sample_labels,
                              ticktext=sample_labels)
             fig.for_each_annotation(lambda annotation: annotation.update(yshift=10))
+            # Remove category from title
+            fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
         else:
             violin_span = "hard" if cut else None
             fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
@@ -408,6 +415,8 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
                               margin=dict(t=80, r=40, b=80, l=70),
                               showlegend=False)
             fig.for_each_annotation(lambda annotation: annotation.update(yshift=14))
+            # Remove category from title
+            fig.for_each_annotation(lambda a: a.update(text=a.text.split("=",1)[-1]))
         fig.update_xaxes(tickangle=90)
         fig.update_xaxes(showticklabels=True, showline=True, linecolor="black",
                          linewidth=2, ticks="outside", tickcolor="black",
