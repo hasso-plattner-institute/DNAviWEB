@@ -1,0 +1,33 @@
+# Instructions for example inputs to DNAviWEB
+# Date: 2026-Apr-20
+# Author: Anja Hess
+ 
+######################################################
+# CSV EXAMPLE (SIGNAL TABLE)
+######################################################
+#Machine: Agilent TapeStation 4150
+#Gel: High Sensitivity D5000 (Agilent, 5067–5592/3)
+electropherogram.csv
+Use with: size_standard.csv & metadata.csv
+
+######################################################
+# IMAGE EXAMPLES (GEL IMAGES)
+######################################################
+# Machine: Agilent TapeStation 4150
+# Gel: High Sensitivity D5000 (Agilent, 5067–5592/3)
+
+# Human cancer cell line cfDNA
+cfDNA_human.png 
+Use with: size_standard.csv & metadata_cf_human.csv
+
+# Serial dilutions of cfDNA (from: Hess, A., Seelow, D. & Kretzmer, H. DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces. Bioinformatics btag041 #(2026) doi:10.1093/bioinformatics/btag041)
+cfDNA_dilution_1.png
+cfDNA_dilution_2.png
+cfDNA_dilution_3.png
+Use with: size_standard.csv
+
+# Human cancer cfDNA libraries (from: Hess, A., Seelow, D. & Kretzmer, H. DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces. Bioinformatics btag041 #(2026) doi:10.1093/bioinformatics/btag041):
+cfDNA_human_2.jpeg OR cfDNA_human_2.jpg
+Use with: size_standard.csv & metadata_cf_human_2.csv
+
+# END OF README
