@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19698607.svg)](https://doi.org/10.5281/zenodo.19698607)
+
 # DNAviWEB
 
 DNAviWEB (https://dnavi.sc.hpi.de/) is a freely-accessible implementation of the DNAvi analysis tool for instant pre-sequencing screening of cell-free DNA fragmentomics from electrophoresis traces.
