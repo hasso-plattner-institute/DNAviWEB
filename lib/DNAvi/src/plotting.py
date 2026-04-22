@@ -197,10 +197,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         else:
             wide_df = prep_df.pivot(index=["sample", col], columns=x,
                                values=y).reset_index()
-        required_colors = round(int(len(wide_df[col].unique())/5))
-        if required_colors <= 5:
-            required_colors = 2
-        lut = dict(zip(wide_df[col].unique(), PALETTE)) #sns.color_palette(palette='colorblind')*required_colors
+        lut = dict(zip(wide_df[col].unique(), PALETTE))
         row_colors = wide_df[col].map(lut)
         sns.clustermap(wide_df.drop(columns=["sample", col]),
                        rasterized=True, row_cluster=True,
@@ -248,6 +245,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     g = sns.FacetGrid(df, col=hue, hue=hue, col_wrap=3, palette=PALETTE)
     g.map(sns.lineplot, x, y, alpha=.7)
     g.add_legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
     # Add labels
     plt.ylabel(y_label)
     plt.xlabel(x_label)
@@ -259,11 +257,17 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
     plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
-    fig = px.line(df, x=x, y=y, color=hue, facet_col=hue, facet_col_wrap=3,
-                  title=f"{title}", color_discrete_sequence=PALETTE,
-                  facet_row_spacing=0.16)
+
+    #####################################################################
+    # Interactive version
+    #####################################################################
     n_facets = df[hue].nunique()
     n_rows = int(np.ceil(n_facets / 3))
+    min_spacing = (1 / (n_rows - 1))
+
+    fig = px.line(df, x=x, y=y, color=hue, facet_col=hue, facet_col_wrap=3,
+                  title=f"{title}", color_discrete_sequence=PALETTE,
+                  facet_row_spacing=min_spacing)
     fig.update_layout(height=max(650, n_rows * 360))
     fig = _apply_line_layout(fig, f"{title}", x_label, y_label,
                              upper_xlim=df[x].max())
@@ -384,6 +388,9 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             n_facets = plot_df[region_id].nunique()
             n_rows = int(np.ceil(n_facets / 2))
             row_spacing = 0.08 if n_rows <= 2 else min(0.03, 0.22 / (n_rows - 1))
+            min_spacing = (1 / (n_rows - 1))
+            if row_spacing > min_spacing:
+                row_spacing = min_spacing
             plot_df[categorical_var] = plot_df[categorical_var].astype(str)
             sample_labels = plot_df[categorical_var].drop_duplicates().tolist()
             fig = px.bar(plot_df, x=categorical_var, y=y,
@@ -402,16 +409,21 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
         else:
             violin_span = "hard" if cut else None
+            n_facets = plot_df[region_id].nunique()
+            n_rows = int(np.ceil(n_facets / 2))
+            row_spacing = 0.04
+            min_spacing = (1 / (n_rows - 1))
+            if row_spacing > min_spacing:
+                row_spacing = min_spacing
+
             fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
                 facet_col=region_id, facet_col_wrap=2, color_discrete_sequence=PALETTE,
                 points="all", box=True, violinmode="group",
-                facet_row_spacing=0.04, facet_col_spacing=0.16)
+                facet_row_spacing=row_spacing, facet_col_spacing=0.16)
 
             if violin_span is not None:
                 fig.update_traces(spanmode=violin_span)
             fig.update_traces(jitter=0.15, pointpos=0)
-            n_facets = plot_df[region_id].nunique()
-            n_rows = int(np.ceil(n_facets / 2))
             fig.update_layout(height=max(1050, n_rows * 700), width=1400,
                               margin=dict(t=80, r=40, b=80, l=70),
                               showlegend=False)
