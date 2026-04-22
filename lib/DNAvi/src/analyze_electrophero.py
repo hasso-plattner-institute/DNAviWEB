@@ -689,6 +689,9 @@ def run_stats(df, variable="", category="", paired=False, alpha=0.05,
                                        "unique_peak",
                                        "average", "modal", "median",
                                        "groups"])
+    # To show all posthoc p-values:
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
     return stats_df
 
 def marker_and_normalize(df, peak_dict="", include_marker=False, normalize=True,
