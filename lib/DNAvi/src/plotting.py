@@ -346,7 +346,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
                               height=4.8, aspect=1.45)
             g.map(sns.barplot, categorical_var, y, palette=PALETTE)
         else:
-            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=2, hue=categorical_var,
+            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
                               height=6.5, aspect=1.05)
             if cut:
@@ -363,15 +363,16 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         g.set_titles(template="{col_name}")
 
         if categorical_var == "sample":
-            plt.subplots_adjust(hspace=0.6, wspace=1.1)
+            plt.subplots_adjust(hspace=1, wspace=1.1)
         else:
-            plt.subplots_adjust(hspace=0.3, wspace=1.8)
+            plt.subplots_adjust(hspace=1, wspace=1.8)
+
         # Rotate x-axis labels
         for ax in g.axes.flat:
             plt.setp(ax.get_xticklabels(), rotation=90, visible=True)
-            plt.setp(ax.get_yticklabels(), visible=True)
-            ax.tick_params(axis="both", which="both",
-                           labelbottom=True, labelleft=True)
+            ax.tick_params(axis="both", which="both", labelbottom=True,
+                           labelleft=True, labelrotation=90)
+
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
