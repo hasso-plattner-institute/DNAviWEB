@@ -79,7 +79,7 @@ Special thanks to Eliz Karaman and other testers.
 ## 5. Citation
 
 **Anja Hess<sup>1,2,3</sup>, Yara Matani<sup>4</sup>, Dominik Seelow<sup>1</sup>, and Helene Kretzmer<sup>2,4</sup>: 
-DNAviWEB: sequencing-free clinical screening of liquid biopsies. Nucleic Acids Res (2026) [https://doi:10.1093/nar/gkag446](https://doi.org/10.1093/nar/gkag446).**
+DNAviWEB: sequencing-free clinical screening of liquid biopsies. <em>Nucleic Acids Research</em>, gkag446. Published: 08 June 2026. [https://doi.org/10.1093/nar/gkag446](https://doi.org/10.1093/nar/gkag446).**
 1. [Center of Genomic Medicine](https://www.bihealth.org/de/forschung/sektionen/exploratory-diagnostic-sciences-eds/center-of-genomic-medicine), Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany
 2. [Max Planck Institute for Molecular Genetics](https://www.molgen.mpg.de/), Berlin, Germany
 3. [Department of Biology, Chemistry and Pharmacy](https://www.bcp.fu-berlin.de/), Freie Universität Berlin, Berlin, Germany
