@@ -77,6 +77,32 @@
       }
     }
   </style>
+<style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
 </head>
 <body>
 

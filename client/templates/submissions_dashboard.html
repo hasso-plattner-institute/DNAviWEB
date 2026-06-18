@@ -27,6 +27,32 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css">
+<style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
 
