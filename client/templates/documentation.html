@@ -183,6 +183,32 @@
       transition: transform 0.4s ease;
     }
   </style>
+<style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open">
 
@@ -195,9 +221,9 @@
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('home')}}">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{url_for('documentation')}}">Documentation</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
       </ul>

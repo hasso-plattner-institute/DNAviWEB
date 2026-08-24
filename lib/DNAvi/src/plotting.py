@@ -197,10 +197,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
         else:
             wide_df = prep_df.pivot(index=["sample", col], columns=x,
                                values=y).reset_index()
-        required_colors = round(int(len(wide_df[col].unique())/5))
-        if required_colors <= 5:
-            required_colors = 2
-        lut = dict(zip(wide_df[col].unique(), PALETTE)) #sns.color_palette(palette='colorblind')*required_colors
+        lut = dict(zip(wide_df[col].unique(), PALETTE))
         row_colors = wide_df[col].map(lut)
         sns.clustermap(wide_df.drop(columns=["sample", col]),
                        rasterized=True, row_cluster=True,
@@ -248,6 +245,7 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     g = sns.FacetGrid(df, col=hue, hue=hue, col_wrap=3, palette=PALETTE)
     g.map(sns.lineplot, x, y, alpha=.7)
     g.add_legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
     # Add labels
     plt.ylabel(y_label)
     plt.xlabel(x_label)
@@ -259,11 +257,17 @@ def gridplot(df, x, y, save_dir="", title="", y_label="", x_label="",
     plt.savefig(f"{save_dir}{title}.pdf", bbox_inches="tight")
     plt.savefig(f"{save_dir}{title}.{ALTERNATE_FORMAT}", bbox_inches="tight")
     plt.close()
-    fig = px.line(df, x=x, y=y, color=hue, facet_col=hue, facet_col_wrap=3,
-                  title=f"{title}", color_discrete_sequence=PALETTE,
-                  facet_row_spacing=0.16)
+
+    #####################################################################
+    # Interactive version
+    #####################################################################
     n_facets = df[hue].nunique()
     n_rows = int(np.ceil(n_facets / 3))
+    min_spacing = (1 / (n_rows - 1))
+
+    fig = px.line(df, x=x, y=y, color=hue, facet_col=hue, facet_col_wrap=3,
+                  title=f"{title}", color_discrete_sequence=PALETTE,
+                  facet_row_spacing=min_spacing)
     fig.update_layout(height=max(650, n_rows * 360))
     fig = _apply_line_layout(fig, f"{title}", x_label, y_label,
                              upper_xlim=df[x].max())
@@ -346,7 +350,7 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
                               height=4.8, aspect=1.45)
             g.map(sns.barplot, categorical_var, y, palette=PALETTE)
         else:
-            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=2, hue=categorical_var,
+            g = sns.FacetGrid(plot_df, col=region_id, col_wrap=4, hue=categorical_var,
                               sharex=True, sharey=False, palette=PALETTE,
                               height=6.5, aspect=1.05)
             if cut:
@@ -363,15 +367,16 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
         g.set_titles(template="{col_name}")
 
         if categorical_var == "sample":
-            plt.subplots_adjust(hspace=0.6, wspace=1.1)
+            plt.subplots_adjust(hspace=1, wspace=1.1)
         else:
-            plt.subplots_adjust(hspace=0.3, wspace=1.8)
+            plt.subplots_adjust(hspace=1, wspace=1.8)
+
         # Rotate x-axis labels
         for ax in g.axes.flat:
             plt.setp(ax.get_xticklabels(), rotation=90, visible=True)
-            plt.setp(ax.get_yticklabels(), visible=True)
-            ax.tick_params(axis="both", which="both",
-                           labelbottom=True, labelleft=True)
+            ax.tick_params(axis="both", which="both", labelbottom=True,
+                           labelleft=True, labelrotation=90)
+
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.pdf"), bbox_inches="tight")
         plt.savefig(path_to_df.replace(".csv", f"_{categorical_var}.{ALTERNATE_FORMAT}"), bbox_inches="tight")
         plt.close()
@@ -383,6 +388,9 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             n_facets = plot_df[region_id].nunique()
             n_rows = int(np.ceil(n_facets / 2))
             row_spacing = 0.08 if n_rows <= 2 else min(0.03, 0.22 / (n_rows - 1))
+            min_spacing = (1 / (n_rows - 1))
+            if row_spacing > min_spacing:
+                row_spacing = min_spacing
             plot_df[categorical_var] = plot_df[categorical_var].astype(str)
             sample_labels = plot_df[categorical_var].drop_duplicates().tolist()
             fig = px.bar(plot_df, x=categorical_var, y=y,
@@ -401,16 +409,21 @@ def stats_plot(path_to_df, cols_not_to_plot=None, region_id="region_id",
             fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
         else:
             violin_span = "hard" if cut else None
+            n_facets = plot_df[region_id].nunique()
+            n_rows = int(np.ceil(n_facets / 2))
+            row_spacing = 0.04
+            min_spacing = (1 / (n_rows - 1))
+            if row_spacing > min_spacing:
+                row_spacing = min_spacing
+
             fig = px.violin(plot_df, x=categorical_var, y=y, color=categorical_var,
                 facet_col=region_id, facet_col_wrap=2, color_discrete_sequence=PALETTE,
                 points="all", box=True, violinmode="group",
-                facet_row_spacing=0.04, facet_col_spacing=0.16)
+                facet_row_spacing=row_spacing, facet_col_spacing=0.16)
 
             if violin_span is not None:
                 fig.update_traces(spanmode=violin_span)
             fig.update_traces(jitter=0.15, pointpos=0)
-            n_facets = plot_df[region_id].nunique()
-            n_rows = int(np.ceil(n_facets / 2))
             fig.update_layout(height=max(1050, n_rows * 700), width=1400,
                               margin=dict(t=80, r=40, b=80, l=70),
                               showlegend=False)

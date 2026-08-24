@@ -27,6 +27,32 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css">
+<style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
 
@@ -35,7 +61,7 @@
     <nav class="app-header navbar navbar-expand bg-body">
       <div class="container-fluid">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
@@ -52,7 +78,7 @@
                 <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
               </li>
              <li class="nav-item">
-                  <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
+                  <a class="nav-link active" href="{{url_for('submissions_dashboard')}}">My submissions</a>
                 </li>
             {% else %}
               <li class="nav-item">
@@ -62,7 +88,7 @@
                 <a class="nav-link" href="{{url_for('register')}}">Register</a>
               </li>
             <li class="nav-item">
-                  <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
+                  <a class="nav-link active" href="{{url_for('submissions_dashboard')}}">My submissions</a>
                 </li>
             {% endif %}
           </li>

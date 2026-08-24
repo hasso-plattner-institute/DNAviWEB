@@ -72,7 +72,33 @@
       integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
       crossorigin="anonymous"
     >
-  </head>
+  <style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
+</head>
   <!--begin::Body-->
   <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
     <!--begin::App Wrapper-->
@@ -83,7 +109,7 @@
         <div class="container-fluid">
           <!--begin::Start Navbar Links-->
           <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link active" href="{{ url_for('home') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('home') }}">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('citation') }}">About</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('documentation') }}">Documentation</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('contact') }}">Contact</a></li>
@@ -110,7 +136,7 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{{url_for('register')}}">Register</a>
                 </li>
-                <li class="nav-item">
+               <li class="nav-item">
                   <a class="nav-link" href="{{url_for('submissions_dashboard')}}">My submissions</a>
                 </li>
               {% endif %}

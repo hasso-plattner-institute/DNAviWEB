@@ -64,6 +64,46 @@
     .hero-section a:hover {
       text-decoration: underline;
     }
+    .citation-entry {
+      margin-bottom: 2rem;
+    }
+    .citation-authors {
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.35rem;
+    }
+    .citation-authors sup,
+    .affiliation-list sup {
+      color: #007bff;
+      font-weight: 700;
+      font-size: 0.72em;
+    }
+    .citation-text {
+      margin-bottom: 0.85rem;
+    }
+    .affiliation-list {
+      border-left: 3px solid #dee2e6;
+      margin-bottom: 1rem;
+      padding-left: 1rem;
+    }
+    .affiliation-list p {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      color: #6c757d;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      margin-bottom: 0.35rem;
+    }
+    .affiliation-list p sup {
+      flex: 0 0 1.2rem;
+      display: inline-block;
+      font-size: 0.88em;
+      line-height: 1.45;
+      position: static;
+      text-align: right;
+      vertical-align: baseline;
+    }
     hr {
       border-color: #dee2e6;
     }
@@ -83,6 +123,32 @@
       }
     }
   </style>
+<style>
+  @media (max-width: 991.98px) {
+    .app-header.navbar .container-fluid {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .app-header.navbar .navbar-brand,
+    .app-header.navbar .nav-item {
+      flex: 0 0 auto;
+    }
+    .app-header.navbar .navbar-nav {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+    .app-header.navbar .nav-link {
+      white-space: nowrap;
+    }
+    .app-header.navbar .ms-auto {
+      margin-left: 0 !important;
+    }
+  }
+</style>
 </head>
 <body>
 
@@ -95,8 +161,8 @@
         <span class="fw-bold">DNAvi</span>
       </a>
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="{{url_for('home')}}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{url_for('citation')}}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('home')}}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{{url_for('citation')}}">About</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('documentation')}}">Documentation</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('contact')}}">Contact</a></li>
         <li class="nav-item"><a class="nav-link" href="{{url_for('legal_notice')}}">Impressum | Legal notice</a></li>
@@ -134,30 +200,43 @@
 
             <h2>DNAvi tool</h2>
 
-            <p>
-              Anja Hess(1,2,3), Dominik Seelow(1), and Helene Kretzmer(2,4): 
-              DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces.
-              <em>Bioinformatics</em>, Volume 42, Issue 2, February 2026, btag041.
-              Published 29 January 2026.
-              <a href="https://doi.org/10.1093/bioinformatics/btag041" target="_blank">https://doi.org/10.1093/bioinformatics/btag041</a>
-            </p>
-            <p> 1. Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany</p>
-            <p> 2. Max Planck Institute for Molecular Genetics, Berlin, Germany</p>
-            <p> 3. Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany</p>
-            <p> 4. Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany</p>
-            <p></p>
+            <div class="citation-entry">
+              <p class="citation-authors">Anja Hess<sup>1,2,3</sup>, Dominik Seelow<sup>1</sup>, and Helene Kretzmer<sup>2,4</sup></p>
+              <p class="citation-text">
+                DNAvi: Integration, statistics, and visualization of cell-free DNA fragment traces.
+                <em>Bioinformatics</em>, Volume 42, Issue 2, February 2026, btag041.
+                Published: 29 January 2026.
+                <a href="https://doi.org/10.1093/bioinformatics/btag041" target="_blank">https://doi.org/10.1093/bioinformatics/btag041</a>
+              </p>
+              <div class="affiliation-list">
+                <p><sup>1</sup> Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany.</p>
+                <p><sup>2</sup> Max Planck Institute for Molecular Genetics, Berlin, Germany.</p>
+                <p><sup>3</sup> Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany.</p>
+                <p><sup>4</sup> Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany.</p>
+              </div>
+            </div>
             <!-- <i class="bi bi-envelope-fill me-2"></i> -->
             <a href="https://github.com/anjahess/DNAvi">DNAvi on GitHub</a>
              <p></p>
             <br>
             <h2>DNAviWEB</h2>
 
-            <p> Anja Hess(1,2,3), Yara Matani(4), Dominik Seelow(1), and Helene Kretzmer(2,4): DNAviWEB: sequencing-free clinical analysis of cell-free DNA profiles (Unpublished). </p>
-            <p> 1. Center of Genomic Medicine, Berlin Institute of Health at Charité Universitätsmedizin Berlin, Berlin, Germany</p>
-            <p> 2. Max Planck Institute for Molecular Genetics, Berlin, Germany</p>
-            <p> 3. Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin, Germany</p>
-            <p> 4. Digital Health Cluster, Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam, Germany</p>
-            <p></p>
+            <div class="citation-entry">
+              <p class="citation-authors">Anja Hess<sup>1,2,3</sup>, Yara Matani<sup>4</sup>, Dominik Seelow<sup>1,5</sup>, and Helene Kretzmer<sup>2,4</sup></p>
+              <p class="citation-text">
+                DNAviWEB: sequencing-free clinical screening of liquid biopsies.
+                <em>Nucleic Acids Research</em>, gkag446.
+                Published: 08 June 2026.
+                DOI: <a href="https://doi.org/10.1093/nar/gkag446" target="_blank">https://doi.org/10.1093/nar/gkag446</a>
+              </p>
+              <div class="affiliation-list">
+                <p><sup>1</sup> Center of Genomic Medicine, Exploratory Diagnostic Sciences, Berlin Institute of Health at the Charité Universitätsmedizin Berlin, Berlin 10117, Germany.</p>
+                <p><sup>2</sup> Max Planck Institute for Molecular Genetics, Berlin 14195, Germany.</p>
+                <p><sup>3</sup> Department of Biology, Chemistry and Pharmacy, Freie Universität Berlin, Berlin 14195, Germany.</p>
+                <p><sup>4</sup> Hasso Plattner Institute for Digital Engineering, Digital Engineering Faculty, University of Potsdam, Potsdam 14482, Germany.</p>
+                <p><sup>5</sup> Institute of Medical Genetics and Human Genetics, Charité Universitätsmedizin Berlin, Berlin 13353, Germany.</p>
+              </div>
+            </div>
             <!-- <i class="bi bi-envelope-fill me-2"></i> -->
             <a href="https://github.com/hasso-plattner-institute/DNAviWEB">DNAviWEB on GitHub</a>
           <hr>
